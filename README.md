@@ -1,2 +1,2 @@
 # fudancraft
-a small rts game written by c++ 
+a small rts game based on Cocos2dx
