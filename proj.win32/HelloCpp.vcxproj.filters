@@ -10,6 +10,12 @@
     <Filter Include="src">
       <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resource\Font">
+      <UniqueIdentifier>{61c48530-cd8a-40e8-ae67-676e9fa711c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Picture">
+      <UniqueIdentifier>{a31a0c98-dc41-4af5-93c7-d647e470a295}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -19,6 +25,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\HelloWorldScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\MainScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,10 +41,30 @@
     <ClInclude Include="..\Classes\HelloWorldScene.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\MainScene.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
       <Filter>resource</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\game.ico" />
+    <Image Include="..\Resources\Picture\airplane.png">
+      <Filter>resource\Picture</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\Resources\fonts\arial.ttf">
+      <Filter>resource\Font</Filter>
+    </Font>
+    <Font Include="..\Resources\fonts\Marker Felt.ttf">
+      <Filter>resource\Font</Filter>
+    </Font>
+    <Font Include="..\Resources\fonts\SIMLI.TTF">
+      <Filter>resource\Font</Filter>
+    </Font>
   </ItemGroup>
 </Project>
