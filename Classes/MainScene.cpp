@@ -159,13 +159,12 @@ void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 
 void Airplane::update()
 {
-	if (selected)
-		if ((dest - getPosition()).getLength() < 10)
-			active = 0;
-		else
-		{
-			active = 1;
-			auto esp = (dest - getPosition()).getNormalized();
-			setPosition(getPosition() + esp * move_speed);
-		}
+	if ((dest - getPosition()).getLength() < 10)
+		active = 0;
+	else
+	{
+		active = 1;
+		auto esp = (dest - getPosition()).getNormalized();
+		setPosition(getPosition() + esp * move_speed);
+	}
 }
