@@ -6,13 +6,17 @@
 class Airplane : public cocos2d::Sprite
 {
 public:
-	void update();
+	bool update();
 	bool isActive() { return active; }
+	bool isAlive() { return alive; }
 	bool isSelected() { return selected; }
 	void select() { selected = true; }
 	void unselect() { selected = false; }
 	void activate() { active = true; }
 	void setDest(cocos2d::Point destination) { this->dest = destination; }
+	void setTarget(Airplane* enemy_plane) { this->target = enemy_plane; }
+	void setState(int _state) { this->state = _state; }
+	void decreaseHp(int dh) { this->hp -= dh; }
 	static Airplane* createPlane(const std::string& filename)
 	{
 		Airplane *airplane = new (std::nothrow) Airplane();
@@ -27,8 +31,17 @@ public:
 private:
 	bool selected = 0;
 	bool active = 0;
+	bool alive = 1;
 	int state = 0;
+	int cd = 0;
+	int hp = 100;
 
+	Airplane* target;
+
+	const int atk = 10;
+	const int atk_range = 50;
+	const int atk_period = 5;
+	const int hp_max = 100;
 	const float move_speed = 10.0;
 
 	cocos2d::Point dest;

@@ -72,9 +72,37 @@ bool MainScene::init()
 
 void MainScene::update(float f)
 {
-	for (auto my_plane : this->my_planes)
-		if (my_plane->isActive())
+	for (auto plane_it = this->my_planes.begin(); plane_it != this->my_planes.end(); )
+		if ((*plane_it)->isAlive() && (*plane_it)->isActive())
+			if ((*plane_it)->update())
+				this->my_planes.erase(plane_it);
+			else
+				plane_it++;
+		else
+			plane_it++;
+
+	auto enemy_begin = enemy_planes.begin();
+	auto enemy_end = enemy_planes.end();
+	
+	for (auto plane_it = this->enemy_planes.begin(); plane_it != this->enemy_planes.end(); )
+		if ((*plane_it)->isAlive() && (*plane_it)->isActive())
+			if ((*plane_it)->update())
+				plane_it = this->enemy_planes.erase(plane_it);
+			else
+				plane_it++;
+		else
+			plane_it++;
+
+	/*for (auto my_plane : this->my_planes)
+		if (my_plane->isAlive() && my_plane->isActive())
 			my_plane->update();
+
+	for (auto enemy_plane : this->enemy_planes)
+		if (enemy_plane->isAlive() && enemy_plane->isActive())
+		{
+			log("enemy plane address: %d", enemy_plane);
+			enemy_plane->update();
+		}*/
 
 	//log("touch point:%f,%f",touchPoint.x,touchPoint.y);
 }
@@ -91,7 +119,22 @@ bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 			for (auto other_plane : this->my_planes)
 				other_plane->unselect();
 			my_plane->select();
-			this->state = 1;
+			this->state = 3;
+			return true;
+		}
+
+	for (auto enemy_plane : this->enemy_planes)
+		if (enemy_plane->isAlive() && enemy_plane->getBoundingBox().containsPoint(touch))
+		{
+			for (auto my_plane : this->my_planes)
+				if (my_plane->isSelected())
+				{
+					my_plane->setState(2);
+					my_plane->setTarget(enemy_plane);
+					my_plane->activate();
+					enemy_plane->activate();
+				}
+			this->state = 3;
 			return true;
 		}
 
@@ -126,6 +169,12 @@ void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 
 void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
+	if (this->state == 3)
+	{
+		this->state = 1;
+		return;
+	}
+
 	if (this->state == 1)
 	{
 		Point touch = pTouch->getLocation();//返回点击的位置 
@@ -133,6 +182,7 @@ void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 			if (my_plane->isSelected())
 			{
 				my_plane->setDest(touch);
+				my_plane->setState(1);
 				my_plane->activate();
 			}
 	}
@@ -157,14 +207,50 @@ void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 	}
 }
 
-void Airplane::update()
+bool Airplane::update()
 {
-	if ((dest - getPosition()).getLength() < 10)
-		active = 0;
-	else
+	if (state == 1)
+		if ((dest - getPosition()).getLength() < 10)
+		{
+			active = 0;
+			state = 0;
+		}
+		else
+		{
+			auto esp = (dest - getPosition()).getNormalized();
+			setPosition(getPosition() + esp * move_speed);
+		}
+	if (state == 2)
+		if ((getPosition() - target->getPosition()).getLength() < atk_range)
+			state = 3;
+		else
+		{
+			auto esp = (target->getPosition() - getPosition()).getNormalized();
+			setPosition(getPosition() + esp * move_speed);
+		}
+	if (state == 3)
+		if (target->isAlive())
+			if (!cd)
+			{
+				log("target address: %d", target);
+				target->decreaseHp(atk);
+				cd = atk_period;
+			}
+			else
+				cd--;
+		else
+		{
+			state = 0;
+			target = nullptr;
+			active = 0;
+		}
+
+	if (alive && hp <= 0  && (unsigned int(_textureAtlas) != 0xdddddddd))
 	{
-		active = 1;
-		auto esp = (dest - getPosition()).getNormalized();
-		setPosition(getPosition() + esp * move_speed);
+		removeFromParent();
+		alive = 0;
+		return true;
 	}
+
+	return false;
 }
