@@ -76,7 +76,7 @@ void MainScene::update(float f)
 		if (my_plane->isActive())
 			my_plane->update();
 
-	log("touch point:%f,%f",touchPoint.x,touchPoint.y);
+	//log("touch point:%f,%f",touchPoint.x,touchPoint.y);
 }
 
 bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
@@ -85,33 +85,15 @@ bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 	Point touch = pTouch->getLocation();//返回点击的位置
 	this->touchPoint = touch;
 
-	if (state == 0)
-	{
-		for (auto my_plane : this->my_planes)
-			if (my_plane->getBoundingBox().containsPoint(touch))
-			{
-				my_plane->select();
-				this->state = 1;
-				return true;
-			}
-	}
-
-	if (this->state == 1)
-	{
-		for (auto my_plane : my_planes)
-			if (my_plane->isSelected())
-			{
-				my_plane->setDest(touch);
-				my_plane->activate();
-			}
-		this->state = 0;
-	}
-	else
-	{
-		this->state = 2;
-		this->mouse_rect = DrawNode::create();
-		this->addChild(this->mouse_rect, 2);
-	}
+	for (auto my_plane : this->my_planes)
+		if (my_plane->getBoundingBox().containsPoint(touch))
+		{
+			for (auto other_plane : this->my_planes)
+				other_plane->unselect();
+			my_plane->select();
+			this->state = 1;
+			return true;
+		}
 
 	return true;
 }
@@ -120,26 +102,41 @@ void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
 	Point touch = pTouch->getLocation();//返回点击的位置  
 
-	//
-	if (this->state == 2)
+	if (state != 2)
 	{
-		this->mouse_rect->clear();
-		Vec2 mouse_rect_points[4];
-		mouse_rect_points[0] = this->touchPoint;
-		mouse_rect_points[1] = Vec2(this->touchPoint.x, touch.y);
-		mouse_rect_points[2] = touch;
-		mouse_rect_points[3] = Vec2(touch.x, this->touchPoint.y);
-
-		//绘制空心多边形
-		//填充颜色：Color4F(1, 0, 0, 0), 透明
-		//轮廓颜色：Color4F(0, 1, 0, 1), 绿色
-		this->mouse_rect->drawPolygon(mouse_rect_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 1, 0, 1));
-		//
+		this->mouse_rect = DrawNode::create();
+		this->addChild(this->mouse_rect, 2);
 	}
+
+	this->state = 2;
+	
+
+	this->mouse_rect->clear();
+	Vec2 mouse_rect_points[4];
+	mouse_rect_points[0] = this->touchPoint;
+	mouse_rect_points[1] = Vec2(this->touchPoint.x, touch.y);
+	mouse_rect_points[2] = touch;
+	mouse_rect_points[3] = Vec2(touch.x, this->touchPoint.y);
+
+	//绘制空心多边形
+	//填充颜色：Color4F(1, 0, 0, 0), 透明
+	//轮廓颜色：Color4F(0, 1, 0, 1), 绿色
+	this->mouse_rect->drawPolygon(mouse_rect_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 1, 0, 1));
 }
 
 void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
+	if (this->state == 1)
+	{
+		Point touch = pTouch->getLocation();//返回点击的位置 
+		for (auto my_plane : my_planes)
+			if (my_plane->isSelected())
+			{
+				my_plane->setDest(touch);
+				my_plane->activate();
+			}
+	}
+
 	if (this->state == 2)
 	{
 		this->removeChild(this->mouse_rect);
@@ -147,11 +144,16 @@ void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 
 		Point touch = pTouch->getLocation();//返回点击的位置  
 
-		Rect select_rect{ this->touchPoint.x, this->touchPoint.y, touch.x - this->touchPoint.x, this->touchPoint.y - touch.y};
+		Rect select_rect{ MIN(this->touchPoint.x, touch.x), MIN(this->touchPoint.y, touch.y), abs(this->touchPoint.x - touch.x), abs(this->touchPoint.y - touch.y) };
+	
+		for (auto other_plane : this->my_planes)
+			other_plane->unselect();
 
 		for (auto my_plane : my_planes)
+		{
 			if (select_rect.containsPoint(my_plane->getPosition()))
 				my_plane->select();
+		}
 	}
 }
 
