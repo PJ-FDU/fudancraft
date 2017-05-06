@@ -8,8 +8,8 @@ class HelloWorld : public cocos2d::Layer
 public:
     static cocos2d::Scene* createScene();
 
-    virtual bool init();
-	virtual void update(float dt);
+	bool init() override;
+	virtual void update(float dt) override; 
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
     
