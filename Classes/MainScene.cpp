@@ -110,11 +110,8 @@ void MainScene::update(float f)
 bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 {
 	
-	
 	Point touch = pTouch->getLocation();//返回点击的位置
-	
-	touchPoint = touch;
-
+	this->touchPoint = touch;
 
 	for (auto my_plane : this->my_planes)
 		if (my_plane->getBoundingBox().containsPoint(touch))
@@ -168,7 +165,6 @@ void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 	//填充颜色：Color4F(1, 0, 0, 0), 透明
 	//轮廓颜色：Color4F(0, 1, 0, 1), 绿色
 	this->mouse_rect->drawPolygon(mouse_rect_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 1, 0, 1));
-	log("touch point:%f,%f", touchPoint.x, touchPoint.y);
 }
 
 void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
