@@ -7,8 +7,8 @@ class Airplane : public cocos2d::Sprite
 {
 public:
 	void update();
-	bool isActive() { return active; }
-	bool isSelected() { return selected; }
+	bool isActive()const { return active; }
+	bool isSelected() const { return selected; }
 	void select() { selected = true; }
 	void unselect() { selected = false; }
 	void activate() { active = true; }
