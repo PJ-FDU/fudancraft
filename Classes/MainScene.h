@@ -50,7 +50,7 @@ private:
 	std::vector<Airplane*> enemy_planes;
 	cocos2d::DrawNode* mouse_rect;
 	int state = 0;
-	cocos2d::Vec2 touchPoint{500,500};
+	cocos2d::Vec2 touchPoint;
 	
 
 	//EventListenerMouse* _mouseListener;
