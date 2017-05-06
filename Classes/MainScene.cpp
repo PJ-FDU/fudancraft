@@ -90,11 +90,11 @@ void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 	rect->drawRect(touch_begin, pTouch->getLocation(), Color4F(1.0, 0, 0, 1.0));
 
 	auto airplane = getChildByTag(12);
-	Point touch = pTouch->getLocation();//返回点击的位置  
-	Rect rectPlayer = airplane->getBoundingBox();//看返回值类型，应该知道这个是飞机所占矩形区域的大小  
+	auto touch = pTouch->getLocation();//返回点击的位置  
+	auto rectPlayer = airplane->getBoundingBox();//看返回值类型，应该知道这个是飞机所占矩形区域的大小  
 
 	if (rectPlayer.containsPoint(touch)) {//如果点击的点在这个矩形区域内就可以对飞机进行拖动  
-		Point temp = pTouch->getDelta();
+		auto temp = pTouch->getDelta();
 		airplane->setPosition(airplane->getPosition() + temp);
 	}
 }
@@ -102,6 +102,6 @@ void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 void MainScene::onTouchEnded(cocos2d::Touch*, cocos2d::Event*)
 {
 	rect->clear();
-//	this->removeChild(rect);
+
 	log("touch end");
 }
