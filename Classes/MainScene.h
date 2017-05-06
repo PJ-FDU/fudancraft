@@ -11,11 +11,13 @@ public:
 	void update(float f) override;
 	bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*)override;
 	void onTouchMoved(cocos2d::Touch*, cocos2d::Event*)override;
+	void onTouchEnded(cocos2d::Touch*, cocos2d::Event*)override;
 
 	CREATE_FUNC(MainScene);
 private:
 	cocos2d::Sprite* airplane;
-	cocos2d::Vec2 touchPoint{500,500};
+	cocos2d::DrawNode* rect;
+	cocos2d::Vec2 touchPoint{500,500},touch_begin;
 	float moveSpeed = 10.0;
 };
 

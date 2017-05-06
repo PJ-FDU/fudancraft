@@ -37,11 +37,17 @@ bool MainScene::init()
 	this->addChild(airplane,1);
 	this->schedule(schedule_selector(MainScene::update));
 
+	rect = DrawNode::create();
 
+	this->addChild(rect, 2);
+//	this->setTouchEnabled(true);
 	auto listen = EventListenerTouchOneByOne::create();
 	listen->onTouchBegan = CC_CALLBACK_2(MainScene::onTouchBegan, this);
 	listen->onTouchMoved = CC_CALLBACK_2(MainScene::onTouchMoved, this);
+	listen->onTouchEnded = CC_CALLBACK_2(MainScene::onTouchEnded, this);
+//	this->addTouchListener();
 	listen->setSwallowTouches(true);
+//	this->setTouchMode(Touch::DispatchMode::ONE_BY_ONE);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
 
 	return true;
@@ -60,23 +66,29 @@ void MainScene::update(float f)
 //		a->setPosition(a->getPosition()+esp*moveSpeed);
 //		
 //	}
-	if (airplane->getBoundingBox().containsPoint(touchPoint))
-		return;
-	auto esp = (touchPoint - airplane->getPosition()).getNormalized();
-	airplane->setPosition(airplane->getPosition()+esp*moveSpeed);
+	if (!airplane->getBoundingBox().containsPoint(touchPoint))
+	{
+		auto esp = (touchPoint - airplane->getPosition()).getNormalized();
+		airplane->setPosition(airplane->getPosition() + esp*moveSpeed);
+	}
+//	log("f:%f", f);
 
-
-	log("touch point:%f,%f",touchPoint.x,touchPoint.y);
+//	log("touch point:%f,%f",touchPoint.x,touchPoint.y);
 }
 
 bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 {
 	this->touchPoint = pTouch->getLocation();
+	touch_begin = pTouch->getLocation();
+	log("touch begin");
 	return true;
 }
 
 void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
+	rect->clear();
+	rect->drawRect(touch_begin, pTouch->getLocation(), Color4F(1.0, 0, 0, 1.0));
+
 	auto airplane = getChildByTag(12);
 	Point touch = pTouch->getLocation();//返回点击的位置  
 	Rect rectPlayer = airplane->getBoundingBox();//看返回值类型，应该知道这个是飞机所占矩形区域的大小  
@@ -85,4 +97,11 @@ void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 		Point temp = pTouch->getDelta();
 		airplane->setPosition(airplane->getPosition() + temp);
 	}
+}
+
+void MainScene::onTouchEnded(cocos2d::Touch*, cocos2d::Event*)
+{
+	rect->clear();
+//	this->removeChild(rect);
+	log("touch end");
 }
