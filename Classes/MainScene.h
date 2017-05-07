@@ -3,6 +3,13 @@
 
 #include "cocos2d.h"
 
+class HPBar : public cocos2d::Sprite
+{
+private:
+	int length;
+	cocos2d::Point frame_points;
+};
+
 class Airplane : public cocos2d::Sprite
 {
 public:
@@ -39,8 +46,8 @@ private:
 	Airplane* target;
 
 	const int atk = 10;
-	const int atk_range = 50;
-	const int atk_period = 5;
+	const int atk_range = 100;
+	const int atk_period = 20;
 	const int hp_max = 100;
 	const float move_speed = 10.0;
 
@@ -57,11 +64,17 @@ public:
 	void onTouchMoved(cocos2d::Touch*, cocos2d::Event*)override;
 	void onTouchEnded(cocos2d::Touch*, cocos2d::Event*)override;
 
+	void onKeyPressed(cocos2d::EventKeyboard::KeyCode , cocos2d::Event *) override;
+
 	CREATE_FUNC(MainScene);
 private:
 	std::vector<Airplane*> my_planes;
 	std::vector<Airplane*> enemy_planes;
 	cocos2d::DrawNode* mouse_rect;
+	cocos2d::TMXTiledMap* battle_map;
+	cocos2d::MenuItemFont* enemy_btn;
+
+	cocos2d::Rect map_range;
 	int state = 0;
 	cocos2d::Vec2 touchPoint{500,500};
 	

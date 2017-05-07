@@ -28,7 +28,11 @@ bool MainScene::init()
 	label->setColor(Color3B::RED);
 	label->setPosition(Vec2(origin.x + visibleSize.width / 2,
 		origin.y + visibleSize.height - label->getContentSize().height));
-	this->addChild(label,0);
+	addChild(label,1);
+
+	battle_map = TMXTiledMap::create("map/test_tiled.tmx");
+	battle_map->setPosition(0, 0);
+	addChild(battle_map, 0);
 
 	std::random_device rd;						//采用非确定性随机数发生器产生随机数种子
 	std::default_random_engine gen(rd());		//采用默认随机数引擎产生随机数
@@ -41,7 +45,7 @@ bool MainScene::init()
 		plane = Airplane::createPlane("Picture/airplane.png");
 		plane->setScale(0.1, 0.1);
 		plane->setPosition(unif_x(gen), unif_y(gen));
-		this->addChild(plane);
+		this->addChild(plane, 1);
 		this->my_planes.push_back(plane);
 	}
 
@@ -51,7 +55,7 @@ bool MainScene::init()
 		plane = Airplane::createPlane("Picture/airplane_red.png");
 		plane->setScale(0.1, 0.1);
 		plane->setPosition(unif_x(gen), unif_y(gen));
-		this->addChild(plane);
+		this->addChild(plane, 1);
 		this->enemy_planes.push_back(plane);
 	}
 	
@@ -66,6 +70,9 @@ bool MainScene::init()
 	listen->setSwallowTouches(true);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
 
+	auto keyboard_listener = EventListenerKeyboard::create();
+	keyboard_listener->onKeyPressed = CC_CALLBACK_2(MainScene::onKeyPressed, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyboard_listener, this);
 	return true;
 
 }
@@ -93,25 +100,15 @@ void MainScene::update(float f)
 		else
 			plane_it++;
 
-	/*for (auto my_plane : this->my_planes)
-		if (my_plane->isAlive() && my_plane->isActive())
-			my_plane->update();
-
-	for (auto enemy_plane : this->enemy_planes)
-		if (enemy_plane->isAlive() && enemy_plane->isActive())
-		{
-			log("enemy plane address: %d", enemy_plane);
-			enemy_plane->update();
-		}*/
-
-	//log("touch point:%f,%f",touchPoint.x,touchPoint.y);
 }
 
 bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 {
 	
-	Point touch = pTouch->getLocation();//返回点击的位置
+	Point touch = pTouch->getLocation() - getPosition();//返回点击的位置
 	this->touchPoint = touch;
+
+	log("Touch Point:(%f, %f)", touch.x, touch.y);
 
 	for (auto my_plane : this->my_planes)
 		if (my_plane->getBoundingBox().containsPoint(touch))
@@ -143,7 +140,7 @@ bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 
 void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
-	Point touch = pTouch->getLocation();//返回点击的位置  
+	Point touch = pTouch->getLocation() - getPosition();//返回点击的位置
 
 	if (state != 2)
 	{
@@ -169,6 +166,8 @@ void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 
 void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
+	Point touch = pTouch->getLocation() - getPosition();//返回点击的位置
+
 	if (this->state == 3)
 	{
 		this->state = 1;
@@ -177,7 +176,6 @@ void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 
 	if (this->state == 1)
 	{
-		Point touch = pTouch->getLocation();//返回点击的位置 
 		for (auto my_plane : my_planes)
 			if (my_plane->isSelected())
 			{
@@ -192,8 +190,6 @@ void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 		this->removeChild(this->mouse_rect);
 		this->state = 1;
 
-		Point touch = pTouch->getLocation();//返回点击的位置  
-
 		Rect select_rect{ MIN(this->touchPoint.x, touch.x), MIN(this->touchPoint.y, touch.y), abs(this->touchPoint.x - touch.x), abs(this->touchPoint.y - touch.y) };
 	
 		for (auto other_plane : this->my_planes)
@@ -204,6 +200,47 @@ void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 			if (select_rect.containsPoint(my_plane->getPosition()))
 				my_plane->select();
 		}
+	}
+}
+
+void MainScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* pEvent)
+{
+	auto screen_center = getPosition();
+	log("Screen Center: (%f, %f)", screen_center.x, screen_center.y);
+	log("Visible Origin: (%f, %f)", Director::getInstance()->getVisibleOrigin().x, Director::getInstance()->getVisibleOrigin().y);
+	Director::getInstance()->getVisibleSize();
+	switch(keycode)
+	{
+	case EventKeyboard::KeyCode::KEY_W:
+		screen_center += Vec2(0, -50);
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0,0) - screen_center + Director::getInstance()->getVisibleSize()))
+			setPosition(screen_center);
+		break;
+	case EventKeyboard::KeyCode::KEY_A:
+		screen_center += Vec2(50, 0);
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - screen_center))
+			setPosition(screen_center);
+		break;
+	case EventKeyboard::KeyCode::KEY_S:
+		screen_center += Vec2(0, 50);
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - screen_center))
+			setPosition(screen_center);
+		break;
+	case EventKeyboard::KeyCode::KEY_D:
+		screen_center += Vec2(-50, 0);
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - screen_center + Director::getInstance()->getVisibleSize()))
+			setPosition(screen_center);
+		break;
+	case EventKeyboard::KeyCode::KEY_C:
+		Airplane* plane;
+		plane = Airplane::createPlane("Picture/airplane_red.png");
+		plane->setScale(0.1, 0.1);
+		plane->setPosition(Vec2(0, 0) - screen_center + 0.5 * Director::getInstance()->getVisibleSize());
+		this->addChild(plane, 1);
+		this->enemy_planes.push_back(plane);
+		break;
+	default:
+		break;
 	}
 }
 
