@@ -34,30 +34,55 @@ bool MainScene::init()
 	battle_map->setPosition(0, 0);
 	addChild(battle_map, 0);
 
-	std::random_device rd;						//采用非确定性随机数发生器产生随机数种子
-	std::default_random_engine gen(rd());		//采用默认随机数引擎产生随机数
-	std::uniform_int_distribution<> unif_x(origin.x, origin.x + visibleSize.width);		//采用整数均匀分布器产生x均匀分布的随机数
-	std::uniform_int_distribution<> unif_y(origin.y, origin.y + visibleSize.height);		//采用整数均匀分布器产生y均匀分布的随机数
-
-	for (int i = 0; i < 5; i++)
+	auto* init_group = battle_map->getObjectGroup("init_unit");
+	auto& objs = init_group->getObjects();
+	for (auto& obj : objs)
 	{
+		auto& dict = obj.asValueMap();
+		float cx = dict["x"].asFloat();
+		float cy = dict["y"].asFloat();
+		int camp = dict["camp"].asInt();
+
 		Airplane* plane;
-		plane = Airplane::createPlane("Picture/airplane.png");
-		plane->setScale(0.1, 0.1);
-		plane->setPosition(unif_x(gen), unif_y(gen));
-		this->addChild(plane, 1);
-		this->my_planes.push_back(plane);
+		if (camp == 0)
+		{
+			plane = Airplane::createPlane("Picture/airplane_red.png");
+			plane->setPosition(cx, cy);
+			addChild(plane, 1);
+			my_planes.push_back(plane);
+		}
+		else
+			if (camp == 1)
+			{
+				plane = Airplane::createPlane("Picture/airplane.png");
+				plane->setPosition(cx, cy);
+				addChild(plane, 1);
+				enemy_planes.push_back(plane);
+			}
 	}
 
-	for (int i = 0; i < 5; i++)
-	{
-		Airplane* plane;
-		plane = Airplane::createPlane("Picture/airplane_red.png");
-		plane->setScale(0.1, 0.1);
-		plane->setPosition(unif_x(gen), unif_y(gen));
-		this->addChild(plane, 1);
-		this->enemy_planes.push_back(plane);
-	}
+	//std::random_device rd;						//采用非确定性随机数发生器产生随机数种子
+	//std::default_random_engine gen(rd());		//采用默认随机数引擎产生随机数
+	//std::uniform_int_distribution<> unif_x(origin.x, origin.x + visibleSize.width);		//采用整数均匀分布器产生x均匀分布的随机数
+	//std::uniform_int_distribution<> unif_y(origin.y, origin.y + visibleSize.height);		//采用整数均匀分布器产生y均匀分布的随机数
+
+	//for (int i = 0; i < 5; i++)
+	//{
+	//	Airplane* plane;
+	//	plane = Airplane::createPlane("Picture/airplane.png");
+	//	plane->setPosition(unif_x(gen), unif_y(gen));
+	//	this->addChild(plane, 1);
+	//	this->my_planes.push_back(plane);
+	//}
+
+	//for (int i = 0; i < 5; i++)
+	//{
+	//	Airplane* plane;
+	//	plane = Airplane::createPlane("Picture/airplane_red.png");
+	//	plane->setPosition(unif_x(gen), unif_y(gen));
+	//	this->addChild(plane, 1);
+	//	this->enemy_planes.push_back(plane);
+	//}
 	
 
 	this->schedule(schedule_selector(MainScene::update));
