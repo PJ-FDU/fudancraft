@@ -141,6 +141,7 @@ bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 			for (auto other_plane : this->my_planes)
 				other_plane->unselect();
 			my_plane->select();
+			my_plane->activate();
 			this->state = 3;
 			return true;
 		}
@@ -148,6 +149,7 @@ bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 	for (auto enemy_plane : this->enemy_planes)
 		if (enemy_plane->isAlive() && enemy_plane->getBoundingBox().containsPoint(touch))
 		{
+			enemy_plane->select();
 			for (auto my_plane : this->my_planes)
 				if (my_plane->isSelected())
 				{
@@ -221,10 +223,11 @@ void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 			other_plane->unselect();
 
 		for (auto my_plane : my_planes)
-		{
 			if (select_rect.containsPoint(my_plane->getPosition()))
+			{
 				my_plane->select();
-		}
+				my_plane->activate();
+			}
 	}
 }
 
@@ -257,9 +260,15 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* pEv
 			setPosition(screen_center);
 		break;
 	case EventKeyboard::KeyCode::KEY_C:
+		Airplane* my_plane;
+		my_plane = Airplane::createPlane("Picture/airplane_red.png");
+		my_plane->setPosition(Vec2(0, 0) - screen_center + 0.5 * Director::getInstance()->getVisibleSize());
+		this->addChild(my_plane, 1);
+		this->my_planes.push_back(my_plane);
+		break;
+	case EventKeyboard::KeyCode::KEY_X:
 		Airplane* plane;
-		plane = Airplane::createPlane("Picture/airplane_red.png");
-		plane->setScale(0.1, 0.1);
+		plane = Airplane::createPlane("Picture/airplane.png");
 		plane->setPosition(Vec2(0, 0) - screen_center + 0.5 * Director::getInstance()->getVisibleSize());
 		this->addChild(plane, 1);
 		this->enemy_planes.push_back(plane);
@@ -271,6 +280,19 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* pEv
 
 bool Airplane::update()
 {
+	if (selected)
+		if (hpbar)
+		{
+			hpbar->clear();
+			hpbar->update();
+		}
+		else
+		{
+			hpbar = HPBar::create();
+			hpbar->hpbarInit(this);
+			addChild(hpbar);
+		}
+
 	if (state == 1)
 		if ((dest - getPosition()).getLength() < 10)
 		{
@@ -315,4 +337,12 @@ bool Airplane::update()
 	}
 
 	return false;
+}
+
+void HPBar::update()
+{
+	drawPolygon(frame_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 0, 1, 1));
+	bar_points[2].x = frame_points[0].x + (frame_points[3].x - frame_points[0].x) * owner->getHP() / owner->getHPMax();
+	bar_points[3].x = bar_points[2].x;
+	drawPolygon(bar_points, 4, Color4F(0, 0, 1, 1), 1, Color4F(0, 0, 1, 1));
 }

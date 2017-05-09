@@ -6,6 +6,7 @@
 
 class Unit : public cocos2d::Sprite
 {
+private:
 
 };
 
