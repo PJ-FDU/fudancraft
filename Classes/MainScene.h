@@ -27,11 +27,14 @@ public:
 	void select() { selected = true; }
 	void unselect() { selected = false; }
 	void activate() { active = true; }
+	void deactivate() { active = false; }
 	void setDest(cocos2d::Point destination) { this->dest = destination; }
 	void setTarget(Airplane* enemy_plane) { this->target = enemy_plane; }
 	void setState(int _state) { this->state = _state; }
+	int getState() { return state; }
 	int getHP() { return hp; }
 	int getHPMax() { return hp_max; }
+	Airplane* getTarget() { return target; }
 	void decreaseHp(int dh) { this->hp -= dh; }
 
 	static Airplane* createPlane(const std::string& filename)
@@ -86,9 +89,13 @@ private:
 	cocos2d::TMXTiledMap* battle_map;
 	cocos2d::MenuItemFont* enemy_btn;
 
+	void simple_AI();
+
 	cocos2d::Rect map_range;
 	int state = 0;
-	int enemy_timer = 10;
+	int timer = 0;
+	int enemy_period = 1000;
+	int AI_period = 10;
 	cocos2d::Vec2 touchPoint{500,500};
 	
 

@@ -104,10 +104,21 @@ bool MainScene::init()
 
 void MainScene::update(float f)
 {
+	timer++;
+
 	for (auto plane_it = this->my_planes.begin(); plane_it != this->my_planes.end(); )
-		if ((*plane_it)->isAlive() && (*plane_it)->isActive())
+		if ((*plane_it)->isAlive())
 			if ((*plane_it)->update())
-				this->my_planes.erase(plane_it);
+			{
+				for (auto enemy_plane : enemy_planes)
+					if (enemy_plane->getTarget() == *plane_it)
+					{
+						enemy_plane->setState(0);
+						enemy_plane->setTarget(nullptr);
+						enemy_plane->deactivate();
+					}
+				plane_it = my_planes.erase(plane_it);
+			}
 			else
 				plane_it++;
 		else
@@ -119,12 +130,22 @@ void MainScene::update(float f)
 	for (auto plane_it = this->enemy_planes.begin(); plane_it != this->enemy_planes.end(); )
 		if ((*plane_it)->isAlive() && (*plane_it)->isActive())
 			if ((*plane_it)->update())
-				plane_it = this->enemy_planes.erase(plane_it);
+			{
+				for (auto my_plane : enemy_planes)
+					if (my_plane->getTarget() == *plane_it)
+					{
+						my_plane->setState(0);
+						my_plane->setTarget(nullptr);
+						my_plane->deactivate();
+					}
+				plane_it = enemy_planes.erase(plane_it);
+			}
 			else
 				plane_it++;
 		else
 			plane_it++;
 
+	simple_AI();
 }
 
 bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
@@ -132,8 +153,6 @@ bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 	
 	Point touch = pTouch->getLocation() - getPosition();//返回点击的位置
 	this->touchPoint = touch;
-
-	log("Touch Point:(%f, %f)", touch.x, touch.y);
 
 	for (auto my_plane : this->my_planes)
 		if (my_plane->getBoundingBox().containsPoint(touch))
@@ -234,8 +253,6 @@ void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 void MainScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* pEvent)
 {
 	auto screen_center = getPosition();
-	log("Screen Center: (%f, %f)", screen_center.x, screen_center.y);
-	log("Visible Origin: (%f, %f)", Director::getInstance()->getVisibleOrigin().x, Director::getInstance()->getVisibleOrigin().y);
 	Director::getInstance()->getVisibleSize();
 	switch(keycode)
 	{
@@ -280,6 +297,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* pEv
 
 bool Airplane::update()
 {
+
 	if (selected)
 		if (hpbar)
 		{
@@ -316,7 +334,6 @@ bool Airplane::update()
 		if (target->isAlive())
 			if (!cd)
 			{
-				log("target address: %d", target);
 				target->decreaseHp(atk);
 				cd = atk_period;
 			}
@@ -345,4 +362,35 @@ void HPBar::update()
 	bar_points[2].x = frame_points[0].x + (frame_points[3].x - frame_points[0].x) * owner->getHP() / owner->getHPMax();
 	bar_points[3].x = bar_points[2].x;
 	drawPolygon(bar_points, 4, Color4F(0, 0, 1, 1), 1, Color4F(0, 0, 1, 1));
+}
+
+void MainScene::simple_AI()
+{
+	static std::random_device rd;						//采用非确定性随机数发生器产生随机数种子
+	static std::default_random_engine gen(rd());		//采用默认随机数引擎产生随机数
+	if (timer % enemy_period == 0)
+	{
+		Airplane* plane;
+		plane = Airplane::createPlane("Picture/airplane.png");
+		std::uniform_int_distribution<> unif(0, Director::getInstance()->getVisibleSize().height);
+		plane->setPosition(Vec2(0, 0) - getPosition() + Vec2(unif(gen), unif(gen)));
+		addChild(plane, 1);
+		enemy_planes.push_back(plane);
+	}
+	if (timer % AI_period == 0 && my_planes.size())
+	{
+		std::uniform_int_distribution<> unif(0, my_planes.size() - 1);
+		for (auto plane : enemy_planes)
+			if (plane->getState() == 0)
+			{
+				int target_index = unif(gen);
+				log("AI Target Index: %d", target_index);
+				Airplane* target_plane = my_planes[target_index];
+				target_plane->activate();
+				plane->setTarget(target_plane);
+				plane->setState(2);
+				plane->activate();
+			}
+	}
+			
 }

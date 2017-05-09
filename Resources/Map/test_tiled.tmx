@@ -76,6 +76,5 @@
     <property name="camp" type="int" value="0"/>
    </properties>
   </object>
-  <object id="16" gid="173" x="1671" y="777" width="63" height="63"/>
  </objectgroup>
 </map>
