@@ -1,4 +1,5 @@
 #include "MainScene.h"
+#include <random>
 
 USING_NS_CC;
 
@@ -27,14 +28,63 @@ bool MainScene::init()
 	label->setColor(Color3B::RED);
 	label->setPosition(Vec2(origin.x + visibleSize.width / 2,
 		origin.y + visibleSize.height - label->getContentSize().height));
-	this->addChild(label,0);
-	airplane = Sprite::create("Picture/airplane.png");
-//	 auto airplane = Sprite::create("Picture/airplane.png");
+	addChild(label,1);
 
-	airplane->setScale(0.1, 0.1);
-	airplane->setPosition(200, 200);
-	airplane->setTag(12);
-	this->addChild(airplane,1);
+	battle_map = TMXTiledMap::create("map/test_tiled.tmx");
+	battle_map->setPosition(0, 0);
+	addChild(battle_map, 0);
+
+	auto* init_group = battle_map->getObjectGroup("init_unit");
+	auto& objs = init_group->getObjects();
+	for (auto& obj : objs)
+	{
+		auto& dict = obj.asValueMap();
+		float cx = dict["x"].asFloat();
+		float cy = dict["y"].asFloat();
+		int camp = dict["camp"].asInt();
+
+		Airplane* plane;
+		if (camp == 0)
+		{
+			plane = Airplane::createPlane("Picture/airplane_red.png");
+			plane->setPosition(cx, cy);
+			addChild(plane, 1);
+			my_planes.push_back(plane);
+		}
+		else
+			if (camp == 1)
+			{
+				plane = Airplane::createPlane("Picture/airplane.png");
+				plane->setPosition(cx, cy);
+				addChild(plane, 1);
+				enemy_planes.push_back(plane);
+			}
+	}
+
+	//std::random_device rd;						//采用非确定性随机数发生器产生随机数种子
+	//std::default_random_engine gen(rd());		//采用默认随机数引擎产生随机数
+	//std::uniform_int_distribution<> unif_x(origin.x, origin.x + visibleSize.width);		//采用整数均匀分布器产生x均匀分布的随机数
+	//std::uniform_int_distribution<> unif_y(origin.y, origin.y + visibleSize.height);		//采用整数均匀分布器产生y均匀分布的随机数
+
+	//for (int i = 0; i < 5; i++)
+	//{
+	//	Airplane* plane;
+	//	plane = Airplane::createPlane("Picture/airplane.png");
+	//	plane->setPosition(unif_x(gen), unif_y(gen));
+	//	this->addChild(plane, 1);
+	//	this->my_planes.push_back(plane);
+	//}
+
+	//for (int i = 0; i < 5; i++)
+	//{
+	//	Airplane* plane;
+	//	plane = Airplane::createPlane("Picture/airplane_red.png");
+	//	plane->setPosition(unif_x(gen), unif_y(gen));
+	//	this->addChild(plane, 1);
+	//	this->enemy_planes.push_back(plane);
+	//}
+	
+
 	this->schedule(schedule_selector(MainScene::update));
 
 	rect = DrawNode::create();
@@ -45,63 +95,315 @@ bool MainScene::init()
 	listen->onTouchBegan = CC_CALLBACK_2(MainScene::onTouchBegan, this);
 	listen->onTouchMoved = CC_CALLBACK_2(MainScene::onTouchMoved, this);
 	listen->onTouchEnded = CC_CALLBACK_2(MainScene::onTouchEnded, this);
-//	this->addTouchListener();
+
 	listen->setSwallowTouches(true);
 //	this->setTouchMode(Touch::DispatchMode::ONE_BY_ONE);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
 
+	auto keyboard_listener = EventListenerKeyboard::create();
+	keyboard_listener->onKeyPressed = CC_CALLBACK_2(MainScene::onKeyPressed, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyboard_listener, this);
 	return true;
 
 }
 
 void MainScene::update(float f)
 {
-//	
-//	auto sp = this->getChildren();//获取这个层中所有的孩子,也就是所有的精灵，看不懂？别逗我了，点进去看源码吧，注意它的返回值类型。  
-//	for (auto a : sp)
-//	{
-//		if(a->getBoundingBox().containsPoint(touchPoint))
-//			continue;
-//		auto esp = Point(touchPoint.x - a->getPosition().x, touchPoint.y - a->getPosition().y).getNormalized();
-//		a->setPosition(a->getPosition()+esp*moveSpeed);
-//		
-//	}
-	if (!airplane->getBoundingBox().containsPoint(touchPoint))
-	{
-		auto esp = (touchPoint - airplane->getPosition()).getNormalized();
-		airplane->setPosition(airplane->getPosition() + esp*moveSpeed);
-	}
-//	log("f:%f", f);
 
-//	log("touch point:%f,%f",touchPoint.x,touchPoint.y);
+	timer++;
+
+	for (auto plane_it = this->my_planes.begin(); plane_it != this->my_planes.end(); )
+		if ((*plane_it)->isAlive())
+			if ((*plane_it)->update())
+			{
+				for (auto enemy_plane : enemy_planes)
+					if (enemy_plane->getTarget() == *plane_it)
+					{
+						enemy_plane->setState(0);
+						enemy_plane->setTarget(nullptr);
+						enemy_plane->deactivate();
+					}
+				plane_it = my_planes.erase(plane_it);
+			}
+			else
+				plane_it++;
+		else
+			plane_it++;
+
+	auto enemy_begin = enemy_planes.begin();
+	auto enemy_end = enemy_planes.end();
+	
+	for (auto plane_it = this->enemy_planes.begin(); plane_it != this->enemy_planes.end(); )
+		if ((*plane_it)->isAlive() && (*plane_it)->isActive())
+			if ((*plane_it)->update())
+			{
+				for (auto my_plane : enemy_planes)
+					if (my_plane->getTarget() == *plane_it)
+					{
+						my_plane->setState(0);
+						my_plane->setTarget(nullptr);
+						my_plane->deactivate();
+					}
+				plane_it = enemy_planes.erase(plane_it);
+			}
+			else
+				plane_it++;
+		else
+			plane_it++;
+
+	simple_AI();
+
 }
 
 bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 {
-	this->touchPoint = pTouch->getLocation();
-	touch_begin = pTouch->getLocation();
-	log("touch begin");
+
+	
+	Point touch = pTouch->getLocation() - getPosition();//返回点击的位置
+	this->touchPoint = touch;
+
+	for (auto my_plane : this->my_planes)
+		if (my_plane->getBoundingBox().containsPoint(touch))
+		{
+			for (auto other_plane : this->my_planes)
+				other_plane->unselect();
+			my_plane->select();
+			my_plane->activate();
+			this->state = 3;
+			return true;
+		}
+
+	for (auto enemy_plane : this->enemy_planes)
+		if (enemy_plane->isAlive() && enemy_plane->getBoundingBox().containsPoint(touch))
+		{
+			enemy_plane->select();
+			for (auto my_plane : this->my_planes)
+				if (my_plane->isSelected())
+				{
+					my_plane->setState(2);
+					my_plane->setTarget(enemy_plane);
+					my_plane->activate();
+					enemy_plane->activate();
+				}
+			this->state = 3;
+			return true;
+		}
+
+
 	return true;
 }
 
 void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
-	rect->clear();
-	rect->drawRect(touch_begin, pTouch->getLocation(), Color4F(1.0, 0, 0, 1.0));
 
-	auto airplane = getChildByTag(12);
-	auto touch = pTouch->getLocation();//返回点击的位置  
-	auto rectPlayer = airplane->getBoundingBox();//看返回值类型，应该知道这个是飞机所占矩形区域的大小  
+	Point touch = pTouch->getLocation() - getPosition();//返回点击的位置
 
-	if (rectPlayer.containsPoint(touch)) {//如果点击的点在这个矩形区域内就可以对飞机进行拖动  
-		auto temp = pTouch->getDelta();
-		airplane->setPosition(airplane->getPosition() + temp);
+	if (state != 2)
+	{
+		this->mouse_rect = DrawNode::create();
+		this->addChild(this->mouse_rect, 2);
+	}
+
+	this->state = 2;
+	
+
+	this->mouse_rect->clear();
+	Vec2 mouse_rect_points[4];
+	mouse_rect_points[0] = this->touchPoint;
+	mouse_rect_points[1] = Vec2(this->touchPoint.x, touch.y);
+	mouse_rect_points[2] = touch;
+	mouse_rect_points[3] = Vec2(touch.x, this->touchPoint.y);
+
+	//绘制空心多边形
+	//填充颜色：Color4F(1, 0, 0, 0), 透明
+	//轮廓颜色：Color4F(0, 1, 0, 1), 绿色
+	this->mouse_rect->drawPolygon(mouse_rect_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 1, 0, 1));
+}
+
+void MainScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
+{
+	Point touch = pTouch->getLocation() - getPosition();//返回点击的位置
+
+	if (this->state == 3)
+	{
+		this->state = 1;
+		return;
+	}
+
+	if (this->state == 1)
+	{
+		for (auto my_plane : my_planes)
+			if (my_plane->isSelected())
+			{
+				my_plane->setDest(touch);
+				my_plane->setState(1);
+				my_plane->activate();
+			}
+	}
+
+	if (this->state == 2)
+	{
+		this->removeChild(this->mouse_rect);
+		this->state = 1;
+
+		Rect select_rect{ MIN(this->touchPoint.x, touch.x), MIN(this->touchPoint.y, touch.y), abs(this->touchPoint.x - touch.x), abs(this->touchPoint.y - touch.y) };
+	
+		for (auto other_plane : this->my_planes)
+			other_plane->unselect();
+
+		for (auto my_plane : my_planes)
+			if (select_rect.containsPoint(my_plane->getPosition()))
+			{
+				my_plane->select();
+				my_plane->activate();
+			}
 	}
 }
 
-void MainScene::onTouchEnded(cocos2d::Touch*, cocos2d::Event*)
+void MainScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* pEvent)
 {
-	rect->clear();
-
-	log("touch end");
+	auto screen_center = getPosition();
+	Director::getInstance()->getVisibleSize();
+	switch(keycode)
+	{
+	case EventKeyboard::KeyCode::KEY_W:
+		screen_center += Vec2(0, -50);
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0,0) - screen_center + Director::getInstance()->getVisibleSize()))
+			setPosition(screen_center);
+		break;
+	case EventKeyboard::KeyCode::KEY_A:
+		screen_center += Vec2(50, 0);
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - screen_center))
+			setPosition(screen_center);
+		break;
+	case EventKeyboard::KeyCode::KEY_S:
+		screen_center += Vec2(0, 50);
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - screen_center))
+			setPosition(screen_center);
+		break;
+	case EventKeyboard::KeyCode::KEY_D:
+		screen_center += Vec2(-50, 0);
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - screen_center + Director::getInstance()->getVisibleSize()))
+			setPosition(screen_center);
+		break;
+	case EventKeyboard::KeyCode::KEY_C:
+		Airplane* my_plane;
+		my_plane = Airplane::createPlane("Picture/airplane_red.png");
+		my_plane->setPosition(Vec2(0, 0) - screen_center + 0.5 * Director::getInstance()->getVisibleSize());
+		this->addChild(my_plane, 1);
+		this->my_planes.push_back(my_plane);
+		break;
+	case EventKeyboard::KeyCode::KEY_X:
+		Airplane* plane;
+		plane = Airplane::createPlane("Picture/airplane.png");
+		plane->setPosition(Vec2(0, 0) - screen_center + 0.5 * Director::getInstance()->getVisibleSize());
+		this->addChild(plane, 1);
+		this->enemy_planes.push_back(plane);
+		break;
+	default:
+		break;
+	}
 }
+
+bool Airplane::update()
+{
+
+	if (selected)
+		if (hpbar)
+		{
+			hpbar->clear();
+			hpbar->update();
+		}
+		else
+		{
+			hpbar = HPBar::create();
+			hpbar->hpbarInit(this);
+			addChild(hpbar);
+		}
+
+	if (state == 1)
+		if ((dest - getPosition()).getLength() < 10)
+		{
+			active = 0;
+			state = 0;
+		}
+		else
+		{
+			auto esp = (dest - getPosition()).getNormalized();
+			setPosition(getPosition() + esp * move_speed);
+		}
+	if (state == 2)
+		if ((getPosition() - target->getPosition()).getLength() < atk_range)
+			state = 3;
+		else
+		{
+			auto esp = (target->getPosition() - getPosition()).getNormalized();
+			setPosition(getPosition() + esp * move_speed);
+		}
+	if (state == 3)
+		if (target->isAlive())
+			if (!cd)
+			{
+				target->decreaseHp(atk);
+				cd = atk_period;
+			}
+			else
+				cd--;
+		else
+		{
+			state = 0;
+			target = nullptr;
+			active = 0;
+		}
+
+	if (alive && hp <= 0  && (unsigned int(_textureAtlas) != 0xdddddddd))
+	{
+		removeFromParent();
+		alive = 0;
+		return true;
+
+	}
+
+	return false;
+}
+
+
+void HPBar::update()
+{
+	drawPolygon(frame_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 0, 1, 1));
+	bar_points[2].x = frame_points[0].x + (frame_points[3].x - frame_points[0].x) * owner->getHP() / owner->getHPMax();
+	bar_points[3].x = bar_points[2].x;
+	drawPolygon(bar_points, 4, Color4F(0, 0, 1, 1), 1, Color4F(0, 0, 1, 1));
+}
+
+void MainScene::simple_AI()
+{
+	static std::random_device rd;						//采用非确定性随机数发生器产生随机数种子
+	static std::default_random_engine gen(rd());		//采用默认随机数引擎产生随机数
+	if (timer % enemy_period == 0)
+	{
+		Airplane* plane;
+		plane = Airplane::createPlane("Picture/airplane.png");
+		std::uniform_int_distribution<> unif(0, Director::getInstance()->getVisibleSize().height);
+		plane->setPosition(Vec2(0, 0) - getPosition() + Vec2(unif(gen), unif(gen)));
+		addChild(plane, 1);
+		enemy_planes.push_back(plane);
+	}
+	if (timer % AI_period == 0 && my_planes.size())
+	{
+		std::uniform_int_distribution<> unif(0, my_planes.size() - 1);
+		for (auto plane : enemy_planes)
+			if (plane->getState() == 0)
+			{
+				int target_index = unif(gen);
+				log("AI Target Index: %d", target_index);
+				Airplane* target_plane = my_planes[target_index];
+				target_plane->activate();
+				plane->setTarget(target_plane);
+				plane->setState(2);
+				plane->activate();
+			}
+	}
+			
+}
+
