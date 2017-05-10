@@ -1,4 +1,4 @@
-﻿#ifndef __MAIN_SCENE_H__
+#ifndef __MAIN_SCENE_H__
 #define __MAIN_SCENE_H__
 
 #include "cocos2d.h"
@@ -79,6 +79,7 @@ public:
 	void onTouchMoved(cocos2d::Touch*, cocos2d::Event*)override;
 	void onTouchEnded(cocos2d::Touch*, cocos2d::Event*)override;
 
+
 	void onKeyPressed(cocos2d::EventKeyboard::KeyCode , cocos2d::Event *) override;
 
 	CREATE_FUNC(MainScene);
@@ -100,6 +101,7 @@ private:
 	
 
 	//EventListenerMouse* _mouseListener;
+
 };
 
 

@@ -87,12 +87,17 @@ bool MainScene::init()
 
 	this->schedule(schedule_selector(MainScene::update));
 
+	rect = DrawNode::create();
 
+	this->addChild(rect, 2);
+//	this->setTouchEnabled(true);
 	auto listen = EventListenerTouchOneByOne::create();
 	listen->onTouchBegan = CC_CALLBACK_2(MainScene::onTouchBegan, this);
 	listen->onTouchMoved = CC_CALLBACK_2(MainScene::onTouchMoved, this);
 	listen->onTouchEnded = CC_CALLBACK_2(MainScene::onTouchEnded, this);
+
 	listen->setSwallowTouches(true);
+//	this->setTouchMode(Touch::DispatchMode::ONE_BY_ONE);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
 
 	auto keyboard_listener = EventListenerKeyboard::create();
@@ -104,6 +109,7 @@ bool MainScene::init()
 
 void MainScene::update(float f)
 {
+
 	timer++;
 
 	for (auto plane_it = this->my_planes.begin(); plane_it != this->my_planes.end(); )
@@ -146,10 +152,12 @@ void MainScene::update(float f)
 			plane_it++;
 
 	simple_AI();
+
 }
 
 bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 {
+
 	
 	Point touch = pTouch->getLocation() - getPosition();//返回点击的位置
 	this->touchPoint = touch;
@@ -181,11 +189,13 @@ bool MainScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 			return true;
 		}
 
+
 	return true;
 }
 
 void MainScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
+
 	Point touch = pTouch->getLocation() - getPosition();//返回点击的位置
 
 	if (state != 2)
@@ -351,10 +361,12 @@ bool Airplane::update()
 		removeFromParent();
 		alive = 0;
 		return true;
+
 	}
 
 	return false;
 }
+
 
 void HPBar::update()
 {
@@ -394,3 +406,4 @@ void MainScene::simple_AI()
 	}
 			
 }
+
