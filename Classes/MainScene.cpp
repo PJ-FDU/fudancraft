@@ -117,6 +117,7 @@ void MainScene::update(float f)
 						enemy_plane->setTarget(nullptr);
 						enemy_plane->deactivate();
 					}
+				removeChild(*plane_it);
 				plane_it = my_planes.erase(plane_it);
 			}
 			else
@@ -138,6 +139,7 @@ void MainScene::update(float f)
 						my_plane->setTarget(nullptr);
 						my_plane->deactivate();
 					}
+				removeChild(*plane_it);
 				plane_it = enemy_planes.erase(plane_it);
 			}
 			else
@@ -346,9 +348,8 @@ bool Airplane::update()
 			active = 0;
 		}
 
-	if (alive && hp <= 0  && (unsigned int(_textureAtlas) != 0xdddddddd))
+	if (alive && hp <= 0)
 	{
-		removeFromParent();
 		alive = 0;
 		return true;
 	}

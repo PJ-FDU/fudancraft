@@ -22,6 +22,7 @@ bool GridMap::initWithTiledMap(const TMXTiledMap* tiled_map)
 	grid_height = int(tiled_map->getTileSize().height);
 	grid_width = int(tiled_map->getTileSize().width);
 	gmap = std::vector<std::vector<int>>(map_width, std::vector<int>(map_height, 0));
+	return(true);
 }
 
 Point GridMap::getPoint(const GridPoint& gp)
