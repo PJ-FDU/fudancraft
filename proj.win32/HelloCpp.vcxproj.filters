@@ -10,14 +10,12 @@
     <Filter Include="src">
       <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
     </Filter>
-
     <Filter Include="resource\Font">
       <UniqueIdentifier>{61c48530-cd8a-40e8-ae67-676e9fa711c6}</UniqueIdentifier>
     </Filter>
     <Filter Include="resource\Picture">
       <UniqueIdentifier>{a31a0c98-dc41-4af5-93c7-d647e470a295}</UniqueIdentifier>
     </Filter>
-
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -29,11 +27,15 @@
     <ClCompile Include="..\Classes\HelloWorldScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
-
     <ClCompile Include="..\Classes\MainScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
-
+    <ClCompile Include="..\Classes\GridMap.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Unit.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -45,18 +47,27 @@
     <ClInclude Include="..\Classes\HelloWorldScene.h">
       <Filter>src</Filter>
     </ClInclude>
-
     <ClInclude Include="..\Classes\MainScene.h">
       <Filter>src</Filter>
     </ClInclude>
-
+    <ClInclude Include="..\Classes\BattleScene.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\fudancraft.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GridMap.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Unit.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
       <Filter>resource</Filter>
     </ResourceCompile>
   </ItemGroup>
-
   <ItemGroup>
     <Image Include="res\game.ico" />
     <Image Include="..\Resources\Picture\airplane.png">
@@ -77,5 +88,4 @@
   <ItemGroup>
     <None Include="..\README.md" />
   </ItemGroup>
-
 </Project>
