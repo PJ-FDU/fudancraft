@@ -52,6 +52,7 @@ public:
 		Airplane *airplane = new (std::nothrow) Airplane();
 		if (airplane && airplane->initWithFile(filename))
 		{
+			airplane->id = ++total_number;
 			airplane->autorelease();
 			return airplane;
 		}
@@ -60,6 +61,9 @@ public:
 		return nullptr;
 	}
 private:
+	int id;
+	static int total_number;
+
 	bool selected = 0;
 	bool active = 0;
 	bool alive = 1;
@@ -77,6 +81,7 @@ private:
 	const float move_speed = 10.0f;
 
 	cocos2d::Point dest;
+
 };
 
 class MainScene : public cocos2d::Layer
@@ -103,7 +108,7 @@ private:
 
 	cocos2d::Rect map_range;
 	int state = 0;
-	int timer = 0;
+	long timer = 0;
 	int enemy_period = 1000;
 	int AI_period = 10;
 	cocos2d::Vec2 touchPoint{500,500};

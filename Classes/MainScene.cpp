@@ -1,6 +1,6 @@
 #include "MainScene.h"
 #include <random>
-
+int Airplane::total_number = 0;
 USING_NS_CC;
 
 Scene* MainScene::createScene()
@@ -310,7 +310,7 @@ bool Airplane::update()
 		{
 			hpbar = HPBar::create();
 			hpbar->hpbarInit(this);
-			addChild(hpbar);
+			addChild(hpbar,10);//make it high level
 		}
 
 	if (state == 1)
