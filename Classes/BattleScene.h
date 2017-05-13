@@ -1,9 +1,7 @@
 #pragma once
-#ifndef __BATTLE_SCENE_H__
-#define __BATTLE_SCENE_H__
 
-#include "cocos2d.h"
 #include "Unit.h"
+
 class BattleScene : public cocos2d::Layer
 {
 public:
@@ -18,22 +16,14 @@ public:
 
 	CREATE_FUNC(BattleScene);
 private:
-	std::vector<Unit *> my_units_;
-	std::vector<Unit *> enemy_units_;
+	cocos2d::TMXTiledMap* battle_map;
+	GridMap* grid_map;
+	UnitManager* unit_manger;
+
 	cocos2d::DrawNode* mouse_rect;
 
-	cocos2d::TMXTiledMap* battle_map;
-	cocos2d::MenuItemFont* enemy_btn;
-
-	cocos2d::Rect map_range;
-	int state = 0;
-	long timer = 0;
-	int enemy_period = 1000;
-	int AI_period = 10;
-	cocos2d::Vec2 touchPoint{ 500,500 };
-
+	int mouse_state = 0;
+	cocos2d::Point last_touch{0, 0};
 
 	//EventListenerMouse* _mouseListener;
 };
-
-#endif

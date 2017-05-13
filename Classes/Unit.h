@@ -10,7 +10,7 @@ class Unit;
 class HPBar : public cocos2d::DrawNode
 {
 public:
-	void update();
+	void update(float f) override;
 	CREATE_FUNC(HPBar);
 	void monitor(Unit* _owner) { owner = _owner; }
 private:
@@ -23,48 +23,18 @@ class Unit : public cocos2d::Sprite
 {
 public:
 	static Unit* create(const std::string& filename);
-	virtual void initProperties();
+
+	virtual void setProperties();
+	virtual void update(float f) override;
+
+	void initHPBar();
 	void addToMaps(cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
 	GridPoint getGridPosition();
-
-
-	bool update();
-	bool isActive() const { return active; }
-	bool isAlive() const { return alive; }
-	bool isSelected() const { return selected; }
-	void unselect()
-	{
-		selected = false;
-		if (hpbar)
-			hpbar->setVisible(false);
-	}
-	void select()
-	{
-		selected = true;
-		if (hpbar)
-			hpbar->setVisible(true);
-	}
-	void activate() { active = true; }
-	void deactivate() { active = false; }
-	void setDest(cocos2d::Point destination) { this->dest = destination; }
-	void setTarget(Unit* enemy_plane) { this->target = enemy_plane; }
-	void setState(int _state) { this->state = _state; }
-	int getState() const { return state; }
-	int getHP() const { return hp; }
-	int getHPMax() const { return hp_max; }
-	Unit* getTarget() const { return target; }
-	void decreaseHp(int dh) { this->hp -= dh; }
-
 protected:
 	int id;
-	static int total_number;
-	char owner;//归属者，用以表明属于哪个阵营（1，2，3...)初始化时由服务器分配；
-
 	int state;
 	int target_id;
-	bool selected{ false };
-	bool active{ false };
-	bool alive{ true };
+	bool selected;
 
 	int cd;
 	int hp;
@@ -78,14 +48,21 @@ protected:
 
 	cocos2d::TMXTiledMap* tiled_map;
 	GridMap* grid_map;
-	cocos2d::Point dest;
+
 	HPBar* hpbar;
-	Unit* target;
+
+	friend void HPBar::update(float ft);
 };
 
-class UnitManager
+class UnitManager : public cocos2d::Ref
 {
-
+public:
+	CREATE_FUNC(UnitManager);
+	bool init();
+private:
+	cocos2d::Map<int, Unit*> id_map;
+	std::vector<Unit*> own_units;
+	std::vector<Unit*> enemy_units;
 };
 
 #endif
