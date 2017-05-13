@@ -26,10 +26,45 @@ public:
 	virtual void initProperties();
 	void addToMaps(cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
 	GridPoint getGridPosition();
-private:
+
+
+	bool update();
+	bool isActive() const { return active; }
+	bool isAlive() const { return alive; }
+	bool isSelected() const { return selected; }
+	void unselect()
+	{
+		selected = false;
+		if (hpbar)
+			hpbar->setVisible(false);
+	}
+	void select()
+	{
+		selected = true;
+		if (hpbar)
+			hpbar->setVisible(true);
+	}
+	void activate() { active = true; }
+	void deactivate() { active = false; }
+	void setDest(cocos2d::Point destination) { this->dest = destination; }
+	void setTarget(Unit* enemy_plane) { this->target = enemy_plane; }
+	void setState(int _state) { this->state = _state; }
+	int getState() const { return state; }
+	int getHP() const { return hp; }
+	int getHPMax() const { return hp_max; }
+	Unit* getTarget() const { return target; }
+	void decreaseHp(int dh) { this->hp -= dh; }
+
+protected:
+	int id;
+	static int total_number;
+	char owner;//归属者，用以表明属于哪个阵营（1，2，3...)初始化时由服务器分配；
+
 	int state;
 	int target_id;
-	bool selected = 0;
+	bool selected{ false };
+	bool active{ false };
+	bool alive{ true };
 
 	int cd;
 	int hp;
@@ -43,8 +78,9 @@ private:
 
 	cocos2d::TMXTiledMap* tiled_map;
 	GridMap* grid_map;
-
+	cocos2d::Point dest;
 	HPBar* hpbar;
+	Unit* target;
 };
 
 class UnitManager

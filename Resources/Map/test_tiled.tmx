@@ -6,8 +6,8 @@
  <tileset firstgid="172" name="airplane" tilewidth="63" tileheight="63" tilecount="1" columns="1">
   <image source="airplane.png" width="63" height="63"/>
  </tileset>
- <tileset firstgid="173" name="airplane_red" tilewidth="63" tileheight="63" tilecount="1" columns="1">
-  <image source="airplane_red.png" width="63" height="63"/>
+ <tileset firstgid="173" name="airplane_red" tilewidth="63" tileheight="63" tilecount="1" columns="0">
+  <image source="airplane_red.png" width="32" height="32"/>
  </tileset>
  <layer name="battle_terrian" width="64" height="32">
   <data encoding="csv">
