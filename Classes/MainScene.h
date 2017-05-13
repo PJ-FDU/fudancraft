@@ -1,4 +1,4 @@
-#ifndef __MAIN_SCENE_H__
+﻿#ifndef __MAIN_SCENE_H__
 #define __MAIN_SCENE_H__
 
 #include "cocos2d.h"
@@ -24,8 +24,18 @@ public:
 	bool isActive() { return active; }
 	bool isAlive() { return alive; }
 	bool isSelected() { return selected; }
-	void select() { selected = true; }
-	void unselect() { selected = false; }
+	void unselect()
+	{
+		selected = false;
+		if (hpbar)
+			hpbar->setVisible(false);
+	}
+	void select() 
+	{ 
+		selected = true; 
+		if (hpbar)
+			hpbar->setVisible(true);
+	}
 	void activate() { active = true; }
 	void deactivate() { active = false; }
 	void setDest(cocos2d::Point destination) { this->dest = destination; }
@@ -42,6 +52,7 @@ public:
 		Airplane *airplane = new (std::nothrow) Airplane();
 		if (airplane && airplane->initWithFile(filename))
 		{
+			airplane->id = ++total_number;
 			airplane->autorelease();
 			return airplane;
 		}
@@ -50,6 +61,9 @@ public:
 		return nullptr;
 	}
 private:
+	int id;
+	static int total_number;
+
 	bool selected = 0;
 	bool active = 0;
 	bool alive = 1;
@@ -64,9 +78,10 @@ private:
 	const int atk_range = 100;
 	const int atk_period = 20;
 	const int hp_max = 100;
-	const float move_speed = 10.0;
+	const float move_speed = 10.0f;
 
 	cocos2d::Point dest;
+
 };
 
 class MainScene : public cocos2d::Layer
@@ -78,7 +93,6 @@ public:
 	bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*)override;
 	void onTouchMoved(cocos2d::Touch*, cocos2d::Event*)override;
 	void onTouchEnded(cocos2d::Touch*, cocos2d::Event*)override;
-
 
 	void onKeyPressed(cocos2d::EventKeyboard::KeyCode , cocos2d::Event *) override;
 
@@ -94,14 +108,13 @@ private:
 
 	cocos2d::Rect map_range;
 	int state = 0;
-	int timer = 0;
+	long timer = 0;
 	int enemy_period = 1000;
 	int AI_period = 10;
 	cocos2d::Vec2 touchPoint{500,500};
 	
 
 	//EventListenerMouse* _mouseListener;
-
 };
 
 
