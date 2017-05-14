@@ -5,6 +5,7 @@ USING_NS_CC;
 
 void HPBar::update(float dt)
 {
+	clear();
 	drawPolygon(frame_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 0, 1, 1));
 	bar_points[2].x = frame_points[0].x + (frame_points[3].x - frame_points[0].x) * owner->hp / owner->hp_max;
 	bar_points[3].x = bar_points[2].x;
@@ -33,8 +34,6 @@ void Unit::setProperties()
 	cd = cd_max;
 	hp = hp_max;
 
-	hpbar = HPBar::create();
-	hpbar->monitor(this);
 }
 
 void Unit::initHPBar()
@@ -43,6 +42,24 @@ void Unit::initHPBar()
 	hpbar->monitor(this);
 	hpbar->setVisible(false);
 	addChild(hpbar);
+}
+
+void Unit::displayHPBar()
+{
+	if (hpbar)
+	{
+		hpbar->scheduleUpdate();
+		hpbar->setVisible(true);
+	}
+}
+
+void Unit::hideHPBar()
+{
+	if (hpbar)
+	{
+		hpbar->unscheduleUpdate();
+		hpbar->setVisible(false);
+	}
 }
 
 GridPoint Unit::getGridPosition()
@@ -99,23 +116,26 @@ void UnitManager::updateUnitsState()
 		GameMessage msg = msgs->back();
 		msgs->pop_back();
 
-		int cmd = msg[0].asInt();
+		int cmd = msg[0];
 		if (cmd == 1)
 		{
-			float cx = msg[3].asFloat();
-			float cy = msg[4].asFloat();
-			int camp = msg[5].asInt();
-			int unit_type = msg[6].asInt();
-			Unit* new_unit = createNewUnit(camp, unit_type, cx, cy);
+			int gx = msg[3];
+			int gy = msg[4];
+			int camp = msg[5];
+			int unit_type = msg[6];
+			Unit* new_unit = createNewUnit(camp, unit_type, gx, gy);
 			id_map.insert(next_id, new_unit);
 			next_id++;
 		}
 		else
-			;
+			if (cmd == 2)
+			{
+				log("Unit ID: %d, Next Point(%d, %d)", msg[1], msg[3], msg[4]);
+			}
 	}
 }
 
-Unit* UnitManager::createNewUnit(int camp, int unit_type, float cx, float cy)
+Unit* UnitManager::createNewUnit(int camp, int unit_type, int gx, int gy)
 {
 	Unit* nu;
 	switch (unit_type)
@@ -128,10 +148,19 @@ Unit* UnitManager::createNewUnit(int camp, int unit_type, float cx, float cy)
 
 	nu->camp = camp;
 	nu->setProperties();
-	nu->setPosition(cx, cy);
+	nu->setPosition(grid_map->getPoint({gx, gy}));
+	nu->initHPBar();
+
 	nu->addToMaps(tiled_map, grid_map);
 
 	return(nu);
+}
+
+void UnitManager::deselectAllUnits()
+{
+	for (auto& id : selected_ids)
+		id_map.at(id)->hideHPBar();
+	selected_ids.clear();
 }
 
 void UnitManager::selectUnits(Point select_point)
@@ -148,20 +177,29 @@ void UnitManager::selectUnits(Point select_point)
 		for (auto & id_unit : id_map)
 			if (id_unit.second->camp == player_id && id_unit.second->getBoundingBox().containsPoint(select_point))
 			{
-				selected_ids.clear();
+				deselectAllUnits();
 				selected_ids.push_back(id_unit.first);
+				id_unit.second->displayHPBar();
 				return;
 			}
 		for (auto & id : selected_ids)
-			log("Unit ID: %d, moving towards: (%f, %f)", id, select_point.x, select_point.y);
+		{
+			log("Unit ID: %d, plan to move to:(%f, %f)", id, select_point.x, select_point.y);
+			Unit* unit = id_map.at(id);
+			GridPath grid_path = unit->planToMoveTo(grid_map->getGridPoint(select_point));
+			GameMessage msg{};
+			msg.genMoveMessage(id, grid_path);
+			msgs->push_back(msg);
+		}
 		return;
 	}
 	else
 		for (auto & id_unit : id_map)
 			if (id_unit.second->camp == player_id && id_unit.second->getBoundingBox().containsPoint(select_point))
 			{
-				selected_ids.clear();
+				deselectAllUnits();
 				selected_ids.push_back(id_unit.first);
+				id_unit.second->displayHPBar();
 				return;
 			}
 
@@ -170,9 +208,12 @@ void UnitManager::selectUnits(Point select_point)
 
 void UnitManager::selectUnits(Rect select_rect)
 {
-	selected_ids.clear();
+	deselectAllUnits();
 	for (auto & id_unit : id_map)
 		if (id_unit.second->camp == player_id && select_rect.containsPoint(id_unit.second->getPosition()))
+		{
 			selected_ids.push_back(id_unit.first);
+			id_unit.second->displayHPBar();
+		}
 	return;
 }

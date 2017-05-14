@@ -17,9 +17,9 @@ public:
 	CREATE_FUNC(HPBar);
 	void monitor(Unit* _owner) { owner = _owner; }
 private:
-	cocos2d::Point frame_points[4]{ { 0, 60 },{ 0, 70 },{ 45, 70 },{ 45,60 } };
-	cocos2d::Point bar_points[4]{ { 0, 60 },{ 0, 70 },{ 45, 70 },{ 45,60 } };
-	Unit* owner;
+	cocos2d::Point frame_points[4]{ { 0, 40 },{ 0, 43 },{ 32, 43 },{ 32, 40 } };
+	cocos2d::Point bar_points[4]{ { 0, 40 },{ 0, 43 },{ 32, 43 },{ 32, 40 } };
+	Unit* owner = nullptr;
 };
 
 class UnitManager : public cocos2d::Ref
@@ -42,12 +42,13 @@ private:
 	//cocos2d::Vector<Unit*> enemy_units;
 
 	std::vector<GameMessage>* msgs;
-	cocos2d::TMXTiledMap* tiled_map;
-	GridMap* grid_map;
+	cocos2d::TMXTiledMap* tiled_map = nullptr;
+	GridMap* grid_map = nullptr;
 	int next_id = 1;
 	int player_id = 0;
 
-	Unit* createNewUnit(int camp, int uint_type, float cx, float cy);
+	Unit* createNewUnit(int camp, int uint_type, int gx, int gy);
+	void deselectAllUnits();
 
 };
 
@@ -63,12 +64,27 @@ public:
 	virtual void update(float f) override;
 
 	void initHPBar();
+	void displayHPBar();
+	void hideHPBar();
 	void addToMaps(cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
 	GridPoint getGridPosition();
+
+	GridPath planToMoveTo(const GridPoint& dest)
+	{
+		return(searchForPath(grid_map->getLogicalGridMap(), getGridPosition(), dest));
+	}
+	GridPath searchForPath(const std::vector<std::vector<int>>& gmap, const GridPoint& start, const GridPoint& dest)
+	{
+		GridPath _grid_path;
+		_grid_path.push_back(GridPoint(start.x, dest.y));
+		_grid_path.push_back(GridPoint(dest.x, dest.y));
+		return(_grid_path);
+	}
 protected:
 	int state;
 	int target_id;
 	bool selected;
+	GridPath grid_path;
 
 	int cd;
 	int hp;
@@ -80,10 +96,10 @@ protected:
 	int cd_max;
 	float move_speed;
 
-	cocos2d::TMXTiledMap* tiled_map;
-	GridMap* grid_map;
+	cocos2d::TMXTiledMap* tiled_map = nullptr;
+	GridMap* grid_map = nullptr;
 
-	HPBar* hpbar;
+	HPBar* hpbar = nullptr;
 
 	friend void HPBar::update(float ft);
 	friend void UnitManager::updateUnitsState();

@@ -22,11 +22,11 @@ private:
 
 	int frame_cnt = 0;
 
-	cocos2d::TMXTiledMap* battle_map;
-	GridMap* grid_map;
-	UnitManager* unit_manager;
+	cocos2d::TMXTiledMap* battle_map = nullptr;
+	GridMap* grid_map = nullptr;
+	UnitManager* unit_manager = nullptr;
 
-	cocos2d::DrawNode* mouse_rect;
+	cocos2d::DrawNode* mouse_rect = nullptr;
 
 	cocos2d::Point last_touch{0, 0};
 

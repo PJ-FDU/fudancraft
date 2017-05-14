@@ -44,3 +44,8 @@ void GridMap::occupyPosition(const Point& pos)
 {
 	occupyPosition(getGridPoint(pos));
 }
+
+const std::vector<std::vector<int>>& GridMap::getLogicalGridMap()
+{
+	return(gmap);
+}
