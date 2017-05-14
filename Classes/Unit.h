@@ -30,16 +30,22 @@ public:
 	void setMessageStack(std::vector<GameMessage>* _msgs);
 	void setTiledMap(cocos2d::TMXTiledMap* _tiledMap);
 	void setGridMap(GridMap* _grid_map);
+	void setPlayerID(int _player_id);
 	void updateUnitsState();
+
+	void selectUnits(cocos2d::Point select_point);
+	void selectUnits(cocos2d::Rect select_rect);
 private:
 	cocos2d::Map<int, Unit*> id_map;
-	cocos2d::Vector<Unit*> own_units;
-	cocos2d::Vector<Unit*> enemy_units;
+	std::vector<int> selected_ids;
+	//cocos2d::Vector<Unit*> own_units;
+	//cocos2d::Vector<Unit*> enemy_units;
 
 	std::vector<GameMessage>* msgs;
 	cocos2d::TMXTiledMap* tiled_map;
 	GridMap* grid_map;
-	int next_id = 0;
+	int next_id = 1;
+	int player_id = 0;
 
 	Unit* createNewUnit(int camp, int uint_type, float cx, float cy);
 
@@ -48,6 +54,9 @@ private:
 class Unit : public cocos2d::Sprite
 {
 public:
+	int id;
+	int camp = 0;
+
 	static Unit* create(const std::string& filename);
 
 	virtual void setProperties();
@@ -57,7 +66,6 @@ public:
 	void addToMaps(cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
 	GridPoint getGridPosition();
 protected:
-	int id;
 	int state;
 	int target_id;
 	bool selected;

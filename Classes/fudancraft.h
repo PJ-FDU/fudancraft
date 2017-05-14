@@ -5,3 +5,5 @@
 
 #define KEY_FRAME 5
 
+#define MIN_SELECT_RECT_SIZE 10
+

@@ -28,7 +28,6 @@ private:
 
 	cocos2d::DrawNode* mouse_rect;
 
-	int mouse_state = 0;
 	cocos2d::Point last_touch{0, 0};
 
 	void initPlayerID();

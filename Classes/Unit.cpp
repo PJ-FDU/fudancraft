@@ -58,7 +58,7 @@ void Unit::addToMaps(TMXTiledMap* _tiled_map, GridMap* _grid_map)
 	tiled_map = _tiled_map;
 	grid_map = _grid_map;
 
-	_tiled_map->addChild(this);
+	_tiled_map->addChild(this, 1);
 
 	_grid_map->occupyPosition(getPosition());
 }
@@ -85,6 +85,11 @@ void UnitManager::setTiledMap(cocos2d::TMXTiledMap* _tiledMap)
 void UnitManager::setGridMap(GridMap* _grid_map)
 {
 	grid_map = _grid_map;
+}
+
+void UnitManager::setPlayerID(int _player_id)
+{
+	player_id = _player_id;
 }
 
 void UnitManager::updateUnitsState()
@@ -121,9 +126,53 @@ Unit* UnitManager::createNewUnit(int camp, int unit_type, float cx, float cy)
 		break;
 	}
 
+	nu->camp = camp;
 	nu->setProperties();
 	nu->setPosition(cx, cy);
 	nu->addToMaps(tiled_map, grid_map);
 
 	return(nu);
+}
+
+void UnitManager::selectUnits(Point select_point)
+{
+	if (selected_ids.size())
+	{
+		for (auto & id_unit : id_map)
+			if (id_unit.second->camp != player_id && id_unit.second->getBoundingBox().containsPoint(select_point))
+			{
+				for (auto & id : selected_ids)
+					log("Unit ID: %d, tracing enemy id:", id, id_unit.second->id);
+				return;
+			}
+		for (auto & id_unit : id_map)
+			if (id_unit.second->camp == player_id && id_unit.second->getBoundingBox().containsPoint(select_point))
+			{
+				selected_ids.clear();
+				selected_ids.push_back(id_unit.first);
+				return;
+			}
+		for (auto & id : selected_ids)
+			log("Unit ID: %d, moving towards: (%f, %f)", id, select_point.x, select_point.y);
+		return;
+	}
+	else
+		for (auto & id_unit : id_map)
+			if (id_unit.second->camp == player_id && id_unit.second->getBoundingBox().containsPoint(select_point))
+			{
+				selected_ids.clear();
+				selected_ids.push_back(id_unit.first);
+				return;
+			}
+
+	return;
+}
+
+void UnitManager::selectUnits(Rect select_rect)
+{
+	selected_ids.clear();
+	for (auto & id_unit : id_map)
+		if (id_unit.second->camp == player_id && select_rect.containsPoint(id_unit.second->getPosition()))
+			selected_ids.push_back(id_unit.first);
+	return;
 }
