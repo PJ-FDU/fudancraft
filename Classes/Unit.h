@@ -4,8 +4,11 @@
 
 #include "cocos2d.h"
 #include "GridMap.h"
+#include "GameMessage.h"
+#include "fudancraft.h"
 
 class Unit;
+class UnitManager;
 
 class HPBar : public cocos2d::DrawNode
 {
@@ -17,6 +20,29 @@ private:
 	cocos2d::Point frame_points[4]{ { 0, 60 },{ 0, 70 },{ 45, 70 },{ 45,60 } };
 	cocos2d::Point bar_points[4]{ { 0, 60 },{ 0, 70 },{ 45, 70 },{ 45,60 } };
 	Unit* owner;
+};
+
+class UnitManager : public cocos2d::Ref
+{
+public:
+	CREATE_FUNC(UnitManager);
+	bool init();
+	void setMessageStack(std::vector<GameMessage>* _msgs);
+	void setTiledMap(cocos2d::TMXTiledMap* _tiledMap);
+	void setGridMap(GridMap* _grid_map);
+	void updateUnitsState();
+private:
+	cocos2d::Map<int, Unit*> id_map;
+	cocos2d::Vector<Unit*> own_units;
+	cocos2d::Vector<Unit*> enemy_units;
+
+	std::vector<GameMessage>* msgs;
+	cocos2d::TMXTiledMap* tiled_map;
+	GridMap* grid_map;
+	int next_id = 0;
+
+	Unit* createNewUnit(int camp, int uint_type, float cx, float cy);
+
 };
 
 class Unit : public cocos2d::Sprite
@@ -52,17 +78,7 @@ protected:
 	HPBar* hpbar;
 
 	friend void HPBar::update(float ft);
-};
-
-class UnitManager : public cocos2d::Ref
-{
-public:
-	CREATE_FUNC(UnitManager);
-	bool init();
-private:
-	cocos2d::Map<int, Unit*> id_map;
-	std::vector<Unit*> own_units;
-	std::vector<Unit*> enemy_units;
+	friend void UnitManager::updateUnitsState();
 };
 
 #endif

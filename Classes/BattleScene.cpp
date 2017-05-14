@@ -21,17 +21,39 @@ bool BattleScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+
+
 	battle_map = TMXTiledMap::create("map/test_tiled.tmx");
 	battle_map->setPosition(0, 0);
 	addChild(battle_map, 0);
 
 	grid_map = GridMap::create(battle_map);
+	grid_map->retain();
 
-	unit_manger = UnitManager::create();
+	unit_manager = UnitManager::create();
+	unit_manager->retain();
+	unit_manager->setMessageStack(&msg_stack);
+	unit_manager->setTiledMap(battle_map);
+	unit_manager->setGridMap(grid_map);
 
 	mouse_rect = DrawNode::create();
 
 	schedule(schedule_selector(BattleScene::update));
+
+	auto* obj_group = battle_map->getObjectGroup("init_unit");
+	auto& objs = obj_group->getObjects();
+
+	for (auto& obj : objs)
+	{
+		auto& dict = obj.asValueMap();
+		float cx = dict["x"].asFloat();
+		float cy = dict["y"].asFloat();
+		int camp = dict["camp"].asInt();
+
+		if (camp == player_id)
+			//GameMessage的格式、初始化方法、解释方法有待进一步探讨
+			msg_stack.push_back({ Value(1), Value(0), Value(0), Value(cx), Value(cy), Value(camp), Value(1) });
+	}
 
 	auto mouse_listener = EventListenerTouchOneByOne::create();
 	mouse_listener->onTouchBegan = CC_CALLBACK_2(BattleScene::onTouchBegan, this);
@@ -47,9 +69,19 @@ bool BattleScene::init()
 	return true;
 }
 
+void BattleScene::initPlayerID()
+{
+	player_id = 0;
+}
+
 void BattleScene::update(float f)
 {
+	frame_cnt++;
 
+	if (frame_cnt % KEY_FRAME == 0)
+	{
+		unit_manager->updateUnitsState();
+	}
 }
 
 bool BattleScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)

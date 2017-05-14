@@ -5,6 +5,8 @@
 class BattleScene : public cocos2d::Layer
 {
 public:
+	std::vector<GameMessage> msg_stack;
+
 	static cocos2d::Scene* createScene();
 	virtual bool init() override;
 	void update(float f) override;
@@ -16,14 +18,20 @@ public:
 
 	CREATE_FUNC(BattleScene);
 private:
+	int player_id = 0;
+
+	int frame_cnt = 0;
+
 	cocos2d::TMXTiledMap* battle_map;
 	GridMap* grid_map;
-	UnitManager* unit_manger;
+	UnitManager* unit_manager;
 
 	cocos2d::DrawNode* mouse_rect;
 
 	int mouse_state = 0;
 	cocos2d::Point last_touch{0, 0};
+
+	void initPlayerID();
 
 	//EventListenerMouse* _mouseListener;
 };
