@@ -4,13 +4,16 @@
 
 #include "cocos2d.h"
 #include "GridMap.h"
+#include "GameMessage.h"
+#include "fudancraft.h"
 
 class Unit;
+class UnitManager;
 
 class HPBar : public cocos2d::DrawNode
 {
 public:
-	void update();
+	void update(float f) override;
 	CREATE_FUNC(HPBar);
 	void monitor(Unit* _owner) { owner = _owner; }
 private:
@@ -19,52 +22,45 @@ private:
 	Unit* owner;
 };
 
+class UnitManager : public cocos2d::Ref
+{
+public:
+	CREATE_FUNC(UnitManager);
+	bool init();
+	void setMessageStack(std::vector<GameMessage>* _msgs);
+	void setTiledMap(cocos2d::TMXTiledMap* _tiledMap);
+	void setGridMap(GridMap* _grid_map);
+	void updateUnitsState();
+private:
+	cocos2d::Map<int, Unit*> id_map;
+	cocos2d::Vector<Unit*> own_units;
+	cocos2d::Vector<Unit*> enemy_units;
+
+	std::vector<GameMessage>* msgs;
+	cocos2d::TMXTiledMap* tiled_map;
+	GridMap* grid_map;
+	int next_id = 0;
+
+	Unit* createNewUnit(int camp, int uint_type, float cx, float cy);
+
+};
+
 class Unit : public cocos2d::Sprite
 {
 public:
 	static Unit* create(const std::string& filename);
-	virtual void initProperties();
+
+	virtual void setProperties();
+	virtual void update(float f) override;
+
+	void initHPBar();
 	void addToMaps(cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
 	GridPoint getGridPosition();
-
-
-	bool update();
-	bool isActive() const { return active; }
-	bool isAlive() const { return alive; }
-	bool isSelected() const { return selected; }
-	void unselect()
-	{
-		selected = false;
-		if (hpbar)
-			hpbar->setVisible(false);
-	}
-	void select()
-	{
-		selected = true;
-		if (hpbar)
-			hpbar->setVisible(true);
-	}
-	void activate() { active = true; }
-	void deactivate() { active = false; }
-	void setDest(cocos2d::Point destination) { this->dest = destination; }
-	void setTarget(Unit* enemy_plane) { this->target = enemy_plane; }
-	void setState(int _state) { this->state = _state; }
-	int getState() const { return state; }
-	int getHP() const { return hp; }
-	int getHPMax() const { return hp_max; }
-	Unit* getTarget() const { return target; }
-	void decreaseHp(int dh) { this->hp -= dh; }
-
 protected:
 	int id;
-	static int total_number;
-	char owner;//归属者，用以表明属于哪个阵营（1，2，3...)初始化时由服务器分配；
-
 	int state;
 	int target_id;
-	bool selected{ false };
-	bool active{ false };
-	bool alive{ true };
+	bool selected;
 
 	int cd;
 	int hp;
@@ -78,14 +74,11 @@ protected:
 
 	cocos2d::TMXTiledMap* tiled_map;
 	GridMap* grid_map;
-	cocos2d::Point dest;
+
 	HPBar* hpbar;
-	Unit* target;
-};
 
-class UnitManager
-{
-
+	friend void HPBar::update(float ft);
+	friend void UnitManager::updateUnitsState();
 };
 
 #endif

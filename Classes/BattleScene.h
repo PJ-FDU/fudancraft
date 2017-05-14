@@ -1,12 +1,12 @@
 #pragma once
-#ifndef __BATTLE_SCENE_H__
-#define __BATTLE_SCENE_H__
 
-#include "cocos2d.h"
 #include "Unit.h"
+
 class BattleScene : public cocos2d::Layer
 {
 public:
+	std::vector<GameMessage> msg_stack;
+
 	static cocos2d::Scene* createScene();
 	virtual bool init() override;
 	void update(float f) override;
@@ -18,22 +18,20 @@ public:
 
 	CREATE_FUNC(BattleScene);
 private:
-	std::vector<Unit *> my_units_;
-	std::vector<Unit *> enemy_units_;
-	cocos2d::DrawNode* mouse_rect;
+	int player_id = 0;
+
+	int frame_cnt = 0;
 
 	cocos2d::TMXTiledMap* battle_map;
-	cocos2d::MenuItemFont* enemy_btn;
+	GridMap* grid_map;
+	UnitManager* unit_manager;
 
-	cocos2d::Rect map_range;
-	int state = 0;
-	long timer = 0;
-	int enemy_period = 1000;
-	int AI_period = 10;
-	cocos2d::Vec2 touchPoint{ 500,500 };
+	cocos2d::DrawNode* mouse_rect;
 
+	int mouse_state = 0;
+	cocos2d::Point last_touch{0, 0};
+
+	void initPlayerID();
 
 	//EventListenerMouse* _mouseListener;
 };
-
-#endif
