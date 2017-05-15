@@ -8,6 +8,11 @@ struct GridPoint
 	int x, y;
 };
 
+struct GridPath : public std::vector<GridPoint>
+{
+
+};
+
 class GridMap : public cocos2d::Ref
 {
 public:
@@ -16,6 +21,7 @@ public:
 	GridPoint getGridPoint(const cocos2d::Point& p);
 	void occupyPosition(const GridPoint& pos);
 	void occupyPosition(const cocos2d::Point& pos);
+	const std::vector<std::vector<int>>& getLogicalGridMap();
 private:
 	bool initWithTiledMap(const cocos2d::TMXTiledMap* tiled_map);
 	std::vector<std::vector<int>> gmap;

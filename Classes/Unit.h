@@ -4,67 +4,87 @@
 
 #include "cocos2d.h"
 #include "GridMap.h"
+#include "GameMessage.h"
+#include "fudancraft.h"
 
 class Unit;
+class UnitManager;
 
 class HPBar : public cocos2d::DrawNode
 {
 public:
-	void update();
+	void update(float f) override;
 	CREATE_FUNC(HPBar);
 	void monitor(Unit* _owner) { owner = _owner; }
 private:
-	cocos2d::Point frame_points[4]{ { 0, 60 },{ 0, 70 },{ 45, 70 },{ 45,60 } };
-	cocos2d::Point bar_points[4]{ { 0, 60 },{ 0, 70 },{ 45, 70 },{ 45,60 } };
-	Unit* owner;
+	cocos2d::Point frame_points[4]{ { 0, 40 },{ 0, 43 },{ 32, 43 },{ 32, 40 } };
+	cocos2d::Point bar_points[4]{ { 0, 40 },{ 0, 43 },{ 32, 43 },{ 32, 40 } };
+	Unit* owner = nullptr;
+};
+
+class UnitManager : public cocos2d::Ref
+{
+public:
+	CREATE_FUNC(UnitManager);
+	bool init();
+	void setMessageStack(std::vector<GameMessage>* _msgs);
+	void setTiledMap(cocos2d::TMXTiledMap* _tiledMap);
+	void setGridMap(GridMap* _grid_map);
+	void setPlayerID(int _player_id);
+	void updateUnitsState();
+
+	void selectUnits(cocos2d::Point select_point);
+	void selectUnits(cocos2d::Rect select_rect);
+private:
+	cocos2d::Map<int, Unit*> id_map;
+	std::vector<int> selected_ids;
+	//cocos2d::Vector<Unit*> own_units;
+	//cocos2d::Vector<Unit*> enemy_units;
+
+	std::vector<GameMessage>* msgs;
+	cocos2d::TMXTiledMap* tiled_map = nullptr;
+	GridMap* grid_map = nullptr;
+	int next_id = 1;
+	int player_id = 0;
+
+	Unit* createNewUnit(int camp, int uint_type, int gx, int gy);
+	void deselectAllUnits();
+
 };
 
 class Unit : public cocos2d::Sprite
 {
 public:
+	int id;
+	int camp = 0;
+
 	static Unit* create(const std::string& filename);
-	virtual void initProperties();
+
+	virtual void setProperties();
+	virtual void update(float f) override;
+
+	void initHPBar();
+	void displayHPBar();
+	void hideHPBar();
 	void addToMaps(cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
 	GridPoint getGridPosition();
 
-
-	bool update();
-	bool isActive() const { return active; }
-	bool isAlive() const { return alive; }
-	bool isSelected() const { return selected; }
-	void unselect()
+	GridPath planToMoveTo(const GridPoint& dest)
 	{
-		selected = false;
-		if (hpbar)
-			hpbar->setVisible(false);
+		return(searchForPath(grid_map->getLogicalGridMap(), getGridPosition(), dest));
 	}
-	void select()
+	GridPath searchForPath(const std::vector<std::vector<int>>& gmap, const GridPoint& start, const GridPoint& dest)
 	{
-		selected = true;
-		if (hpbar)
-			hpbar->setVisible(true);
+		GridPath _grid_path;
+		_grid_path.push_back(GridPoint(start.x, dest.y));
+		_grid_path.push_back(GridPoint(dest.x, dest.y));
+		return(_grid_path);
 	}
-	void activate() { active = true; }
-	void deactivate() { active = false; }
-	void setDest(cocos2d::Point destination) { this->dest = destination; }
-	void setTarget(Unit* enemy_plane) { this->target = enemy_plane; }
-	void setState(int _state) { this->state = _state; }
-	int getState() const { return state; }
-	int getHP() const { return hp; }
-	int getHPMax() const { return hp_max; }
-	Unit* getTarget() const { return target; }
-	void decreaseHp(int dh) { this->hp -= dh; }
-
 protected:
-	int id;
-	static int total_number;
-	char owner;//归属者，用以表明属于哪个阵营（1，2，3...)初始化时由服务器分配；
-
 	int state;
 	int target_id;
-	bool selected{ false };
-	bool active{ false };
-	bool alive{ true };
+	bool selected;
+	GridPath grid_path;
 
 	int cd;
 	int hp;
@@ -76,16 +96,13 @@ protected:
 	int cd_max;
 	float move_speed;
 
-	cocos2d::TMXTiledMap* tiled_map;
-	GridMap* grid_map;
-	cocos2d::Point dest;
-	HPBar* hpbar;
-	Unit* target;
-};
+	cocos2d::TMXTiledMap* tiled_map = nullptr;
+	GridMap* grid_map = nullptr;
 
-class UnitManager
-{
+	HPBar* hpbar = nullptr;
 
+	friend void HPBar::update(float ft);
+	friend void UnitManager::updateUnitsState();
 };
 
 #endif
