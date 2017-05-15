@@ -39,6 +39,12 @@
     <ClCompile Include="..\Classes\BattleScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\SocketClient.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\SocketServer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -63,6 +69,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Unit.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SocketClient.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SocketServer.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
