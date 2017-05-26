@@ -10,7 +10,8 @@ struct GridPoint
 
 struct GridPath : public std::vector<GridPoint>
 {
-
+	GridPath() {};
+	GridPath(const std::initializer_list<GridPoint> init_gps) : std::vector<GridPoint>{ init_gps } {}
 };
 
 class GridMap : public cocos2d::Ref
