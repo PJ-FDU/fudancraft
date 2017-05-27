@@ -116,26 +116,25 @@ void UnitManager::updateUnitsState()
 		GameMessage msg = msgs->back();
 		msgs->pop_back();
 
-		int cmd = msg[0];
-		if (cmd == 1)
+		if (msg.cmd_code == GameMessage::CmdCode::CRT)
 		{
-			int gx = msg[3];
-			int gy = msg[4];
-			int camp = msg[5];
-			int unit_type = msg[6];
-			Unit* new_unit = createNewUnit(camp, unit_type, gx, gy);
+			GridPoint crt_gp = msg.grid_path[0];
+			int camp = msg.camp;
+			int unit_type = msg.unit_type;
+			Unit* new_unit = createNewUnit(camp, unit_type, crt_gp);
 			id_map.insert(next_id, new_unit);
 			next_id++;
 		}
 		else
-			if (cmd == 2)
+			if (msg.cmd_code == GameMessage::CmdCode::MOV)
 			{
-				log("Unit ID: %d, Next Point(%d, %d)", msg[1], msg[3], msg[4]);
+				log("Unit ID: %d, Next Point(%d, %d)", msg.unit_0, msg.grid_path[0].x, msg.grid_path[0].y);
+
 			}
 	}
 }
 
-Unit* UnitManager::createNewUnit(int camp, int unit_type, int gx, int gy)
+Unit* UnitManager::createNewUnit(int camp, int unit_type, GridPoint crt_gp)
 {
 	Unit* nu;
 	switch (unit_type)
@@ -148,12 +147,31 @@ Unit* UnitManager::createNewUnit(int camp, int unit_type, int gx, int gy)
 
 	nu->camp = camp;
 	nu->setProperties();
-	nu->setPosition(grid_map->getPoint({gx, gy}));
+	nu->setPosition(grid_map->getPoint(crt_gp));
 	nu->initHPBar();
 
 	nu->addToMaps(tiled_map, grid_map);
 
 	return(nu);
+}
+
+void UnitManager::initiallyCreateUnits()
+{
+	auto* obj_group = tiled_map->getObjectGroup("init_unit");
+	auto& objs = obj_group->getObjects();
+
+	for (auto& obj : objs)
+	{
+		auto& dict = obj.asValueMap();
+		float cx = dict["x"].asFloat();
+		float cy = dict["y"].asFloat();
+		int camp = dict["camp"].asInt();
+		GridPoint init_gp = grid_map->getGridPoint({ cx, cy });
+
+		if (camp == player_id)
+			//GameMessage的格式、初始化方法、解释方法有待进一步探讨
+			msgs->push_back(GameMessage{ GameMessage::CmdCode::CRT, next_id, 0, 0, player_id, 1, GridPath{init_gp} });
+	}
 }
 
 void UnitManager::deselectAllUnits()
@@ -187,8 +205,7 @@ void UnitManager::selectUnits(Point select_point)
 			log("Unit ID: %d, plan to move to:(%f, %f)", id, select_point.x, select_point.y);
 			Unit* unit = id_map.at(id);
 			GridPath grid_path = unit->planToMoveTo(grid_map->getGridPoint(select_point));
-			GameMessage msg{};
-			msg.genMoveMessage(id, grid_path);
+			GameMessage msg{GameMessage::CmdCode::MOV, id, 0, 0, 0, 0, grid_path};
 			msgs->push_back(msg);
 		}
 		return;

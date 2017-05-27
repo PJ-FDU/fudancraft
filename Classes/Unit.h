@@ -31,8 +31,10 @@ public:
 	void setTiledMap(cocos2d::TMXTiledMap* _tiledMap);
 	void setGridMap(GridMap* _grid_map);
 	void setPlayerID(int _player_id);
+	void setGridPath();
 	void updateUnitsState();
 
+	void initiallyCreateUnits();
 	void selectUnits(cocos2d::Point select_point);
 	void selectUnits(cocos2d::Rect select_rect);
 private:
@@ -47,7 +49,7 @@ private:
 	int next_id = 1;
 	int player_id = 0;
 
-	Unit* createNewUnit(int camp, int uint_type, int gx, int gy);
+	Unit* createNewUnit(int camp, int uint_type, GridPoint crt_gp);
 	void deselectAllUnits();
 
 };

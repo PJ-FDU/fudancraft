@@ -42,21 +42,7 @@ bool BattleScene::init()
 
 	schedule(schedule_selector(BattleScene::update));
 
-	auto* obj_group = battle_map->getObjectGroup("init_unit");
-	auto& objs = obj_group->getObjects();
-
-	for (auto& obj : objs)
-	{
-		auto& dict = obj.asValueMap();
-		float cx = dict["x"].asFloat();
-		float cy = dict["y"].asFloat();
-		int camp = dict["camp"].asInt();
-		GridPoint init_gp = grid_map->getGridPoint({ cx, cy });
-
-		if (camp == player_id)
-			//GameMessage的格式、初始化方法、解释方法有待进一步探讨
-			msg_stack.push_back({ 1, 0, 0, init_gp.x, init_gp.y, 0, 1 });
-	}
+	unit_manager->initiallyCreateUnits();
 
 	auto mouse_listener = EventListenerTouchOneByOne::create();
 	mouse_listener->onTouchBegan = CC_CALLBACK_2(BattleScene::onTouchBegan, this);
