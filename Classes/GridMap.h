@@ -8,11 +8,13 @@ struct GridPoint
 	int x, y;
 };
 
-struct GridPath : public std::vector<GridPoint>
-{
-	GridPath() {};
-	GridPath(const std::initializer_list<GridPoint> init_gps) : std::vector<GridPoint>{ init_gps } {}
-};
+typedef std::vector<GridPoint>  GridPath;
+
+//struct GridPath : public std::vector<GridPoint>
+//{
+//	GridPath() {};
+//	GridPath(const std::initializer_list<GridPoint> init_gps) : std::vector<GridPoint>{ init_gps } {}
+//};
 
 class GridMap : public cocos2d::Ref
 {
