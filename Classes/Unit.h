@@ -4,7 +4,7 @@
 
 #include "cocos2d.h"
 #include "GridMap.h"
-#include "GameMessage.h"
+#include "GameMessage.pb.h"
 #include "fudancraft.h"
 
 class Unit;

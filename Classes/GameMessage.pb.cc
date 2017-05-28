@@ -15,12 +15,29 @@
 // @@protoc_insertion_point(includes)
 class GameMessageDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<GameMessage> {
 } _GameMessage_default_instance_;
-class GridPointDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<GridPoint> {
+class GridPointDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<MsgGridPoint> {
 } _GridPoint_default_instance_;
-class GridPathDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<GridPath> {
+class GridPathDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<MsgGridPath> {
 } _GridPath_default_instance_;
 class GameMessageSetDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<GameMessageSet> {
 } _GameMessageSet_default_instance_;
+
+void GameMessage::genGameMessage(CmdCode _cmd_code, int _unit_0, int _unit_1, int _damage, int _camp, int _unit_type, const GridPath& _grid_path)
+{
+	set_cmd_code(_cmd_code);
+	set_unit_0(_unit_0);
+	set_unit_1(_unit_1);
+	set_damage(_damage);
+	set_camp(_camp);
+	set_unit_type(_unit_type);
+	MsgGridPath* msg_grid_path = mutable_grid_path();
+	for (const auto & gp : _grid_path)
+	{
+		MsgGridPoint* msg_grid_point = msg_grid_path->add_grid_point();
+		msg_grid_point->set_x(gp.x);
+		msg_grid_point->set_y(gp.y);
+	}
+}
 
 namespace protobuf_GameMessage_2eproto {
 
@@ -57,8 +74,8 @@ void TableStruct::InitDefaultsImpl() {
   _GridPoint_default_instance_.DefaultConstruct();
   _GridPath_default_instance_.DefaultConstruct();
   _GameMessageSet_default_instance_.DefaultConstruct();
-  _GameMessage_default_instance_.get_mutable()->grid_path_ = const_cast< ::GridPath*>(
-      ::GridPath::internal_default_instance());
+  _GameMessage_default_instance_.get_mutable()->grid_path_ = const_cast< ::MsgGridPath*>(
+      ::MsgGridPath::internal_default_instance());
 }
 
 void InitDefaults() {
@@ -131,7 +148,7 @@ GameMessage::GameMessage(const GameMessage& from)
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   if (from.has_grid_path()) {
-    grid_path_ = new ::GridPath(*from.grid_path_);
+    grid_path_ = new ::MsgGridPath(*from.grid_path_);
   } else {
     grid_path_ = NULL;
   }
@@ -253,7 +270,7 @@ bool GameMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // .GridPath grid_path = 5;
+      // .MsgGridPath grid_path = 5;
       case 5: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(42u)) {
@@ -341,7 +358,7 @@ void GameMessage::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->damage(), output);
   }
 
-  // .GridPath grid_path = 5;
+  // .MsgGridPath grid_path = 5;
   if (this->has_grid_path()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessage(
       5, *this->grid_path_, output);
@@ -364,7 +381,7 @@ size_t GameMessage::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:GameMessage)
   size_t total_size = 0;
 
-  // .GridPath grid_path = 5;
+  // .MsgGridPath grid_path = 5;
   if (this->has_grid_path()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -432,7 +449,7 @@ void GameMessage::MergeFrom(const GameMessage& from) {
   (void) cached_has_bits;
 
   if (from.has_grid_path()) {
-    mutable_grid_path()->::GridPath::MergeFrom(from.grid_path());
+    mutable_grid_path()->::MsgGridPath::MergeFrom(from.grid_path());
   }
   if (from.cmd_code() != 0) {
     set_cmd_code(from.cmd_code());
@@ -543,7 +560,7 @@ void GameMessage::set_damage(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:GameMessage.damage)
 }
 
-// .GridPath grid_path = 5;
+// .MsgGridPath grid_path = 5;
 bool GameMessage::has_grid_path() const {
   return this != internal_default_instance() && grid_path_ != NULL;
 }
@@ -551,27 +568,27 @@ void GameMessage::clear_grid_path() {
   if (GetArenaNoVirtual() == NULL && grid_path_ != NULL) delete grid_path_;
   grid_path_ = NULL;
 }
-const ::GridPath& GameMessage::grid_path() const {
+const ::MsgGridPath& GameMessage::grid_path() const {
   // @@protoc_insertion_point(field_get:GameMessage.grid_path)
   return grid_path_ != NULL ? *grid_path_
-                         : *::GridPath::internal_default_instance();
+                         : *::MsgGridPath::internal_default_instance();
 }
-::GridPath* GameMessage::mutable_grid_path() {
+::MsgGridPath* GameMessage::mutable_grid_path() {
   
   if (grid_path_ == NULL) {
-    grid_path_ = new ::GridPath;
+    grid_path_ = new ::MsgGridPath;
   }
   // @@protoc_insertion_point(field_mutable:GameMessage.grid_path)
   return grid_path_;
 }
-::GridPath* GameMessage::release_grid_path() {
+::MsgGridPath* GameMessage::release_grid_path() {
   // @@protoc_insertion_point(field_release:GameMessage.grid_path)
   
-  ::GridPath* temp = grid_path_;
+  ::MsgGridPath* temp = grid_path_;
   grid_path_ = NULL;
   return temp;
 }
-void GameMessage::set_allocated_grid_path(::GridPath* grid_path) {
+void GameMessage::set_allocated_grid_path(::MsgGridPath* grid_path) {
   delete grid_path_;
   grid_path_ = grid_path;
   if (grid_path) {
@@ -615,19 +632,19 @@ void GameMessage::set_unit_type(::google::protobuf::int32 value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int GridPoint::kXFieldNumber;
-const int GridPoint::kYFieldNumber;
+const int MsgGridPoint::kXFieldNumber;
+const int MsgGridPoint::kYFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
-GridPoint::GridPoint()
+MsgGridPoint::MsgGridPoint()
   : ::google::protobuf::MessageLite(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
     protobuf_GameMessage_2eproto::InitDefaults();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:GridPoint)
+  // @@protoc_insertion_point(constructor:MsgGridPoint)
 }
-GridPoint::GridPoint(const GridPoint& from)
+MsgGridPoint::MsgGridPoint(const MsgGridPoint& from)
   : ::google::protobuf::MessageLite(),
       _internal_metadata_(NULL),
       _cached_size_(0) {
@@ -635,52 +652,52 @@ GridPoint::GridPoint(const GridPoint& from)
   ::memcpy(&x_, &from.x_,
     reinterpret_cast<char*>(&y_) -
     reinterpret_cast<char*>(&x_) + sizeof(y_));
-  // @@protoc_insertion_point(copy_constructor:GridPoint)
+  // @@protoc_insertion_point(copy_constructor:MsgGridPoint)
 }
 
-void GridPoint::SharedCtor() {
+void MsgGridPoint::SharedCtor() {
   ::memset(&x_, 0, reinterpret_cast<char*>(&y_) -
     reinterpret_cast<char*>(&x_) + sizeof(y_));
   _cached_size_ = 0;
 }
 
-GridPoint::~GridPoint() {
-  // @@protoc_insertion_point(destructor:GridPoint)
+MsgGridPoint::~MsgGridPoint() {
+  // @@protoc_insertion_point(destructor:MsgGridPoint)
   SharedDtor();
 }
 
-void GridPoint::SharedDtor() {
+void MsgGridPoint::SharedDtor() {
 }
 
-void GridPoint::SetCachedSize(int size) const {
+void MsgGridPoint::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const GridPoint& GridPoint::default_instance() {
+const MsgGridPoint& MsgGridPoint::default_instance() {
   protobuf_GameMessage_2eproto::InitDefaults();
   return *internal_default_instance();
 }
 
-GridPoint* GridPoint::New(::google::protobuf::Arena* arena) const {
-  GridPoint* n = new GridPoint;
+MsgGridPoint* MsgGridPoint::New(::google::protobuf::Arena* arena) const {
+  MsgGridPoint* n = new MsgGridPoint;
   if (arena != NULL) {
     arena->Own(n);
   }
   return n;
 }
 
-void GridPoint::Clear() {
-// @@protoc_insertion_point(message_clear_start:GridPoint)
+void MsgGridPoint::Clear() {
+// @@protoc_insertion_point(message_clear_start:MsgGridPoint)
   ::memset(&x_, 0, reinterpret_cast<char*>(&y_) -
     reinterpret_cast<char*>(&x_) + sizeof(y_));
 }
 
-bool GridPoint::MergePartialFromCodedStream(
+bool MsgGridPoint::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:GridPoint)
+  // @@protoc_insertion_point(parse_start:MsgGridPoint)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -727,17 +744,17 @@ bool GridPoint::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:GridPoint)
+  // @@protoc_insertion_point(parse_success:MsgGridPoint)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:GridPoint)
+  // @@protoc_insertion_point(parse_failure:MsgGridPoint)
   return false;
 #undef DO_
 }
 
-void GridPoint::SerializeWithCachedSizes(
+void MsgGridPoint::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:GridPoint)
+  // @@protoc_insertion_point(serialize_start:MsgGridPoint)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -751,11 +768,11 @@ void GridPoint::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->y(), output);
   }
 
-  // @@protoc_insertion_point(serialize_end:GridPoint)
+  // @@protoc_insertion_point(serialize_end:MsgGridPoint)
 }
 
-size_t GridPoint::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:GridPoint)
+size_t MsgGridPoint::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:MsgGridPoint)
   size_t total_size = 0;
 
   // int32 x = 1;
@@ -779,13 +796,13 @@ size_t GridPoint::ByteSizeLong() const {
   return total_size;
 }
 
-void GridPoint::CheckTypeAndMergeFrom(
+void MsgGridPoint::CheckTypeAndMergeFrom(
     const ::google::protobuf::MessageLite& from) {
-  MergeFrom(*::google::protobuf::down_cast<const GridPoint*>(&from));
+  MergeFrom(*::google::protobuf::down_cast<const MsgGridPoint*>(&from));
 }
 
-void GridPoint::MergeFrom(const GridPoint& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:GridPoint)
+void MsgGridPoint::MergeFrom(const MsgGridPoint& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:MsgGridPoint)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -799,60 +816,60 @@ void GridPoint::MergeFrom(const GridPoint& from) {
   }
 }
 
-void GridPoint::CopyFrom(const GridPoint& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:GridPoint)
+void MsgGridPoint::CopyFrom(const MsgGridPoint& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:MsgGridPoint)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool GridPoint::IsInitialized() const {
+bool MsgGridPoint::IsInitialized() const {
   return true;
 }
 
-void GridPoint::Swap(GridPoint* other) {
+void MsgGridPoint::Swap(MsgGridPoint* other) {
   if (other == this) return;
   InternalSwap(other);
 }
-void GridPoint::InternalSwap(GridPoint* other) {
+void MsgGridPoint::InternalSwap(MsgGridPoint* other) {
   std::swap(x_, other->x_);
   std::swap(y_, other->y_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
-::std::string GridPoint::GetTypeName() const {
-  return "GridPoint";
+::std::string MsgGridPoint::GetTypeName() const {
+  return "MsgGridPoint";
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
-// GridPoint
+// MsgGridPoint
 
 // int32 x = 1;
-void GridPoint::clear_x() {
+void MsgGridPoint::clear_x() {
   x_ = 0;
 }
-::google::protobuf::int32 GridPoint::x() const {
-  // @@protoc_insertion_point(field_get:GridPoint.x)
+::google::protobuf::int32 MsgGridPoint::x() const {
+  // @@protoc_insertion_point(field_get:MsgGridPoint.x)
   return x_;
 }
-void GridPoint::set_x(::google::protobuf::int32 value) {
+void MsgGridPoint::set_x(::google::protobuf::int32 value) {
   
   x_ = value;
-  // @@protoc_insertion_point(field_set:GridPoint.x)
+  // @@protoc_insertion_point(field_set:MsgGridPoint.x)
 }
 
 // int32 y = 2;
-void GridPoint::clear_y() {
+void MsgGridPoint::clear_y() {
   y_ = 0;
 }
-::google::protobuf::int32 GridPoint::y() const {
-  // @@protoc_insertion_point(field_get:GridPoint.y)
+::google::protobuf::int32 MsgGridPoint::y() const {
+  // @@protoc_insertion_point(field_get:MsgGridPoint.y)
   return y_;
 }
-void GridPoint::set_y(::google::protobuf::int32 value) {
+void MsgGridPoint::set_y(::google::protobuf::int32 value) {
   
   y_ = value;
-  // @@protoc_insertion_point(field_set:GridPoint.y)
+  // @@protoc_insertion_point(field_set:MsgGridPoint.y)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -860,72 +877,72 @@ void GridPoint::set_y(::google::protobuf::int32 value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int GridPath::kGridPointFieldNumber;
+const int MsgGridPath::kGridPointFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
-GridPath::GridPath()
+MsgGridPath::MsgGridPath()
   : ::google::protobuf::MessageLite(), _internal_metadata_(NULL) {
   if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
     protobuf_GameMessage_2eproto::InitDefaults();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:GridPath)
+  // @@protoc_insertion_point(constructor:MsgGridPath)
 }
-GridPath::GridPath(const GridPath& from)
+MsgGridPath::MsgGridPath(const MsgGridPath& from)
   : ::google::protobuf::MessageLite(),
       _internal_metadata_(NULL),
       grid_point_(from.grid_point_),
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  // @@protoc_insertion_point(copy_constructor:GridPath)
+  // @@protoc_insertion_point(copy_constructor:MsgGridPath)
 }
 
-void GridPath::SharedCtor() {
+void MsgGridPath::SharedCtor() {
   _cached_size_ = 0;
 }
 
-GridPath::~GridPath() {
-  // @@protoc_insertion_point(destructor:GridPath)
+MsgGridPath::~MsgGridPath() {
+  // @@protoc_insertion_point(destructor:MsgGridPath)
   SharedDtor();
 }
 
-void GridPath::SharedDtor() {
+void MsgGridPath::SharedDtor() {
 }
 
-void GridPath::SetCachedSize(int size) const {
+void MsgGridPath::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const GridPath& GridPath::default_instance() {
+const MsgGridPath& MsgGridPath::default_instance() {
   protobuf_GameMessage_2eproto::InitDefaults();
   return *internal_default_instance();
 }
 
-GridPath* GridPath::New(::google::protobuf::Arena* arena) const {
-  GridPath* n = new GridPath;
+MsgGridPath* MsgGridPath::New(::google::protobuf::Arena* arena) const {
+  MsgGridPath* n = new MsgGridPath;
   if (arena != NULL) {
     arena->Own(n);
   }
   return n;
 }
 
-void GridPath::Clear() {
-// @@protoc_insertion_point(message_clear_start:GridPath)
+void MsgGridPath::Clear() {
+// @@protoc_insertion_point(message_clear_start:MsgGridPath)
   grid_point_.Clear();
 }
 
-bool GridPath::MergePartialFromCodedStream(
+bool MsgGridPath::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:GridPath)
+  // @@protoc_insertion_point(parse_start:MsgGridPath)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .GridPoint grid_point = 1;
+      // repeated .MsgGridPoint grid_point = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(10u)) {
@@ -950,34 +967,34 @@ bool GridPath::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:GridPath)
+  // @@protoc_insertion_point(parse_success:MsgGridPath)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:GridPath)
+  // @@protoc_insertion_point(parse_failure:MsgGridPath)
   return false;
 #undef DO_
 }
 
-void GridPath::SerializeWithCachedSizes(
+void MsgGridPath::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:GridPath)
+  // @@protoc_insertion_point(serialize_start:MsgGridPath)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // repeated .GridPoint grid_point = 1;
+  // repeated .MsgGridPoint grid_point = 1;
   for (unsigned int i = 0, n = this->grid_point_size(); i < n; i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessage(
       1, this->grid_point(i), output);
   }
 
-  // @@protoc_insertion_point(serialize_end:GridPath)
+  // @@protoc_insertion_point(serialize_end:MsgGridPath)
 }
 
-size_t GridPath::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:GridPath)
+size_t MsgGridPath::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:MsgGridPath)
   size_t total_size = 0;
 
-  // repeated .GridPoint grid_point = 1;
+  // repeated .MsgGridPoint grid_point = 1;
   {
     unsigned int count = this->grid_point_size();
     total_size += 1UL * count;
@@ -995,13 +1012,13 @@ size_t GridPath::ByteSizeLong() const {
   return total_size;
 }
 
-void GridPath::CheckTypeAndMergeFrom(
+void MsgGridPath::CheckTypeAndMergeFrom(
     const ::google::protobuf::MessageLite& from) {
-  MergeFrom(*::google::protobuf::down_cast<const GridPath*>(&from));
+  MergeFrom(*::google::protobuf::down_cast<const MsgGridPath*>(&from));
 }
 
-void GridPath::MergeFrom(const GridPath& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:GridPath)
+void MsgGridPath::MergeFrom(const MsgGridPath& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:MsgGridPath)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -1010,60 +1027,60 @@ void GridPath::MergeFrom(const GridPath& from) {
   grid_point_.MergeFrom(from.grid_point_);
 }
 
-void GridPath::CopyFrom(const GridPath& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:GridPath)
+void MsgGridPath::CopyFrom(const MsgGridPath& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:MsgGridPath)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool GridPath::IsInitialized() const {
+bool MsgGridPath::IsInitialized() const {
   return true;
 }
 
-void GridPath::Swap(GridPath* other) {
+void MsgGridPath::Swap(MsgGridPath* other) {
   if (other == this) return;
   InternalSwap(other);
 }
-void GridPath::InternalSwap(GridPath* other) {
+void MsgGridPath::InternalSwap(MsgGridPath* other) {
   grid_point_.InternalSwap(&other->grid_point_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
-::std::string GridPath::GetTypeName() const {
-  return "GridPath";
+::std::string MsgGridPath::GetTypeName() const {
+  return "MsgGridPath";
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
-// GridPath
+// MsgGridPath
 
-// repeated .GridPoint grid_point = 1;
-int GridPath::grid_point_size() const {
+// repeated .MsgGridPoint grid_point = 1;
+int MsgGridPath::grid_point_size() const {
   return grid_point_.size();
 }
-void GridPath::clear_grid_point() {
+void MsgGridPath::clear_grid_point() {
   grid_point_.Clear();
 }
-const ::GridPoint& GridPath::grid_point(int index) const {
-  // @@protoc_insertion_point(field_get:GridPath.grid_point)
+const ::MsgGridPoint& MsgGridPath::grid_point(int index) const {
+  // @@protoc_insertion_point(field_get:MsgGridPath.grid_point)
   return grid_point_.Get(index);
 }
-::GridPoint* GridPath::mutable_grid_point(int index) {
-  // @@protoc_insertion_point(field_mutable:GridPath.grid_point)
+::MsgGridPoint* MsgGridPath::mutable_grid_point(int index) {
+  // @@protoc_insertion_point(field_mutable:MsgGridPath.grid_point)
   return grid_point_.Mutable(index);
 }
-::GridPoint* GridPath::add_grid_point() {
-  // @@protoc_insertion_point(field_add:GridPath.grid_point)
+::MsgGridPoint* MsgGridPath::add_grid_point() {
+  // @@protoc_insertion_point(field_add:MsgGridPath.grid_point)
   return grid_point_.Add();
 }
-::google::protobuf::RepeatedPtrField< ::GridPoint >*
-GridPath::mutable_grid_point() {
-  // @@protoc_insertion_point(field_mutable_list:GridPath.grid_point)
+::google::protobuf::RepeatedPtrField< ::MsgGridPoint >*
+MsgGridPath::mutable_grid_point() {
+  // @@protoc_insertion_point(field_mutable_list:MsgGridPath.grid_point)
   return &grid_point_;
 }
-const ::google::protobuf::RepeatedPtrField< ::GridPoint >&
-GridPath::grid_point() const {
-  // @@protoc_insertion_point(field_list:GridPath.grid_point)
+const ::google::protobuf::RepeatedPtrField< ::MsgGridPoint >&
+MsgGridPath::grid_point() const {
+  // @@protoc_insertion_point(field_list:MsgGridPath.grid_point)
   return grid_point_;
 }
 

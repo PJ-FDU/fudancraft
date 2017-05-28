@@ -116,19 +116,18 @@ void UnitManager::updateUnitsState()
 		GameMessage msg = msgs->back();
 		msgs->pop_back();
 
-		if (msg.cmd_code == GameMessage::CmdCode::CRT)
+		if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_CRT)
 		{
-			GridPoint crt_gp = msg.grid_path[0];
-			int camp = msg.camp;
-			int unit_type = msg.unit_type;
-			Unit* new_unit = createNewUnit(camp, unit_type, crt_gp);
+			int camp = msg.camp();
+			int unit_type = msg.unit_type();
+			Unit* new_unit = createNewUnit(camp, unit_type, GridPoint(msg.grid_path().grid_point(0).x(), msg.grid_path().grid_point(0).y()));
 			id_map.insert(next_id, new_unit);
 			next_id++;
 		}
 		else
-			if (msg.cmd_code == GameMessage::CmdCode::MOV)
+			if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_MOV)
 			{
-				log("Unit ID: %d, Next Point(%d, %d)", msg.unit_0, msg.grid_path[0].x, msg.grid_path[0].y);
+				log("Unit ID: %d, Next Point(%d, %d)", msg.unit_0(), msg.grid_path().grid_point(0).x(), msg.grid_path().grid_point(0).y());
 
 			}
 	}
@@ -170,7 +169,11 @@ void UnitManager::initiallyCreateUnits()
 
 		if (camp == player_id)
 			//GameMessage的格式、初始化方法、解释方法有待进一步探讨
-			msgs->push_back(GameMessage{ GameMessage::CmdCode::CRT, next_id, 0, 0, player_id, 1, GridPath{init_gp} });
+		{
+			GameMessage game_msg;
+			game_msg.genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_CRT, next_id, 0, 0, player_id, 1, GridPath{ init_gp });
+			msgs->push_back(game_msg);
+		}
 	}
 }
 
@@ -205,8 +208,9 @@ void UnitManager::selectUnits(Point select_point)
 			log("Unit ID: %d, plan to move to:(%f, %f)", id, select_point.x, select_point.y);
 			Unit* unit = id_map.at(id);
 			GridPath grid_path = unit->planToMoveTo(grid_map->getGridPoint(select_point));
-			GameMessage msg{GameMessage::CmdCode::MOV, id, 0, 0, 0, 0, grid_path};
-			msgs->push_back(msg);
+			GameMessage game_msg;
+			game_msg.genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_MOV, next_id, 0, 0, player_id, 1, grid_path);
+			msgs->push_back(game_msg);
 		}
 		return;
 	}
