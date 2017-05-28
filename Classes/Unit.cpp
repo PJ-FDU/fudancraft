@@ -90,7 +90,7 @@ bool UnitManager::init()
 	return true;
 }
 
-void UnitManager::setMessageStack(std::vector<GameMessage>* _msgs)
+void UnitManager::setMessageSet(GameMessageSet* _msgs)
 {
 	msgs = _msgs;
 }
@@ -111,10 +111,9 @@ void UnitManager::setPlayerID(int _player_id)
 
 void UnitManager::updateUnitsState()
 {
-	while (msgs->size())
+	for (int i = 0; i < msgs->game_message_size(); i++)
 	{
-		GameMessage msg = msgs->back();
-		msgs->pop_back();
+		GameMessage msg = msgs->game_message(i);
 
 		if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_CRT)
 		{
@@ -131,6 +130,7 @@ void UnitManager::updateUnitsState()
 
 			}
 	}
+	msgs->clear_game_message();
 }
 
 Unit* UnitManager::createNewUnit(int camp, int unit_type, GridPoint crt_gp)
@@ -170,9 +170,8 @@ void UnitManager::initiallyCreateUnits()
 		if (camp == player_id)
 			//GameMessage的格式、初始化方法、解释方法有待进一步探讨
 		{
-			GameMessage game_msg;
-			game_msg.genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_CRT, next_id, 0, 0, player_id, 1, GridPath{ init_gp });
-			msgs->push_back(game_msg);
+			auto new_msg = msgs->add_game_message();
+			new_msg->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_CRT, next_id, 0, 0, player_id, 1, GridPath{ init_gp });
 		}
 	}
 }
@@ -208,9 +207,7 @@ void UnitManager::selectUnits(Point select_point)
 			log("Unit ID: %d, plan to move to:(%f, %f)", id, select_point.x, select_point.y);
 			Unit* unit = id_map.at(id);
 			GridPath grid_path = unit->planToMoveTo(grid_map->getGridPoint(select_point));
-			GameMessage game_msg;
-			game_msg.genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_MOV, next_id, 0, 0, player_id, 1, grid_path);
-			msgs->push_back(game_msg);
+			msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_MOV, next_id, 0, 0, player_id, 1, grid_path);
 		}
 		return;
 	}

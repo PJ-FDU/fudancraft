@@ -32,7 +32,7 @@ bool BattleScene::init()
 
 	unit_manager = UnitManager::create();
 	unit_manager->retain();
-	unit_manager->setMessageStack(&msg_stack);
+	unit_manager->setMessageSet(&msg_set);
 	unit_manager->setTiledMap(battle_map);
 	unit_manager->setGridMap(grid_map);
 	unit_manager->setPlayerID(player_id);

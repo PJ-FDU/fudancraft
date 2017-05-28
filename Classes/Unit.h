@@ -27,7 +27,7 @@ class UnitManager : public cocos2d::Ref
 public:
 	CREATE_FUNC(UnitManager);
 	bool init();
-	void setMessageStack(std::vector<GameMessage>* _msgs);
+	void setMessageSet(GameMessageSet* _msgs);
 	void setTiledMap(cocos2d::TMXTiledMap* _tiledMap);
 	void setGridMap(GridMap* _grid_map);
 	void setPlayerID(int _player_id);
@@ -43,7 +43,7 @@ private:
 	//cocos2d::Vector<Unit*> own_units;
 	//cocos2d::Vector<Unit*> enemy_units;
 
-	std::vector<GameMessage>* msgs;
+	GameMessageSet* msgs;
 	cocos2d::TMXTiledMap* tiled_map = nullptr;
 	GridMap* grid_map = nullptr;
 	int next_id = 1;

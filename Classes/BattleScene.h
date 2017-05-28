@@ -5,7 +5,7 @@
 class BattleScene : public cocos2d::Layer
 {
 public:
-	std::vector<GameMessage> msg_stack;
+	GameMessageSet msg_set;
 
 	static cocos2d::Scene* createScene();
 	virtual bool init() override;
