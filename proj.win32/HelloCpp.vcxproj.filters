@@ -121,12 +121,4 @@
   <ItemGroup>
     <None Include="..\README.md" />
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\Classes\libprotobuf-lite.lib">
-      <Filter>src</Filter>
-    </Library>
-    <Library Include="..\Classes\libprotobuf-lited.lib">
-      <Filter>src</Filter>
-    </Library>
-  </ItemGroup>
 </Project>

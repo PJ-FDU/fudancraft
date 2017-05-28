@@ -10,18 +10,6 @@ TcpConnection::~TcpConnection()
 	delete_from_parent();	
 }
 
-void TcpConnection::start()
-{
-	
-//	std::thread t(std::bind(&TcpConnection::handle_connection, shared_from_this(), ++player_num));
-//	t.detach();
-	socket_.async_read_some(asio::buffer(data_, max_length),
-		std::bind(&TcpConnection::handle_read, shared_from_this(),
-			std::placeholders::_1,
-			std::placeholders::_2)
-	);
-
-}
 
 void TcpConnection::handle_connection(int n)
 {
@@ -77,11 +65,11 @@ void TcpConnection::delete_from_parent()
 	
 }
 
-SocketServer::SocketServer(asio::io_service& io_service):
-	acceptor_(io_service, tcp::endpoint(tcp::v4(), 8008))
-{
-	start_accept();
-}
+//SocketServer::SocketServer(asio::io_service& io_service):
+//	acceptor_(io_service, tcp::endpoint(tcp::v4(), 8008))
+//{
+//	start_accept();
+//}
 
 std::vector<TcpConnection::pointer> SocketServer::get_connection() const
 {
@@ -101,11 +89,7 @@ void SocketServer::remove_connection(TcpConnection::pointer p)
 	std::cout << "delete succ\n";
 }
 
-void SocketServer::button_start()
-{
-	for (auto i = 0; i < connections_.size(); i++)
-		connections_[i]->write_data("PLAYER" + std::to_string(i));
-}
+
 
 void SocketServer::start_accept()
 {
@@ -115,7 +99,7 @@ void SocketServer::start_accept()
 	acceptor_.async_accept(new_connection->socket(),
 	                       std::bind(&SocketServer::handle_accept, this, new_connection,
 	                                 std::placeholders::_1));
-	//		std::cout << "start accept " << std::endl;
+			std::cout << "start accept " << std::endl;
 }
 
 void SocketServer::handle_accept(TcpConnection::pointer new_connection, const asio::error_code& error)
@@ -129,27 +113,7 @@ void SocketServer::handle_accept(TcpConnection::pointer new_connection, const as
 		new_connection->start();
 	}
 	start_accept();
-	//		std::cout << "handle accept\n";
-}
-
-bool TcpConnection::write_data(std::string s)
-{
-	try
-	{
-		asio::write(socket_, asio::buffer(s, s.length()));
-	}
-	catch (std::exception& e)
-	{
-		std::cerr << "Exception in write: " << e.what() << "\n";
-	}
-	return true;
-}
-
-std::string TcpConnection::read_data()
-{
-	auto ret = message_;
-	message_ = "";
-	return ret;
+//			std::cout << "handle accept\n";
 }
 
 

@@ -3,6 +3,9 @@
 #include "asio.hpp"
 #include <thread>
 #include <iostream>
+#include <condition_variable>
+#include "socket_message.h"
+#include "GameMessageWrap.h"
 using asio::ip::tcp;
 
 typedef std::shared_ptr<tcp::socket> socket_ptr;
@@ -20,11 +23,75 @@ public:
 	}
 	tcp::socket& socket(){return socket_;}
 
-	void start();
-	bool write_data(std::string s);
-	std::string read_data();;
+	void start()
+	{
+		asio::async_read(socket_,
+			asio::buffer(read_msg_.data(), socket_message::header_length),
+			std::bind(&TcpConnection::handle_read_header, this,
+				std::placeholders::_1));
+	}
+	void write_data(std::string s)
+	{
+		socket_message msg;
+		msg.body_length(s.size());
+		memcpy(msg.body(), &s[0u], msg.body_length());
+		msg.encode_header();
+		asio::write(socket_,
+			asio::buffer(msg.data(), msg.length()));
+	}
+	std::string read_data()
+	{
+		while (!data_flag);
+		auto ret = std::string(read_msg_.body(), read_msg_.body_length());
+		data_flag = false;
+		return ret;
+	}
 
+
+	void do_close()
+	{
+		socket_.close();
+	}
 private:
+
+	void handle_read_header(const asio::error_code& error)
+	{
+		if (!error && read_msg_.decode_header())
+		{
+			std::cout << "here\n";
+			data_flag = true;
+			asio::async_read(socket_,
+				asio::buffer(read_msg_.body(), read_msg_.body_length()),
+				std::bind(&TcpConnection::handle_read_body, this,
+					std::placeholders::_1));
+		}
+		else
+		{
+			do_close();
+		}
+	}
+
+	void handle_read_body(const asio::error_code& error)
+	{
+		if (!error)
+		{
+			std::cout << "read:";
+			std::cout.write(read_msg_.body(), read_msg_.body_length());
+			std::cout << "\n";
+			while (data_flag);
+			asio::async_read(socket_,
+				asio::buffer(read_msg_.data(), socket_message::header_length),
+				std::bind(&TcpConnection::handle_read_header, this,
+					std::placeholders::_1));
+		}
+		else
+		{
+			do_close();
+		}
+	}
+
+
+
 	TcpConnection(asio::io_service& io_service, SocketServer* parent) : 
 		socket_(io_service), parent(parent) {
 		std::cout << "new tcp" << std::endl;
@@ -45,6 +112,9 @@ private:
 	std::string message_;
 	enum { max_length = 1024 };
 	char data_[max_length]{ 0 };
+	
+	socket_message read_msg_;
+	bool data_flag;
 
 };
 
@@ -52,10 +122,10 @@ class SocketServer
 {
 public:
 
-	static SocketServer* create()
+	static SocketServer* create(int port=8008)
 	{
 //		asio::io_service io_service;
-		auto s= new SocketServer();
+		auto s= new SocketServer(port);
 		s->thread_ = new std::thread(
 			std::bind(static_cast<std::size_t(asio::io_service::*)()>(&asio::io_service::run),
 				io_service_));
@@ -65,17 +135,20 @@ public:
 	std::vector<TcpConnection::pointer> get_connection() const;
 
 	void remove_connection(TcpConnection::pointer p);
-	void button_start();
-
-
-
+	void button_start()
+	{
+		for (auto i = 0; i < connections_.size(); i++)
+			connections_[i]->write_data("PLAYER" + std::to_string(i));
+		connection_num = connections_.size();
+		loop_process();
+	}
 
 private:	
 //	void run(){thread_ = std::thread(std::bind(static_cast<std::size_t(asio::io_service::*)()>(&asio::io_service::run), &acceptor_.geis));
 //	}
-	SocketServer(asio::io_service& io_service_);
-	SocketServer() :
-		acceptor_(*io_service_, tcp::endpoint(tcp::v4(), 8008))
+//	SocketServer(asio::io_service& io_service_);
+	SocketServer(int port) :
+		acceptor_(*io_service_, tcp::endpoint(tcp::v4(), port))
 	{
 		start_accept();
 	}
@@ -84,11 +157,31 @@ private:
 	void handle_accept(TcpConnection::pointer new_connection,
 	                   const asio::error_code& error);
 
+	void loop_process()
+	{
+		while (true)
+		{	
+			if (connections_.size() != connection_num)
+				throw std::exception{ "lost connection" };
+			std::vector<std::string> ret;
+			for (auto r : connections_)
+				ret.push_back(r->read_data());
+			auto game_msg = GameMessageWrap::combine_message(ret);
+			for (auto r : connections_)
+				r->write_data(game_msg);
+
+
+		}
+	}
+
+
 	tcp::acceptor acceptor_;
 	std::vector<TcpConnection::pointer> connections_;
+	int connection_num;
 	
 	static asio::io_service* io_service_;
 	std::thread* thread_;
+	std::condition_variable data_cond_;
 };
 
 //class Server{
