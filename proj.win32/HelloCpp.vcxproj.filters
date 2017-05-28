@@ -45,6 +45,12 @@
     <ClCompile Include="..\Classes\SocketServer.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\AdvancedUnit.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameMessage.pb.cc">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -77,6 +83,18 @@
     <ClInclude Include="..\Classes\SocketServer.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\AdvancedUnit.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\asio.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameMessage.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameMessage.pb.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
@@ -102,5 +120,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\Classes\libprotobuf-lite.lib">
+      <Filter>src</Filter>
+    </Library>
+    <Library Include="..\Classes\libprotobuf-lited.lib">
+      <Filter>src</Filter>
+    </Library>
   </ItemGroup>
 </Project>
