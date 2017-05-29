@@ -21,9 +21,14 @@ bool BattleScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	initPlayerID();
+#ifdef SERVER
+	socket_server = SocketServer::create();
+#endif // 
+	socket_client = SocketClient::create();
 
-	battle_map = TMXTiledMap::create("map/test_tiled.tmx");
+	//initPlayerID();
+
+	battle_map = TMXTiledMap::create("map/test_tiled_128.tmx");
 	battle_map->setPosition(0, 0);
 	addChild(battle_map, 0);
 
@@ -32,17 +37,18 @@ bool BattleScene::init()
 
 	unit_manager = UnitManager::create();
 	unit_manager->retain();
-	unit_manager->setMessageStack(&msg_stack);
+	unit_manager->setMessageSet(&msg_set);
 	unit_manager->setTiledMap(battle_map);
 	unit_manager->setGridMap(grid_map);
-	unit_manager->setPlayerID(player_id);
+	unit_manager->setSocketClient(socket_client);
+	//unit_manager->setPlayerID(player_id);
 
 	mouse_rect = DrawNode::create();
 	addChild(mouse_rect, 3);
 
 	schedule(schedule_selector(BattleScene::update));
 
-	unit_manager->initiallyCreateUnits();
+	//unit_manager->initiallyCreateUnits();
 
 	auto mouse_listener = EventListenerTouchOneByOne::create();
 	mouse_listener->onTouchBegan = CC_CALLBACK_2(BattleScene::onTouchBegan, this);
@@ -60,14 +66,14 @@ bool BattleScene::init()
 
 void BattleScene::initPlayerID()
 {
-	player_id = 0;
+	player_id = socket_client->camp();
 }
 
 void BattleScene::update(float f)
 {
 	frame_cnt++;
 
-	if (frame_cnt % KEY_FRAME == 0)
+	if (frame_cnt % KEY_FRAME == 0 && start_flag)
 	{
 		unit_manager->updateUnitsState();
 	}
@@ -108,6 +114,10 @@ void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 	Point maptouch = touch - battle_map->getPosition();
 	Point last_maptouch = last_touch - battle_map->getPosition();
 
+	GridPoint touch_grid_point = grid_map->getGridPoint(touch);
+
+	log("Touch Grid Point: (%d, %d)", touch_grid_point.x, touch_grid_point.y);
+
 	if ((maptouch - last_maptouch).length() < MIN_SELECT_RECT_SIZE)
 		unit_manager->selectUnits(maptouch);
 	else
@@ -138,6 +148,21 @@ void BattleScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* p
 		map_center += Vec2(0, 50);
 		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - map_center))
 			battle_map->setPosition(map_center);
+		break;
+	case EventKeyboard::KeyCode::KEY_D:
+		map_center += Vec2(-50, 0);
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - map_center + Director::getInstance()->getVisibleSize()))
+			battle_map->setPosition(map_center);
+		break;
+	case EventKeyboard::KeyCode::KEY_K:
+		socket_server->button_start();
+		initPlayerID();
+		unit_manager->setPlayerID(player_id); 
+		unit_manager->initiallyCreateUnits();
+		start_flag = 1;
+		break;
+	case EventKeyboard::KeyCode::KEY_X:
+		unit_manager->genCreateMessage();
 		break;
 	default:
 		break;

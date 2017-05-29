@@ -3,6 +3,11 @@
 
 USING_NS_CC;
 
+bool GridPoint::operator==(const GridPoint& gp2) const
+{
+	return(x == gp2.x && y == gp2.y);
+}
+
 GridMap* GridMap::create(const cocos2d::TMXTiledMap * tiled_map)
 {
 	GridMap *ret = new (std::nothrow) GridMap();
@@ -21,6 +26,7 @@ bool GridMap::initWithTiledMap(const TMXTiledMap* tiled_map)
 	map_width = int(tiled_map->getMapSize().width);
 	grid_height = int(tiled_map->getTileSize().height);
 	grid_width = int(tiled_map->getTileSize().width);
+	offset_vec = Vec2(grid_width / 2, grid_height / 2);
 	gmap = std::vector<std::vector<int>>(map_width, std::vector<int>(map_height, 0));
 	return(true);
 }
@@ -35,17 +41,45 @@ GridPoint GridMap::getGridPoint(const Point& p)
 	return(GridPoint(int(p.x) / grid_width, int(p.y) / grid_height));
 }
 
-void GridMap::occupyPosition(const GridPoint& pos)
+Point GridMap::getPointWithOffset(const GridPoint& gp)
 {
-	gmap[pos.x][pos.y] = 1;
+	return(getPoint(gp) + offset_vec);
 }
 
-void GridMap::occupyPosition(const Point& pos)
+GridPoint GridMap::getGridPointWithOffset(const Point& p)
 {
-	occupyPosition(getGridPoint(pos));
+	return(getGridPoint(p + offset_vec));
 }
 
-const std::vector<std::vector<int>>& GridMap::getLogicalGridMap()
+bool GridMap::occupyPosition(const GridPoint& pos)
+{
+	if (!gmap[pos.x][pos.y])
+	{
+		gmap[pos.x][pos.y] = 1;
+		return(1);
+	}
+	return(0);
+}
+
+bool GridMap::occupyPosition(const Point& pos)
+{
+	return(occupyPosition(getGridPoint(pos)));
+}
+
+void GridMap::leavePosition(const GridPoint& pos)
+{
+	gmap[pos.x][pos.y] = 0;
+}
+
+std::vector<std::vector<int>>& GridMap::getLogicalGridMap()
 {
 	return(gmap);
+}
+
+bool GridMap::hasApproached(const Point& cur_fp, const GridPoint& dest_gp)
+{
+	Point dest_fp = getPointWithOffset(dest_gp);
+	if ((dest_fp - cur_fp).length() < POS_OFFSET)
+		return(true);
+	return(false);
 }

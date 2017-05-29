@@ -20,7 +20,7 @@ void Fighter::setProperties()
 	atk_period = 20;
 	hp_max = 100;
 	cd_max = 5;
-	move_speed = 10.0f;
+	move_speed = 3.0f;
 
 	cd = cd_max;
 	hp = hp_max;
