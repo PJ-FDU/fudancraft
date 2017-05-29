@@ -24,13 +24,6 @@ public:
 	}
 	void start()
 	{
-		std::cout << "call here";
-		/*socket_.async_read_some(asio::buffer(data_, max_length),
-			std::bind(&SocketClient::handle_read, this,
-				std::placeholders::_1,
-				std::placeholders::_2)
-		);*/
-
 		start_connect();
 	};
 
@@ -47,12 +40,15 @@ public:
 	}
 
 	[[deprecated("just for test")]]
-	void send_data(std::string s);
+	void send_string(std::string s)
+	{
+		write_data(s);
+	}
 
 	[[deprecated("just for test")]]
-	size_t send_vector(std::vector<asio::const_buffer> buffers)
+	std::string get_string()
 	{
-		return asio::write(socket_, buffers);
+		return read_data();
 	};
 
 	void do_close()
@@ -60,6 +56,7 @@ public:
 		socket_.close();
 	}
 
+	int camp()const { return camp_; }
 private:
 	void write_data(std::string s)
 	{
@@ -77,17 +74,39 @@ private:
 		socket_.async_connect(endpoint_,
 			std::bind(&SocketClient::handle_connect, this,
 				std::placeholders::_1));
+
 	}
 
 
 	void handle_connect(const asio::error_code& error)
 	{
-		if (!error)
+		try
 		{
-			asio::async_read(socket_,
-				asio::buffer(read_msg_.data(), socket_message::header_length),
-				std::bind(&SocketClient::handle_read_header, this,
-					std::placeholders::_1));
+			if (!error)
+			{
+				std::cout << "connected\n";
+				char data[20] = {0};
+				asio::error_code error;
+				size_t length = socket_.read_some(asio::buffer(data, 20), error);
+				if (error || length < 10)
+					throw asio::system_error(error);
+				camp_ = atoi(data + 10);
+				std::cout << "camp: " << camp_;
+
+				asio::async_read(socket_,
+				                 asio::buffer(read_msg_.data(), socket_message::header_length),
+				                 std::bind(&SocketClient::handle_read_header, this,
+				                           std::placeholders::_1));
+			}
+			else
+			{
+				std::cerr << "failed to connect" << std::endl;
+				throw asio::system_error(error);
+			}
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Exception in connection: " << e.what() << "\n";
 		}
 	}
 
@@ -95,8 +114,7 @@ private:
 	{
 		if (!error && read_msg_.decode_header())
 		{
-			std::cout << "here\n";
-			data_flag = true;
+			
 			asio::async_read(socket_,
 				asio::buffer(read_msg_.body(), read_msg_.body_length()),
 				std::bind(&SocketClient::handle_read_body, this,
@@ -112,6 +130,8 @@ private:
 	{
 		if (!error)
 		{
+			data_flag = true;
+			std::cout << "read completed\n";
 //			std::cout << "read:";
 //			std::cout.write(read_msg_.body(), read_msg_.body_length());
 //			std::cout << "\n";
@@ -158,11 +178,12 @@ private:
 	tcp::endpoint endpoint_;
 	socket_message read_msg_;
 
-
-	enum{max_length = 4};
+	
+//	enum{max_length = 4};
 	bool data_flag;
 //	asio::streambuf input_buffer_;
-	std::string message_;
+//	std::string message_;
 //	std::vector<char> data_;
 	std::thread* thread_;
+	int camp_;
 };

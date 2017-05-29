@@ -59,7 +59,6 @@ private:
 		if (!error && read_msg_.decode_header())
 		{
 			std::cout << "here\n";
-			data_flag = true;
 			asio::async_read(socket_,
 				asio::buffer(read_msg_.body(), read_msg_.body_length()),
 				std::bind(&TcpConnection::handle_read_body, this,
@@ -75,6 +74,7 @@ private:
 	{
 		if (!error)
 		{
+			data_flag = true;
 			std::cout << "read:";
 			std::cout.write(read_msg_.body(), read_msg_.body_length());
 			std::cout << "\n";
@@ -93,13 +93,15 @@ private:
 
 
 	TcpConnection(asio::io_service& io_service, SocketServer* parent) : 
-		socket_(io_service), parent(parent) {
+		socket_(io_service), parent(parent),
+		data_flag{ false } {
 		std::cout << "new tcp" << std::endl;
+		
 	};
 
-	void handle_connection(int n);
-	void handle_read(const asio::error_code& error,
-	                 size_t bytes_transferred);
+//	void handle_connection(int n);
+//	void handle_read(const asio::error_code& error,
+//	                 size_t bytes_transferred);
 
 
 	void delete_from_parent();
@@ -164,13 +166,23 @@ private:
 			if (connections_.size() != connection_num)
 				throw std::exception{ "lost connection" };
 			std::vector<std::string> ret;
+			/*for (auto r : connections_)
+			{
+				GameMessageSet game_message_set;
+				auto ret = r->read_data();
+				game_message_set.ParseFromString(ret);
+				std::cout << game_message_set.DebugString() << std::endl;
+				r->write_data(ret);
+			}*/
 			for (auto r : connections_)
 				ret.push_back(r->read_data());
+			std::cout << "read all message\n";
 			auto game_msg = GameMessageWrap::combine_message(ret);
+			/*GameMessageSet game_message_set;
+			game_message_set.ParseFromString(game_msg);
+			std::cout << game_message_set.DebugString() << std::endl;*/
 			for (auto r : connections_)
 				r->write_data(game_msg);
-
-
 		}
 	}
 

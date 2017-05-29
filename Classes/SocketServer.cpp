@@ -10,51 +10,51 @@ TcpConnection::~TcpConnection()
 	delete_from_parent();	
 }
 
+//
+//void TcpConnection::handle_connection(int n)
+//{
+////	init_connection(n);
+//	try
+//	{
+//		for (;;)
+//		{
+//			char data[max_length]{0};
+//
+//			asio::error_code error;
+//			size_t length = socket_.read_some(asio::buffer(data), error);
+//			if (error == asio::error::eof)
+//				break; // Connection closed cleanly by peer.
+//			else if (error)
+//				throw asio::system_error(error); // Some other error.
+//			std::cout << "Player: " << n << std::endl;
+//			std::cout << data << std::endl;
+//			asio::write(socket_, asio::buffer(data, length));
+////			std::cout << "done!\n";
+//		}
+//	}
+//	catch (std::exception& e)
+//	{
+//		std::cerr << "Exception in thread: " << e.what() << "\n";
+//		delete_from_parent();
+//	}
+//}
 
-void TcpConnection::handle_connection(int n)
-{
-//	init_connection(n);
-	try
-	{
-		for (;;)
-		{
-			char data[max_length]{0};
-
-			asio::error_code error;
-			size_t length = socket_.read_some(asio::buffer(data), error);
-			if (error == asio::error::eof)
-				break; // Connection closed cleanly by peer.
-			else if (error)
-				throw asio::system_error(error); // Some other error.
-			std::cout << "Player: " << n << std::endl;
-			std::cout << data << std::endl;
-			asio::write(socket_, asio::buffer(data, length));
-//			std::cout << "done!\n";
-		}
-	}
-	catch (std::exception& e)
-	{
-		std::cerr << "Exception in thread: " << e.what() << "\n";
-		delete_from_parent();
-	}
-}
-
-void TcpConnection::handle_read(const asio::error_code& error, size_t bytes_transferred)
-{
-	if ((asio::error::eof == error) ||
-		(asio::error::connection_reset == error))
-	{
-		delete_from_parent();
-	}
-	else
-	{
-		socket_.async_read_some(asio::buffer(data_, max_length),
-		                        std::bind(&TcpConnection::handle_read, shared_from_this(),
-		                                  std::placeholders::_1,
-		                                  std::placeholders::_2));
-		message_ += std::string(data_);
-	}
-}
+//void TcpConnection::handle_read(const asio::error_code& error, size_t bytes_transferred)
+//{
+//	if ((asio::error::eof == error) ||
+//		(asio::error::connection_reset == error))
+//	{
+//		delete_from_parent();
+//	}
+//	else
+//	{
+//		socket_.async_read_some(asio::buffer(data_, max_length),
+//		                        std::bind(&TcpConnection::handle_read, shared_from_this(),
+//		                                  std::placeholders::_1,
+//		                                  std::placeholders::_2));
+//		message_ += std::string(data_);
+//	}
+//}
 
 
 void TcpConnection::delete_from_parent()
