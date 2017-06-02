@@ -123,6 +123,12 @@
     <Font Include="..\Resources\fonts\SIMLI.TTF">
       <Filter>resource\Font</Filter>
     </Font>
+    <Font Include="..\Resources\fonts\Blackwood Castle Shadow.ttf">
+      <Filter>resource\Font</Filter>
+    </Font>
+    <Font Include="..\Resources\fonts\Blackwood Castle.ttf">
+      <Filter>resource\Font</Filter>
+    </Font>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
