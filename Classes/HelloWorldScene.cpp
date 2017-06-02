@@ -41,7 +41,7 @@ bool HelloWorld::init()
     auto menu = Menu::create(closeItem, NULL);
     menu->setPosition(Vec2::ZERO);
     
-    auto start = Label::createWithTTF("Start Game", "fonts/SIMLI.TTF", 24);
+    auto start = Label::createWithTTF("Start Game", "fonts/BlackwoodCastle.ttf", 24);
 
 	auto start_label = MenuItemLabel::create(start,CC_CALLBACK_1(HelloWorld::menuStartCallback,this));
     start_label->setPosition(Vec2(origin.x + visibleSize.width/2,
