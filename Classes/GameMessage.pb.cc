@@ -120,6 +120,9 @@ const GameMessage_CmdCode GameMessage::ATK;
 
 const GameMessage_CmdCode GameMessage::TRC;
 
+const GameMessage_CmdCode GameMessage::RFP;
+const GameMessage_CmdCode GameMessage::UDP;
+
 const GameMessage_CmdCode GameMessage::CmdCode_MIN;
 const GameMessage_CmdCode GameMessage::CmdCode_MAX;
 const int GameMessage::CmdCode_ARRAYSIZE;

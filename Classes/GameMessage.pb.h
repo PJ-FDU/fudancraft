@@ -76,6 +76,9 @@ enum GameMessage_CmdCode {
 
   GameMessage_CmdCode_TRC = 3,
 
+  GameMessage_CmdCode_RFP = 4,
+  GameMessage_CmdCode_UDP = 5,
+
   GameMessage_CmdCode_GameMessage_CmdCode_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
   GameMessage_CmdCode_GameMessage_CmdCode_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
 };
@@ -156,6 +159,11 @@ class GameMessage : public ::google::protobuf::MessageLite /* @@protoc_insertion
 
   static const CmdCode TRC =
 	  GameMessage_CmdCode_TRC;
+
+  static const CmdCode RFP =
+	  GameMessage_CmdCode_RFP;
+  static const CmdCode UDP =
+	  GameMessage_CmdCode_UDP;
 
   static inline bool CmdCode_IsValid(int value) {
     return GameMessage_CmdCode_IsValid(value);
