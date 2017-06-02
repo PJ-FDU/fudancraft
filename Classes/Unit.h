@@ -6,6 +6,10 @@
 #include "GridMap.h"
 #include "GameMessage.pb.h"
 #include "fudancraft.h"
+#include "PathFinder/PathFinder.h"
+#include "SocketClient.h"
+
+#include <fstream>
 
 class Unit;
 class UnitManager;
@@ -25,14 +29,20 @@ private:
 class UnitManager : public cocos2d::Ref
 {
 public:
+	int player_id = 0;
+
 	CREATE_FUNC(UnitManager);
 	bool init();
 	void setMessageSet(GameMessageSet* _msgs);
 	void setTiledMap(cocos2d::TMXTiledMap* _tiledMap);
 	void setGridMap(GridMap* _grid_map);
 	void setPlayerID(int _player_id);
-	void setGridPath();
+	void setSocketClient(SocketClient* _socket_client);
 	void updateUnitsState();
+	void updatePathMessage(int _unit_id, const GridPath& _grid_path);
+
+	GridPoint getUnitPosition(int unit_id);
+	void genCreateMessage();
 
 	void initiallyCreateUnits();
 	void selectUnits(cocos2d::Point select_point);
@@ -46,10 +56,10 @@ private:
 	GameMessageSet* msgs;
 	cocos2d::TMXTiledMap* tiled_map = nullptr;
 	GridMap* grid_map = nullptr;
+	SocketClient* socket_client = nullptr;
 	int next_id = 1;
-	int player_id = 0;
 
-	Unit* createNewUnit(int camp, int uint_type, GridPoint crt_gp);
+	Unit* createNewUnit(int id, int camp, int uint_type, GridPoint crt_gp);
 	void deselectAllUnits();
 
 };
@@ -59,6 +69,7 @@ class Unit : public cocos2d::Sprite
 public:
 	int id;
 	int camp = 0;
+	UnitManager* unit_manager = nullptr;
 
 	static Unit* create(const std::string& filename);
 
@@ -70,16 +81,49 @@ public:
 	void hideHPBar();
 	void addToMaps(cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
 	GridPoint getGridPosition();
+	void setGridPath(const MsgGridPath& _grid_path);
+	void setState(int _state);
+	void setTarget(int _target_id);
+	int getState() const;
+	bool hasArrivedAtDest();
+	bool updateGridPostion();
 
-	GridPath planToMoveTo(const GridPoint& dest)
+	GridPath planToMoveTo(GridPoint& dest)
 	{
 		return(searchForPath(grid_map->getLogicalGridMap(), getGridPosition(), dest));
 	}
-	GridPath searchForPath(const std::vector<std::vector<int>>& gmap, const GridPoint& start, const GridPoint& dest)
+	GridPath searchForPath(std::vector<std::vector<int>>& gmap, const GridPoint& start, const GridPoint& dest)
 	{
-		GridPath _grid_path;
-		_grid_path.push_back(GridPoint(start.x, dest.y));
-		_grid_path.push_back(GridPoint(dest.x, dest.y));
+		/*std::ofstream out_file;
+		out_file.open("pathfind.log", std::ios::app);
+
+		out_file << "(" << start.x << "," << start.y << ")" << "->" << "(" << dest.x << "," << dest.y << ")" << std::endl;
+
+		for (int gy = 127; gy >= 0; gy--)
+		{
+			for (int gx = 0; gx < 128; gx++)
+				if (gx == start.x && gy == start.y)
+					out_file << '2';
+				else
+					if (gx == dest.x && gy == dest.y)
+						out_file << '3';
+					else 
+						out_file << gmap[gx][gy];
+			out_file << std::endl;
+		}*/
+		
+
+		PathFinder path_finder(gmap, start.x, start.y, dest.x, dest.y);
+		path_finder.searchPath();
+		path_finder.generatePath();
+		GridPath _grid_path = path_finder.getPath();
+
+		/*out_file << "Path: ";
+		for (auto & gp : _grid_path)
+			out_file << "(" << gp.x << "," << gp.y << ")" << "->";
+		out_file << std::endl;
+		out_file.close();*/
+
 		return(_grid_path);
 	}
 protected:
@@ -87,6 +131,9 @@ protected:
 	int target_id;
 	bool selected;
 	GridPath grid_path;
+	GridPoint final_dest;
+	GridPoint cur_pos;
+	GridPoint cur_dest;
 
 	int cd;
 	int hp;

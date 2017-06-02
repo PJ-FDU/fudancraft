@@ -3,7 +3,9 @@
 #include "asio.hpp"
 #include <functional>
 #include <thread>
+
 #include "cocos2d.h"
+
 #include <iostream>
 #include "socket_message.h"
 #include "GameMessage.pb.h"
@@ -57,7 +59,9 @@ public:
 		socket_.close();
 	}
 
+
 	int camp()const { while (!start_flag_); return camp_; }
+
 private:
 	void write_data(std::string s)
 	{
@@ -92,9 +96,11 @@ private:
 				if (error || length < 10)
 					throw asio::system_error(error);
 				camp_ = atoi(data + 10);
+
 				
 				start_flag_ = true;
 				cocos2d::log("camp:%d", camp_);
+
 				asio::async_read(socket_,
 				                 asio::buffer(read_msg_.data(), socket_message::header_length),
 				                 std::bind(&SocketClient::handle_read_header, this,
@@ -109,7 +115,7 @@ private:
 		catch (std::exception& e)
 		{
 			std::cerr << "Exception in connection: " << e.what() << "\n";
-			exit(-1);
+
 		}
 	}
 
@@ -183,7 +189,9 @@ private:
 
 	
 //	enum{max_length = 4};
+
 	bool data_flag,start_flag_{false};
+
 //	asio::streambuf input_buffer_;
 //	std::string message_;
 //	std::vector<char> data_;

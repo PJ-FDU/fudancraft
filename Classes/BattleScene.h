@@ -1,6 +1,10 @@
 #pragma once
 
+#define SERVER
+
 #include "Unit.h"
+#include "SocketServer.h"
+#include "SocketClient.h"
 
 class BattleScene : public cocos2d::Layer
 {
@@ -21,6 +25,12 @@ private:
 	int player_id = 0;
 
 	int frame_cnt = 0;
+
+
+	SocketServer* socket_server = nullptr;
+	SocketClient* socket_client = nullptr;
+
+	int start_flag = 0;
 
 	cocos2d::TMXTiledMap* battle_map = nullptr;
 	GridMap* grid_map = nullptr;
