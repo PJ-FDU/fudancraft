@@ -142,7 +142,8 @@ public:
 		for (auto i = 0; i < connections_.size(); i++)
 			connections_[i]->write_data("PLAYER" + std::to_string(i));
 		connection_num = connections_.size();
-		loop_process();
+		loop_ = new std::thread(std::bind(&SocketServer::loop_process,this));
+
 	}
 
 private:	
@@ -192,7 +193,7 @@ private:
 	int connection_num;
 	
 	static asio::io_service* io_service_;
-	std::thread* thread_;
+	std::thread* thread_,*loop_;
 	std::condition_variable data_cond_;
 };
 

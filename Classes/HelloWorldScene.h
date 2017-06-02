@@ -59,7 +59,24 @@ private:
 	SocketClient* socket_client_{nullptr};
 };
 
+class ClientMenu : public cocos2d::Layer
+{
+public:
+	static cocos2d::Scene* createScene();
 
+	bool init() override;
+	// a selector callback
+//	void menuStartServerCallback(cocos2d::Ref* pSender);
+	void menuStartGameCallback(cocos2d::Ref* pSender);
+	void menuBackCallback(cocos2d::Ref* pSender);
+
+	// implement the "static create()" method manually
+	CREATE_FUNC(ClientMenu);
+private:
+	void wait_start();
+
+	SocketClient* socket_client_{ nullptr };
+};
 
 
 
