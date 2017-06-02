@@ -94,7 +94,7 @@ public:
 	}
 	GridPath searchForPath(std::vector<std::vector<int>>& gmap, const GridPoint& start, const GridPoint& dest)
 	{
-		std::ofstream out_file;
+		/*std::ofstream out_file;
 		out_file.open("pathfind.log", std::ios::app);
 
 		out_file << "(" << start.x << "," << start.y << ")" << "->" << "(" << dest.x << "," << dest.y << ")" << std::endl;
@@ -110,7 +110,7 @@ public:
 					else 
 						out_file << gmap[gx][gy];
 			out_file << std::endl;
-		}
+		}*/
 		
 
 		PathFinder path_finder(gmap, start.x, start.y, dest.x, dest.y);
@@ -118,11 +118,11 @@ public:
 		path_finder.generatePath();
 		GridPath _grid_path = path_finder.getPath();
 
-		out_file << "Path: ";
+		/*out_file << "Path: ";
 		for (auto & gp : _grid_path)
 			out_file << "(" << gp.x << "," << gp.y << ")" << "->";
 		out_file << std::endl;
-		out_file.close();
+		out_file.close();*/
 
 		return(_grid_path);
 	}

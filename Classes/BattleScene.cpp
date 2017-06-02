@@ -137,22 +137,22 @@ void BattleScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* p
 	{
 	case EventKeyboard::KeyCode::KEY_W:
 		map_center += Vec2(0, -50);
-		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - map_center + Director::getInstance()->getVisibleSize()))
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) + Director::getInstance()->getVisibleSize()))
 			battle_map->setPosition(map_center);
 		break;
 	case EventKeyboard::KeyCode::KEY_A:
 		map_center += Vec2(50, 0);
-		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - map_center))
+		if (battle_map->getBoundingBox().containsPoint(Vec2(-50, 0)))
 			battle_map->setPosition(map_center);
 		break;
 	case EventKeyboard::KeyCode::KEY_S:
 		map_center += Vec2(0, 50);
-		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - map_center))
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0, -50)))
 			battle_map->setPosition(map_center);
 		break;
 	case EventKeyboard::KeyCode::KEY_D:
 		map_center += Vec2(-50, 0);
-		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) - map_center + Director::getInstance()->getVisibleSize()))
+		if (battle_map->getBoundingBox().containsPoint(Vec2(0, 0) + Director::getInstance()->getVisibleSize()))
 			battle_map->setPosition(map_center);
 		break;
 	case EventKeyboard::KeyCode::KEY_K:
