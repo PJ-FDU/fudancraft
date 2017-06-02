@@ -1,5 +1,6 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
+#include "BattleScene.h"
 
 USING_NS_CC;
 
@@ -47,22 +48,28 @@ bool HelloWorld::init()
     // create menu, it's an autorelease object
     auto menu = Menu::create(closeItem, NULL);
     menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
+    
 
     /////////////////////////////
     // 3. add your codes below...
 
     // add a label shows "Hello World"
     // create and initialize a label
-    
-    auto label = Label::createWithTTF("世界,你好", "fonts/SIMLI.TTF", 24);
-	label->setTag(111);
+	
+    auto start = Label::createWithTTF("Start Game", "fonts/SIMLI.TTF", 24);
     // position the label on the center of the screen
-    label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - label->getContentSize().height));
 
+	auto start_label = MenuItemLabel::create(start,CC_CALLBACK_1(HelloWorld::menuStartCallback,this));
     // add the label as a child to this layer
-    this->addChild(label, 1);
+    start_label->setPosition(Vec2(origin.x + visibleSize.width/2,
+                            origin.y + visibleSize.height - start->getContentSize().height));
+
+	menu->addChild(start_label, 1);
+	
+	this->addChild(menu, 1);
+
+
+
 
     // add "HelloWorld" splash screen"
     auto sprite = Sprite::create("HelloWorld.png");
@@ -79,30 +86,20 @@ bool HelloWorld::init()
 
 void HelloWorld::update(float dt)
 {
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	auto label = this->getChildByTag(111);
-	if(label->getPosition().x>visibleSize.width||label->getPosition().y>visibleSize.height)
-		label->setPosition(label->getPosition() + Vec2(2, -2));
-	else
-		label->setPosition(Vec2(100,300));
-
+	
 }
 
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
+  
 	unscheduleUpdate();
-    Director::getInstance()->end();
+    Director::getInstance()->end();    
+    
+}
 
-    #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
-#endif
-    
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() and exit(0) as given above,instead trigger a custom event created in RootViewController.mm as below*/
-    
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
-    
-    
+void HelloWorld::menuStartCallback(cocos2d::Ref* pSender)
+{
+	auto scene = BattleScene::createScene();
+	Director::getInstance()->replaceScene(scene);
 }

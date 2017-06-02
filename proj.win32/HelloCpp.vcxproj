@@ -170,11 +170,13 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Classes\GameMessage.pb.h" />
+    <ClInclude Include="..\Classes\GameMessageWrap.h" />
     <ClInclude Include="..\Classes\GridMap.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
     <ClInclude Include="..\Classes\MainScene.h" />
     <ClInclude Include="..\Classes\SocketClient.h" />
     <ClInclude Include="..\Classes\SocketServer.h" />
+    <ClInclude Include="..\Classes\socket_message.h" />
     <ClInclude Include="..\Classes\Unit.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>

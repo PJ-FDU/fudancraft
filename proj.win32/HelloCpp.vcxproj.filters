@@ -95,6 +95,12 @@
     <ClInclude Include="..\Classes\GameMessage.pb.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\GameMessageWrap.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\socket_message.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
