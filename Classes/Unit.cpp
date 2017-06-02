@@ -347,6 +347,7 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 
 
 //生成新单位测试程序
+
 void UnitManager::genCreateMessage()
 {
 	GridPoint init_gp = getUnitPosition(1);
@@ -369,8 +370,8 @@ void UnitManager::initiallyCreateUnits()
 		int type = dict["type"].asInt();
 		GridPoint init_gp = grid_map->getGridPoint({ cx, cy });
 
-		if (camp == player_id)
 			//GameMessage的格式、初始化方法、解释方法有待进一步探讨
+		if (camp == player_id)
 		{
 			auto new_msg = msgs->add_game_message();
 

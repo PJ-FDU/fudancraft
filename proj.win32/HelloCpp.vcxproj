@@ -154,6 +154,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\GridMap.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
     <ClCompile Include="..\Classes\MainScene.cpp" />
+    <ClCompile Include="..\Classes\PathFinder\PathFinder.cpp" />
     <ClCompile Include="..\Classes\SocketClient.cpp" />
     <ClCompile Include="..\Classes\SocketServer.cpp" />
     <ClCompile Include="..\Classes\Unit.cpp" />
@@ -174,6 +175,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\GridMap.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
     <ClInclude Include="..\Classes\MainScene.h" />
+    <ClInclude Include="..\Classes\PathFinder\PathFinder.h" />
     <ClInclude Include="..\Classes\SocketClient.h" />
     <ClInclude Include="..\Classes\SocketServer.h" />
     <ClInclude Include="..\Classes\socket_message.h" />
