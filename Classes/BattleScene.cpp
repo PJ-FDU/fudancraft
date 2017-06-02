@@ -28,7 +28,8 @@ bool BattleScene::init()
 
 	//initPlayerID();
 
-	battle_map = TMXTiledMap::create("map/test_tiled_128.tmx");
+	battle_map = TMXTiledMap::create("map/DefanceOfTheAncient.tmx");
+	battle_map->setAnchorPoint(Vec2(0, 0));
 	battle_map->setPosition(0, 0);
 	addChild(battle_map, 0);
 
@@ -114,9 +115,9 @@ void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 	Point maptouch = touch - battle_map->getPosition();
 	Point last_maptouch = last_touch - battle_map->getPosition();
 
-	GridPoint touch_grid_point = grid_map->getGridPoint(touch);
+	GridPoint map_touch_grid_point = grid_map->getGridPoint(maptouch);
 
-	log("Touch Grid Point: (%d, %d)", touch_grid_point.x, touch_grid_point.y);
+	log("Map Touch Grid Point: (%d, %d)", map_touch_grid_point.x, map_touch_grid_point.y);
 
 	if ((maptouch - last_maptouch).length() < MIN_SELECT_RECT_SIZE)
 		unit_manager->selectUnits(maptouch);

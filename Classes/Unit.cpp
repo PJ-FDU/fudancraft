@@ -363,13 +363,14 @@ void UnitManager::initiallyCreateUnits()
 		float cx = dict["x"].asFloat();
 		float cy = dict["y"].asFloat();
 		int camp = dict["camp"].asInt();
+		int type = dict["type"].asInt();
 		GridPoint init_gp = grid_map->getGridPoint({ cx, cy });
 
 		if (camp == player_id)
 			//GameMessage的格式、初始化方法、解释方法有待进一步探讨
 		{
 			auto new_msg = msgs->add_game_message();
-			new_msg->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_CRT, next_id, 0, 0, player_id, 1, GridPath{ init_gp });
+			new_msg->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_CRT, next_id, 0, 0, player_id, type, GridPath{ init_gp });
 			next_id++;
 		}
 	}

@@ -1,5 +1,6 @@
 #include "GridMap.h"
 #include <vector>
+#include <fstream>
 
 USING_NS_CC;
 
@@ -28,6 +29,34 @@ bool GridMap::initWithTiledMap(const TMXTiledMap* tiled_map)
 	grid_width = int(tiled_map->getTileSize().width);
 	offset_vec = Vec2(grid_width / 2, grid_height / 2);
 	gmap = std::vector<std::vector<int>>(map_width, std::vector<int>(map_height, 0));
+
+	auto decoration_layer = tiled_map->getLayer("TerrainDecorationsLayer");
+	for (int gx = 0; gx < map_width; gx++)
+		for (int gy = 0; gy < map_height; gy++)
+		{
+			int tile_gid = decoration_layer->getTileGIDAt(Vec2(gx, map_height - 1 - gy));
+			if (tile_gid > 0)
+			{
+				auto prop = tiled_map->getPropertiesForGID(tile_gid);
+				if (prop.isNull())
+					continue;
+				auto prop_valuemap = prop.asValueMap();
+				int z_index = prop_valuemap["z_index"].asInt();
+				gmap[gx][gy] = z_index;
+			}
+		}
+
+	std::ofstream out_file;
+	out_file.open("init_gridmap.log", std::ios::app);
+
+	for (int gy = 127; gy >= 0; gy--)
+	{
+		for (int gx = 0; gx < 128; gx++)
+			out_file << gmap[gx][gy];
+		out_file << std::endl;
+	}
+	out_file.close();
+
 	return(true);
 }
 
