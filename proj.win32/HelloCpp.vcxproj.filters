@@ -39,6 +39,18 @@
     <ClCompile Include="..\Classes\BattleScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\SocketClient.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\SocketServer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\AdvancedUnit.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameMessage.pb.cc">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -65,6 +77,30 @@
     <ClInclude Include="..\Classes\Unit.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\SocketClient.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SocketServer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\AdvancedUnit.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\asio.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameMessage.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameMessage.pb.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameMessageWrap.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\socket_message.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
@@ -87,8 +123,15 @@
     <Font Include="..\Resources\fonts\SIMLI.TTF">
       <Filter>resource\Font</Filter>
     </Font>
+    <Font Include="..\Resources\fonts\Blackwood Castle Shadow.ttf">
+      <Filter>resource\Font</Filter>
+    </Font>
+    <Font Include="..\Resources\fonts\Blackwood Castle.ttf">
+      <Filter>resource\Font</Filter>
+    </Font>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>
