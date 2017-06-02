@@ -2,6 +2,14 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#include "SocketServer.h"
+#include "SocketClient.h"
+#include "ui/UIEditBox/UIEditBox.h"
+
+namespace cocos2d {namespace ui {
+	class EditBox;
+}
+}
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -9,12 +17,67 @@ public:
     static cocos2d::Scene* createScene();
 
 	bool init() override;
-	virtual void update(float dt) override; 
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
+	void menuStartCallback(cocos2d::Ref* pSender);
     
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
 };
+class StartMenu : public cocos2d::Layer
+{
+public:
+	static cocos2d::Scene* createScene();
+
+	bool init() override;
+	// a selector callback
+	void menuServerCallback(cocos2d::Ref* pSender);
+	void menuClientCallback(cocos2d::Ref* pSender);
+	void menuBackCallback(cocos2d::Ref* pSender);
+
+	// implement the "static create()" method manually
+	CREATE_FUNC(StartMenu);
+};
+
+class ServerMenu : public cocos2d::Layer,cocos2d::ui::EditBoxDelegate
+{
+public:
+	static cocos2d::Scene* createScene();
+
+	bool init() override;
+	// a selector callback
+	void menuStartServerCallback(cocos2d::Ref* pSender);
+	void menuStartGameCallback(cocos2d::Ref* pSender);
+	void menuBackCallback(cocos2d::Ref* pSender);
+
+	// implement the "static create()" method manually
+	CREATE_FUNC(ServerMenu);
+private:
+	void editBoxReturn(cocos2d::ui::EditBox* editBox) override;
+
+	SocketServer* socket_server_{nullptr};
+	SocketClient* socket_client_{nullptr};
+};
+
+class ClientMenu : public cocos2d::Layer
+{
+public:
+	static cocos2d::Scene* createScene();
+
+	bool init() override;
+	// a selector callback
+//	void menuStartServerCallback(cocos2d::Ref* pSender);
+	void menuStartGameCallback(cocos2d::Ref* pSender);
+	void menuBackCallback(cocos2d::Ref* pSender);
+
+	// implement the "static create()" method manually
+	CREATE_FUNC(ClientMenu);
+private:
+	void wait_start();
+
+	SocketClient* socket_client_{ nullptr };
+};
+
+
 
 #endif // __HELLOWORLD_SCENE_H__

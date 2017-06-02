@@ -8,8 +8,10 @@ struct GridPoint
 	GridPoint(int _x = 0, int _y = 0) : x(_x), y(_y) {}
 	int x, y;
 
+
 	bool operator==(const GridPoint& gp2) const;
 };
+
 
 typedef std::vector<GridPoint>  GridPath;
 
