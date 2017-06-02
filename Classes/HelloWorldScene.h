@@ -9,7 +9,6 @@ public:
     static cocos2d::Scene* createScene();
 
 	bool init() override;
-	virtual void update(float dt) override; 
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
 	void menuStartCallback(cocos2d::Ref* pSender);
