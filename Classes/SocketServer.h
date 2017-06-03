@@ -139,8 +139,12 @@ public:
 	void remove_connection(TcpConnection::pointer p);
 	void button_start()
 	{
+		using namespace std; // For sprintf and memcpy.
+		char total[4 + 1] = "";
+		sprintf(total, "%4d", static_cast<int>(connections_.size()));
+
 		for (auto i = 0; i < connections_.size(); i++)
-			connections_[i]->write_data("PLAYER" + std::to_string(i));
+			connections_[i]->write_data("PLAYER" + std::string(total)+std::to_string(i+1));
 		connection_num = connections_.size();
 
 		this->button_thread_ = new std::thread(std::bind(&SocketServer::loop_process,this));

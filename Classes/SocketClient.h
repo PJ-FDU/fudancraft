@@ -61,6 +61,7 @@ public:
 
 
 	int camp()const { while (!start_flag_); return camp_; }
+	int total()const { while (!start_flag_); return total_; }
 
 private:
 	void write_data(std::string s)
@@ -90,16 +91,17 @@ private:
 			if (!error)
 			{
 				std::cout << "connected\n";
-				char data[20] = {0};
+				char data[30] = {0};
 				asio::error_code error;
-				size_t length = socket_.read_some(asio::buffer(data, 20), error);
+				size_t length = socket_.read_some(asio::buffer(data, 30), error);
 				if (error || length < 10)
 					throw asio::system_error(error);
-				camp_ = atoi(data + 10);
-
-				
+				char header[4 + 1] = "";
+				strncat(header, data+10, 4);
+				total_ = atoi(header);
+				camp_ = atoi(data + 14);				
 				start_flag_ = true;
-				cocos2d::log("camp:%d", camp_);
+				cocos2d::log("camp:%d, total:%d", camp_,total_);
 
 				asio::async_read(socket_,
 				                 asio::buffer(read_msg_.data(), socket_message::header_length),
@@ -196,5 +198,5 @@ private:
 //	std::string message_;
 //	std::vector<char> data_;
 	std::thread* thread_;
-	int camp_;
+	int camp_,total_;
 };
