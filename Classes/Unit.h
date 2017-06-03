@@ -38,9 +38,10 @@ public:
 	void setPlayerID(int _player_id);
 	void setSocketClient(SocketClient* _socket_client);
 	void updateUnitsState();
+	void deleteUnit(int id);
 
 	GridPoint getUnitPosition(int unit_id);
-	void genCreateMessage();
+	void genCreateMessage(int _unit_type, const GridPoint& _crt_gp);
 
 	void initiallyCreateUnits();
 	void selectUnits(cocos2d::Point select_point);
@@ -78,6 +79,7 @@ public:
 	void displayHPBar();
 	void hideHPBar();
 	void addToMaps(cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
+	void removeFromMaps();
 	GridPoint getGridPosition();
 	void setGridPath(const MsgGridPath& _grid_path);
 	void motivate();
@@ -86,6 +88,7 @@ public:
 	int getState() const;
 	bool hasArrivedAtDest();
 	bool updateGridPostion();
+	bool underAttack(int damage);
 
 	GridPath planToMoveTo(GridPoint& dest)
 	{
