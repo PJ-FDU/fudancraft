@@ -190,7 +190,7 @@ void Unit::update(float dt)
 			}
 			else
 			{
-				moving = false;
+				cur_dest = cur_pos;
 				if (grid_path.size() && camp == unit_manager->player_id)
 				{
 					GridPath grid_path = planToMoveTo(final_dest);
@@ -255,6 +255,7 @@ void UnitManager::setSocketClient(SocketClient* _socket_client)
 void UnitManager::setPlayerID(int _player_id)
 {
 	player_id = _player_id;
+	next_id = _player_id;
 }
 
 GridPoint UnitManager::getUnitPosition(int _unit_id)
@@ -416,7 +417,7 @@ void UnitManager::initiallyCreateUnits()
 			auto new_msg = msgs->add_game_message();
 
 			new_msg->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_CRT, next_id, 0, 0, player_id, type, GridPath{ init_gp });
-			next_id++;
+			next_id += MAX_PLAYER_NUM;
 
 		}
 	}
