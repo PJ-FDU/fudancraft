@@ -80,16 +80,6 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	return true;
 }
 
-void BattleScene::initSockets(SocketClient* _socket_client, SocketServer* _socket_server)
-{
-	socket_client = _socket_client;
-	socket_server = _socket_server;
-	initPlayerID();
-	unit_manager->setPlayerID(player_id);
-	unit_manager->initiallyCreateUnits();
-	start_flag = 1;
-}
-
 void BattleScene::initPlayerID()
 {
 	player_id = socket_client->camp();
@@ -181,11 +171,6 @@ void BattleScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* p
 			battle_map->setPosition(map_center);
 		break;
 	case EventKeyboard::KeyCode::KEY_K:
-		socket_server->button_start();
-		initPlayerID();
-		unit_manager->setPlayerID(player_id); 
-		unit_manager->initiallyCreateUnits();
-		start_flag = 1;
 		break;
 	case EventKeyboard::KeyCode::KEY_X:
 		unit_manager->genCreateMessage();

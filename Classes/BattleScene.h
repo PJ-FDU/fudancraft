@@ -16,7 +16,6 @@ public:
 	static cocos2d::Scene* createScene(SocketClient* _socket_client, SocketServer* _socket_server = nullptr);
 	virtual bool init(SocketClient* _socket_client, SocketServer* _socket_server);
 	void update(float f) override;
-	void initSockets(SocketClient* _socket_client, SocketServer* _socket_server = nullptr);
 	bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*)override;
 	void onTouchMoved(cocos2d::Touch*, cocos2d::Event*)override;
 	void onTouchEnded(cocos2d::Touch*, cocos2d::Event*)override;
