@@ -30,26 +30,26 @@ public:
 	{
 		start_connect();
 	};
-
+	[[deprecated("just for test")]]
 	std::vector<GameMessage> get_game_messages()
 	{
 		auto game_message_set_stirng = read_data();
 		return GameMessageWrap::set_string_to_vector(game_message_set_stirng);
 	}
 
+	[[deprecated("just for test")]]
 	void send_game_message(const std::vector<GameMessage> &vec_game_msg)
 	{
 		auto set_string = GameMessageWrap::vector_to_set_stirng(vec_game_msg);
 		write_data(set_string);
 	}
 
-	[[deprecated("just for test")]]
+	
 	void send_string(std::string s)
 	{
 		write_data(s);
 	}
 
-	[[deprecated("just for test")]]
 	std::string get_string()
 	{
 		return read_data();
