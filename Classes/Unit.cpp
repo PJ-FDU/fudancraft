@@ -1,5 +1,6 @@
 ﻿#include "Unit.h"
 #include "AdvancedUnit.h"
+#include "Building.h"
 #include <string>
 
 
@@ -102,55 +103,6 @@ int Unit::getState() const
 {
 	return(state);
 }
-bool Unit::updateGridPostion()
-{
-	if (state == 1)
-	{
-		GridPoint tmp_gp = getGridPosition();
-		/*Point real_pos = getPosition();
-		
-		if (hasArrivedAtDest() && !grid_path.size())
-		{
-			log("Unit ID: %d, Final Dest: (%d, %d), Arrived at: (%d, %d), Real Position: (%f, %f)", id, final_dest.x, final_dest.y, tmp_gp.x, tmp_gp.y, real_pos.x, real_pos.y);
-			state = 0;
-		}*/
-
-		if (cur_pos == tmp_gp)
-			return(true);
-		if (grid_map->occupyPosition(tmp_gp))
-		{
-			grid_map->leavePosition(cur_pos);
-			cur_pos = tmp_gp;
-			return(true);
-		}
-		else
-		{
-			state = 0;
-			return(false);
-		}
-	}
-
-	if (state == 2)
-	{
-		GridPoint tmp_gp = getGridPosition();
-		state = 0;
-		if (cur_pos == tmp_gp)
-			return(true);
-		if (grid_map->occupyPosition(tmp_gp))
-		{
-			grid_map->leavePosition(cur_pos);
-			cur_pos = tmp_gp;
-			return(true);
-		}
-		else
-		{
-			state = 0;
-			return(true);
-		}
-	}
-
-	return(true);
-}
 
 bool Unit::underAttack(int damage)
 {
@@ -161,12 +113,13 @@ bool Unit::underAttack(int damage)
 		return(false);
 }
 
-void Unit::addToMaps(TMXTiledMap* _tiled_map, GridMap* _grid_map)
+void Unit::addToMaps(const GridPoint & crt_gp, TMXTiledMap* _tiled_map, GridMap* _grid_map)
 {
 	tiled_map = _tiled_map;
 	grid_map = _grid_map;
 
-	cur_pos = _grid_map->getGridPoint(getPosition());
+	cur_pos = crt_gp;
+	setPosition(grid_map->getPointWithOffset(crt_gp));
 
 	_tiled_map->addChild(this, 1);
 
@@ -437,6 +390,10 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 		else
 		if (camp == 2)
 			nu = Fighter::create("Picture/airplane_blue.png");
+		break;
+	case 5:
+		nu = Building::create("Picture/factory.jpg");
+		break;
 	default:
 		break;
 	}
@@ -444,10 +401,10 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 	nu->id = id;
 	nu->camp = camp;
 	nu->setProperties();
-	nu->setPosition(grid_map->getPoint(crt_gp));
+	//nu->setPosition(grid_map->getPoint(crt_gp));
 	nu->initHPBar();
 	nu->setAnchorPoint(Vec2(0.5, 0.5));
-	nu->addToMaps(tiled_map, grid_map);
+	nu->addToMaps(crt_gp, tiled_map, grid_map);
 	nu->unit_manager = this;
 	nu->schedule(schedule_selector(Unit::update));
 

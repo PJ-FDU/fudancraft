@@ -48,6 +48,11 @@ bool GridMap::initWithTiledMap(const TMXTiledMap* tiled_map)
 	return(true);
 }
 
+Point GridMap::getGridRectCenter(const GridRect& grec)
+{
+	return(getPoint(grec.gp) + Vec2(grid_width * grec.size.width / 2, grid_height * grec.size.height / 2));
+}
+
 Point GridMap::getPoint(const GridPoint& gp)
 {
 	return(Point(gp.x * grid_width, gp.y * grid_height));
@@ -68,6 +73,15 @@ GridPoint GridMap::getGridPointWithOffset(const Point& p)
 	return(getGridPoint(p + offset_vec));
 }
 
+bool GridMap::checkPosition(const GridRect& grec)
+{
+	for (int x = grec.gp.x; x < grec.gp.x + grec.size.width; x++)
+		for (int y = grec.gp.y; y < grec.gp.y + grec.size.height; y++)
+			if (x < 0 || x >= map_width || y < 0 || y >= map_height || gmap[x][y])
+				return(false);
+	return(true);
+}
+
 bool GridMap::occupyPosition(const GridPoint& pos)
 {
 	if (!gmap[pos.x][pos.y])
@@ -83,9 +97,26 @@ bool GridMap::occupyPosition(const Point& pos)
 	return(occupyPosition(getGridPoint(pos)));
 }
 
+bool GridMap::occupyPosition(const GridRect& grec)
+{
+	if (checkPosition(grec))
+		for (int x = grec.gp.x; x < grec.gp.x + grec.size.width; x++)
+			for (int y = grec.gp.y; y < grec.gp.y + grec.size.height; y++)
+				gmap[x][y] = 1;
+	else
+		return(false);
+}
+
 void GridMap::leavePosition(const GridPoint& pos)
 {
 	gmap[pos.x][pos.y] = 0;
+}
+
+void GridMap::leavePosition(const GridRect& grec)
+{
+	for (int x = grec.gp.x; x < grec.gp.x + grec.size.width; x++)
+		for (int y = grec.gp.y; y < grec.gp.y + grec.size.height; y++)
+			gmap[x][y] = 0;
 }
 
 std::vector<std::vector<int>>& GridMap::getLogicalGridMap()
