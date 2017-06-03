@@ -3877,19 +3877,19 @@
  <objectgroup name="init_unit">
   <object id="1" x="194.667" y="3745.33" width="29.3333" height="32">
    <properties>
-    <property name="camp" type="int" value="0"/>
+    <property name="camp" type="int" value="1"/>
     <property name="type" type="int" value="1"/>
    </properties>
   </object>
   <object id="2" x="360" y="3825.33" width="29.3333" height="32">
    <properties>
-    <property name="camp" type="int" value="0"/>
+    <property name="camp" type="int" value="1"/>
     <property name="type" type="int" value="1"/>
    </properties>
   </object>
   <object id="3" x="157.333" y="3857.33" width="29.3333" height="32">
    <properties>
-    <property name="camp" type="int" value="0"/>
+    <property name="camp" type="int" value="1"/>
     <property name="type" type="int" value="1"/>
    </properties>
   </object>
