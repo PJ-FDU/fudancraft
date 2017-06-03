@@ -22,6 +22,6 @@ void Fighter::setProperties()
 	cd_max = 5;
 	move_speed = 3.0f;
 
-	cd = cd_max;
+	cd = 0;
 	hp = hp_max;
 }
