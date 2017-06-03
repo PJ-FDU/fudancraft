@@ -110,9 +110,12 @@ private:
 				camp_ = atoi(data + 14);				
 				start_flag_ = true;
 				cocos2d::log("camp:%d, total:%d", camp_,total_);
-
-				read_thread_ = new std::thread(std::bind(&SocketClient::start_read, this));
-				read_thread_->detach();
+				asio::async_read(socket_,
+					asio::buffer(read_msg_.data(), socket_message::header_length),
+					std::bind(&SocketClient::handle_read_header, this,
+						std::placeholders::_1));
+//				read_thread_ = new std::thread(std::bind(&SocketClient::start_read, this));
+//				read_thread_->detach();
 			}
 			else
 			{
@@ -145,10 +148,10 @@ private:
 		}
 
 
-//		asio::async_read(socket_,
-//			asio::buffer(read_msg_.data(), socket_message::header_length),
-//			std::bind(&SocketClient::handle_read_header, this,
-//				std::placeholders::_1));
+//		
+//		
+//		
+//		
 	}
 
 	void handle_read_header(const asio::error_code& error)

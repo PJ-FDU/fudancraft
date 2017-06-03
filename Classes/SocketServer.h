@@ -194,7 +194,7 @@ private:
 				ret.push_back(r->read_data());
 			auto game_msg = GameMessageWrap::combine_message(ret);
 //			cocos2d::log("Server read all message");
-			cocos2d::log("Server read all message:%s",game_msg.c_str());
+//			cocos2d::log("Server read all message:%s",game_msg.c_str());
 			/*GameMessageSet game_message_set;
 			game_message_set.ParseFromString(game_msg);
 			std::cout << game_message_set.DebugString() << std::endl;*/
