@@ -6,6 +6,8 @@
 #include "SocketServer.h"
 #include "SocketClient.h"
 
+class ControlPanel;
+
 class BattleScene : public cocos2d::Layer
 {
 public:
@@ -40,6 +42,7 @@ private:
 	cocos2d::TMXTiledMap* battle_map = nullptr;
 	GridMap* grid_map = nullptr;
 	UnitManager* unit_manager = nullptr;
+	ControlPanel* control_panel_;
 
 	cocos2d::DrawNode* mouse_rect = nullptr;
 
@@ -48,4 +51,11 @@ private:
 	void initPlayerID();
 
 	//EventListenerMouse* _mouseListener;
+};
+
+class ControlPanel:public cocos2d::Menu
+{
+public:
+	CREATE_FUNC(ControlPanel);
+	bool init() override;
 };
