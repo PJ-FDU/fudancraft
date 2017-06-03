@@ -186,7 +186,7 @@ void ServerMenu::menuStartGameCallback(cocos2d::Ref* pSender)
 	{
 		//	auto scene = BattleScene::createScene(socket_client,socket_server);
 		socket_server_->button_start();
-		auto scene = BattleScene::createScene();
+		auto scene = BattleScene::createScene(socket_client_, socket_server_);
 		Director::getInstance()->replaceScene(scene);
 		log("start game");
 	}
@@ -291,7 +291,7 @@ void ClientMenu::wait_start()
 	socket_client_->camp();
 	log("get the camp");
 	log("start game");
-	auto scene = BattleScene::createScene();
+	auto scene = BattleScene::createScene(socket_client_, nullptr);
 	//	auto scene = BattleScene::createScene(socket_client_);
 	Director::getInstance()->replaceScene(scene);
 }

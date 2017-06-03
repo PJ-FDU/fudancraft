@@ -11,16 +11,22 @@ class BattleScene : public cocos2d::Layer
 public:
 	GameMessageSet msg_set;
 
-	static cocos2d::Scene* createScene();
-	virtual bool init() override;
+	//static cocos2d::Scene* createScene();
+	//virtual bool init() override;
+	static cocos2d::Scene* createScene(SocketClient* _socket_client, SocketServer* _socket_server = nullptr);
+	virtual bool init(SocketClient* _socket_client, SocketServer* _socket_server);
 	void update(float f) override;
+	void initSockets(SocketClient* _socket_client, SocketServer* _socket_server = nullptr);
 	bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*)override;
 	void onTouchMoved(cocos2d::Touch*, cocos2d::Event*)override;
 	void onTouchEnded(cocos2d::Touch*, cocos2d::Event*)override;
 
 	void onKeyPressed(cocos2d::EventKeyboard::KeyCode, cocos2d::Event *) override;
 
-	CREATE_FUNC(BattleScene);
+	//CREATE_FUNC(BattleScene);
+
+	static BattleScene* create(SocketClient* _socket_client, SocketServer* _socket_server);
+
 private:
 	int player_id = 0;
 

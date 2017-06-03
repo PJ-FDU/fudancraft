@@ -1,6 +1,5 @@
 #include "GridMap.h"
 #include <vector>
-#include <fstream>
 
 USING_NS_CC;
 
@@ -45,17 +44,6 @@ bool GridMap::initWithTiledMap(const TMXTiledMap* tiled_map)
 				gmap[gx][gy] = z_index;
 			}
 		}
-
-	std::ofstream out_file;
-	out_file.open("init_gridmap.log", std::ios::app);
-
-	for (int gy = 127; gy >= 0; gy--)
-	{
-		for (int gx = 0; gx < 128; gx++)
-			out_file << gmap[gx][gy];
-		out_file << std::endl;
-	}
-	out_file.close();
 
 	return(true);
 }
