@@ -29,6 +29,9 @@ public:
 	static BattleScene* create(SocketClient* _socket_client, SocketServer* _socket_server);
 
 private:
+	void create_figher(Ref*);
+
+
 	int player_id = 0;
 
 	int frame_cnt = 0;
@@ -58,4 +61,7 @@ class ControlPanel:public cocos2d::Menu
 public:
 	CREATE_FUNC(ControlPanel);
 	bool init() override;
+	void setFighterCallback(std::function<void(Ref*)>);
+private:
+	cocos2d::MenuItemImage *fighter;
 };
