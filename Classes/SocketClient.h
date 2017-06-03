@@ -5,7 +5,7 @@
 #include <thread>
 #include <chrono>
 #include "cocos2d.h"
-
+#include <deque>
 #include <iostream>
 #include "socket_message.h"
 #include "GameMessage.pb.h"
@@ -77,7 +77,7 @@ private:
 			msg.body_length(s.size());
 		memcpy(msg.body(), &s[0u], msg.body_length());
 		msg.encode_header();
-		cocos2d::log("client send data: %s",msg.data());
+//		cocos2d::log("client send data: %s",msg.data());
 		asio::write(socket_,
 			asio::buffer(msg.data(), msg.length()));
 	}
@@ -109,7 +109,7 @@ private:
 				total_ = atoi(header);
 				camp_ = atoi(data + 14);				
 				start_flag_ = true;
-				cocos2d::log("camp:%d, total:%d", camp_,total_);
+//				cocos2d::log("camp:%d, total:%d", camp_,total_);
 				asio::async_read(socket_,
 					asio::buffer(read_msg_.data(), socket_message::header_length),
 					std::bind(&SocketClient::handle_read_header, this,
@@ -132,8 +132,7 @@ private:
 
 	void start_read()
 	{
-
-
+		
 		while(1)
 		{
 			std::lock_guard<std::mutex> lk{ mut };
@@ -147,11 +146,7 @@ private:
 			while (data_flag);
 		}
 
-
-//		
-//		
-//		
-//		
+	
 	}
 
 	void handle_read_header(const asio::error_code& error)
@@ -175,14 +170,15 @@ private:
 		if (!error)
 		{
 			std::lock_guard<std::mutex> lk{ mut };
-			data_flag = true;
+			read_msg_deque_.push_back(read_msg_);
+//			data_flag = true;
 			data_cond_.notify_one();
 			std::cout << "read completed\n";
-			cocos2d::log("client receive completed: %s",read_msg_.data());
+//			cocos2d::log("client receive completed: %s",read_msg_.data());
 //			std::cout << "read:";
 //			std::cout.write(read_msg_.body(), read_msg_.body_length());
 //			std::cout << "\n";
-			while (data_flag);
+//			while (data_flag);
 			asio::async_read(socket_,
 				asio::buffer(read_msg_.data(), socket_message::header_length),
 				std::bind(&SocketClient::handle_read_header, this,
@@ -196,12 +192,15 @@ private:
 
 	std::string read_data()
 	{
-//		std::unique_lock<std::mutex> lk{ mut };
-		while (!data_flag);
-//			data_cond_.wait(lk); ;
-		auto ret = std::string(read_msg_.body(), read_msg_.body_length());
-		data_flag = false;
-//		lk.unlock();
+		std::unique_lock<std::mutex> lk{ mut };
+//		while (!data_flag);
+		while(read_msg_deque_.empty())
+			data_cond_.wait(lk);
+		auto read_msg = read_msg_deque_.front();
+		read_msg_deque_.pop_front();
+		lk.unlock();
+		auto ret = std::string(read_msg.body(), read_msg.body_length());
+//		data_flag = false;
 		return ret;
 	}
 private:
@@ -226,6 +225,7 @@ private:
 	asio::io_service io_service_;
 	tcp::socket socket_;
 	tcp::endpoint endpoint_;
+	std::deque<socket_message> read_msg_deque_;
 	socket_message read_msg_;
 
 	

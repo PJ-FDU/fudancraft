@@ -4,6 +4,7 @@
 #include <thread>
 #include <iostream>
 #include <condition_variable>
+#include <deque>
 #include "socket_message.h"
 #include "GameMessageWrap.h"
 #include "cocos2d.h"
@@ -49,9 +50,15 @@ public:
 	}
 	std::string read_data()
 	{
-		while (!data_flag);
-		auto ret = std::string(read_msg_.body(), read_msg_.body_length());
-		data_flag = false;
+		std::unique_lock<std::mutex> lk{ mut_ };
+		//		while (!data_flag);
+		while (read_msg_deque_.empty())
+			data_cond_.wait(lk);
+		auto read_msg = read_msg_deque_.front();
+		read_msg_deque_.pop_front();	
+		lk.unlock();
+		auto ret = std::string(read_msg.body(), read_msg.body_length());
+//		data_flag = false;
 		return ret;
 	}
 
@@ -82,12 +89,17 @@ private:
 	{
 		if (!error)
 		{
-			data_flag = true;
+//			data_flag = true;
 //			std::cout << "read:";
 //			std::cout.write(read_msg_.body(), read_msg_.body_length());
 //			std::cout << "\n";
 //			cocos2d::log("Server receive data: %s", read_msg_.data());
-			while (data_flag);
+//			while (data_flag);
+
+			std::lock_guard<std::mutex> lk{ mut_ };
+			read_msg_deque_.push_back(read_msg_);
+//			data_flag = true;
+			data_cond_.notify_one();
 			asio::async_read(socket_,
 				asio::buffer(read_msg_.data(), socket_message::header_length),
 				std::bind(&TcpConnection::handle_read_header, this,
@@ -125,7 +137,10 @@ private:
 	char data_[max_length]{ 0 };
 	
 	socket_message read_msg_;
-	bool data_flag;
+	std::deque<socket_message> read_msg_deque_;
+	std::condition_variable data_cond_;
+	std::mutex mut_;
+	std::atomic<bool> data_flag;
 
 };
 
@@ -155,7 +170,7 @@ public:
 		for (auto i = 0; i < connections_.size(); i++)
 			connections_[i]->write_data("PLAYER" + std::string(total)+std::to_string(i+1));
 		connection_num = connections_.size();
-		cocos2d::log("Server start, total conection:%d", connection_num);
+//		cocos2d::log("Server start, total conection:%d", connection_num);
 		this->button_thread_ = new std::thread(std::bind(&SocketServer::loop_process,this));
 		button_thread_->detach();
 
@@ -191,6 +206,7 @@ private:
 				r->write_data(ret);
 			}*/
 			for (auto r : connections_)
+
 				ret.push_back(r->read_data());
 			auto game_msg = GameMessageWrap::combine_message(ret);
 //			cocos2d::log("Server read all message");
