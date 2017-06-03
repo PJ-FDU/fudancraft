@@ -152,6 +152,15 @@ bool Unit::updateGridPostion()
 	return(true);
 }
 
+bool Unit::underAttack(int damage)
+{
+	hp -= damage;
+	if (hp < 0)
+		return(true);
+	else
+		return(false);
+}
+
 void Unit::addToMaps(TMXTiledMap* _tiled_map, GridMap* _grid_map)
 {
 	tiled_map = _tiled_map;
@@ -162,6 +171,12 @@ void Unit::addToMaps(TMXTiledMap* _tiled_map, GridMap* _grid_map)
 	_tiled_map->addChild(this, 1);
 
 	_grid_map->occupyPosition(cur_pos);
+}
+
+void Unit::removeFromMaps()
+{
+	grid_map->leavePosition(cur_pos);
+	tiled_map->removeChild(this);
 }
 
 bool Unit::hasArrivedAtDest()
@@ -386,12 +401,29 @@ void UnitManager::updateUnitsState()
 			Unit* unit_1 = id_map.at(unitid_1);
 			if (unit_1)
 			{
-
+				unit_1->displayHPBar();
+				if (unit_1->underAttack(damage))
+					deleteUnit(unitid_1);
 			}
 		}
 	}
 	delete msgs;
 	msgs = new_msgs;
+}
+
+void UnitManager::deleteUnit(int id)
+{
+	Unit* unit = id_map.at(id);
+	if (unit)
+	{
+		auto itor = std::find(selected_ids.begin(), selected_ids.end(), id);
+		if (itor != selected_ids.end())
+			selected_ids.erase(itor);
+
+		unit->removeFromMaps();
+
+		id_map.erase(id);
+	}
 }
 
 Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_gp)
@@ -400,7 +432,11 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 	switch (unit_type)
 	{
 	case 1:
-		nu = Fighter::create("Picture/airplane_red.png");
+		if (camp == 1)
+			nu = Fighter::create("Picture/airplane_red.png");
+		else
+		if (camp == 2)
+			nu = Fighter::create("Picture/airplane_blue.png");
 	default:
 		break;
 	}
@@ -420,11 +456,10 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 
 
 //生成新单位测试程序
-void UnitManager::genCreateMessage()
+void UnitManager::genCreateMessage(int _unit_type, const GridPoint & crt_gp)
 {
-	GridPoint init_gp = getUnitPosition(player_id);
 	auto new_msg = msgs->add_game_message();
-	new_msg->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_CRT, next_id, 0, 0, player_id, 1, GridPath{ init_gp });
+	new_msg->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_CRT, next_id, 0, 0, player_id, _unit_type, GridPath{ crt_gp });
 	next_id += MAX_PLAYER_NUM;
 }
 
@@ -440,16 +475,12 @@ void UnitManager::initiallyCreateUnits()
 		float cy = dict["y"].asFloat();
 		int camp = dict["camp"].asInt();
 		int type = dict["type"].asInt();
-		GridPoint init_gp = grid_map->getGridPoint({ cx, cy });
+		GridPoint crt_gp = grid_map->getGridPoint({ cx, cy });
 
 			//GameMessage的格式、初始化方法、解释方法有待进一步探讨
 		if (camp == player_id)
 		{
-			auto new_msg = msgs->add_game_message();
-
-			new_msg->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_CRT, next_id, 0, 0, player_id, type, GridPath{ init_gp });
-			next_id += MAX_PLAYER_NUM;
-
+			genCreateMessage(type, crt_gp);
 		}
 	}
 }
