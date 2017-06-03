@@ -3,7 +3,7 @@
 #include "asio.hpp"
 #include <functional>
 #include <thread>
-
+#include <chrono>
 #include "cocos2d.h"
 
 #include <iostream>
@@ -23,6 +23,7 @@ public:
 		s->thread_ = new std::thread(
 			std::bind(static_cast<std::size_t(asio::io_service::*)()>(&asio::io_service::run),
 				&s->io_service_));
+		s->thread_->detach();
 		return s;
 	}
 	void start()
@@ -67,7 +68,13 @@ private:
 	void write_data(std::string s)
 	{
 		socket_message msg;
-		msg.body_length(s.size());
+		if (s.size() == 0)
+		{
+			s = std::string("\0");
+			msg.body_length(1);
+		}
+		else
+			msg.body_length(s.size());
 		memcpy(msg.body(), &s[0u], msg.body_length());
 		msg.encode_header();
 		cocos2d::log("client send data: %s",msg.data());
@@ -104,10 +111,8 @@ private:
 				start_flag_ = true;
 				cocos2d::log("camp:%d, total:%d", camp_,total_);
 
-				asio::async_read(socket_,
-				                 asio::buffer(read_msg_.data(), socket_message::header_length),
-				                 std::bind(&SocketClient::handle_read_header, this,
-				                           std::placeholders::_1));
+				read_thread_ = new std::thread(std::bind(&SocketClient::start_read, this));
+				read_thread_->detach();
 			}
 			else
 			{
@@ -120,6 +125,30 @@ private:
 			std::cerr << "Exception in connection: " << e.what() << "\n";
 
 		}
+	}
+
+	void start_read()
+	{
+
+
+		while(1)
+		{
+			std::lock_guard<std::mutex> lk{ mut };
+			asio::error_code error;
+			asio::read(socket_, asio::buffer(read_msg_.data(), socket_message::header_length),error);
+			asio::read(socket_,	asio::buffer(read_msg_.body(), read_msg_.body_length()),error);
+			data_flag = true;
+			data_cond_.notify_one();
+			std::cout << "read completed\n";
+//			cocos2d::log("client receive completed: %s", read_msg_.data());
+			while (data_flag);
+		}
+
+
+//		asio::async_read(socket_,
+//			asio::buffer(read_msg_.data(), socket_message::header_length),
+//			std::bind(&SocketClient::handle_read_header, this,
+//				std::placeholders::_1));
 	}
 
 	void handle_read_header(const asio::error_code& error)
@@ -142,7 +171,9 @@ private:
 	{
 		if (!error)
 		{
+			std::lock_guard<std::mutex> lk{ mut };
 			data_flag = true;
+			data_cond_.notify_one();
 			std::cout << "read completed\n";
 			cocos2d::log("client receive completed: %s",read_msg_.data());
 //			std::cout << "read:";
@@ -162,9 +193,12 @@ private:
 
 	std::string read_data()
 	{
+//		std::unique_lock<std::mutex> lk{ mut };
 		while (!data_flag);
+//			data_cond_.wait(lk); ;
 		auto ret = std::string(read_msg_.body(), read_msg_.body_length());
 		data_flag = false;
+//		lk.unlock();
 		return ret;
 	}
 private:
@@ -199,6 +233,9 @@ private:
 //	asio::streambuf input_buffer_;
 //	std::string message_;
 //	std::vector<char> data_;
-	std::thread* thread_;
+	std::thread* thread_,*read_thread_;
 	int camp_,total_;
+
+	std::condition_variable data_cond_;
+	std::mutex mut;
 };

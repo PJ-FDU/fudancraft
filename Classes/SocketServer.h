@@ -32,11 +32,17 @@ public:
 	}
 	void write_data(std::string s)
 	{
-		cocos2d::log("Server send data:%d", s.c_str());
 		socket_message msg;
-		msg.body_length(s.size());
+		if(s.size()==0)
+		{
+			s = std::string("\0");
+			msg.body_length(1);
+		}
+		else
+			msg.body_length(s.size());
 		memcpy(msg.body(), &s[0u], msg.body_length());
 		msg.encode_header();
+//		cocos2d::log("Server send data:%s", msg.data());
 		asio::write(socket_,
 			asio::buffer(msg.data(), msg.length()));
 	}
@@ -76,9 +82,10 @@ private:
 		if (!error)
 		{
 			data_flag = true;
-			std::cout << "read:";
-			std::cout.write(read_msg_.body(), read_msg_.body_length());
-			std::cout << "\n";
+//			std::cout << "read:";
+//			std::cout.write(read_msg_.body(), read_msg_.body_length());
+//			std::cout << "\n";
+//			cocos2d::log("Server receive data: %s", read_msg_.data());
 			while (data_flag);
 			asio::async_read(socket_,
 				asio::buffer(read_msg_.data(), socket_message::header_length),
@@ -149,6 +156,7 @@ public:
 		connection_num = connections_.size();
 		cocos2d::log("Server start, total conection:%d", connection_num);
 		this->button_thread_ = new std::thread(std::bind(&SocketServer::loop_process,this));
+		button_thread_->detach();
 
 	}
 
@@ -183,8 +191,8 @@ private:
 			}*/
 			for (auto r : connections_)
 				ret.push_back(r->read_data());
-			std::cout << "read all message\n";
 			auto game_msg = GameMessageWrap::combine_message(ret);
+//			cocos2d::log("Server read all message");
 			/*GameMessageSet game_message_set;
 			game_message_set.ParseFromString(game_msg);
 			std::cout << game_message_set.DebugString() << std::endl;*/
