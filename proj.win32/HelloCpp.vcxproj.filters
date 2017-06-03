@@ -51,6 +51,9 @@
     <ClCompile Include="..\Classes\GameMessage.pb.cc">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\PathFinder\PathFinder.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -99,6 +102,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\socket_message.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\PathFinder\PathFinder.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
