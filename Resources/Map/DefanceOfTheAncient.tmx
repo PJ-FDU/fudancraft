@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" nextobjectid="7">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" nextobjectid="13">
  <tileset firstgid="1" name="map_item" tilewidth="32" tileheight="32" tilecount="15360" columns="32">
   <image source="map_item.png" width="1024" height="15360"/>
   <terraintypes>
@@ -3891,6 +3891,30 @@
    <properties>
     <property name="camp" type="int" value="1"/>
     <property name="type" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="7" x="396" y="3359" width="33" height="31">
+   <properties>
+    <property name="camp" type="int" value="2"/>
+    <property name="type" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="10" x="508.5" y="3490.5" width="33" height="31">
+   <properties>
+    <property name="camp" type="int" value="2"/>
+    <property name="type" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="11" x="600.5" y="3361.5" width="33" height="31">
+   <properties>
+    <property name="camp" type="int" value="2"/>
+    <property name="type" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="12" x="644" y="3938" width="126" height="63">
+   <properties>
+    <property name="camp" type="int" value="1"/>
+    <property name="type" type="int" value="5"/>
    </properties>
   </object>
  </objectgroup>
