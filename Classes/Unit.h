@@ -38,7 +38,6 @@ public:
 	void setPlayerID(int _player_id);
 	void setSocketClient(SocketClient* _socket_client);
 	void updateUnitsState();
-	void updatePathMessage(int _unit_id, const GridPath& _grid_path);
 
 	GridPoint getUnitPosition(int unit_id);
 	void genCreateMessage();

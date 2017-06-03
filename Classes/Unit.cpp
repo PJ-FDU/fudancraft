@@ -1,4 +1,4 @@
-#include "Unit.h"
+﻿#include "Unit.h"
 #include "AdvancedUnit.h"
 #include <string>
 
@@ -340,7 +340,7 @@ void UnitManager::updateUnitsState()
 			}
 			GridPoint grid_dest{ msg.grid_path().grid_point(0).x(), msg.grid_path().grid_point(0).y() };
 			log("Unit id: %d, Refind Path to: (%d, %d), Times: %d", id, grid_dest.x, grid_dest.y, unit->rfp_cnt);
-			GridPath grid_path = unit->planToMoveTo(grid_dest);	//�ֲ��������
+			GridPath grid_path = unit->planToMoveTo(grid_dest);	//锟街诧拷锟斤拷锟斤拷锟斤拷锟?
 			if (grid_path.size())
 				msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_UDP, id, 0, 0, player_id, 0, grid_path);
 
@@ -387,7 +387,7 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 }
 
 
-//生成新单位测试程序
+//鐢熸垚鏂板崟浣嶆祴璇曠▼搴?
 void UnitManager::genCreateMessage()
 {
 	GridPoint init_gp = getUnitPosition(1);
@@ -411,7 +411,7 @@ void UnitManager::initiallyCreateUnits()
 		GridPoint init_gp = grid_map->getGridPoint({ cx, cy });
 
 		if (camp == player_id)
-			//GameMessage的格式、初始化方法、解释方法有待进一步探讨
+			//GameMessage鐨勬牸寮忋€佸垵濮嬪寲鏂规硶銆佽В閲婃柟娉曟湁寰呰繘涓€姝ユ帰璁?
 		{
 			auto new_msg = msgs->add_game_message();
 
@@ -459,7 +459,7 @@ void UnitManager::selectUnits(Point select_point)
 			Unit* unit = id_map.at(id);
 
 			GridPoint grid_dest = grid_map->getGridPointWithOffset(select_point);
-			GridPath grid_path = unit->planToMoveTo(grid_dest);	//�ֲ��������
+			GridPath grid_path = unit->planToMoveTo(grid_dest);	//锟街诧拷锟斤拷锟斤拷锟斤拷锟?
 			if (grid_path.size())
 				msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_MOV, id, 0, 0, player_id, 0, grid_path);
 			else

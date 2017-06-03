@@ -9,4 +9,4 @@
 
 #define POS_OFFSET 10
 
-#define MAX_PATH_FIND_TIMES 3
+#define MAX_PATH_FIND_TIMES 4

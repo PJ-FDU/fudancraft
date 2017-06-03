@@ -2,18 +2,31 @@
 
 USING_NS_CC;
 
-Scene* BattleScene::createScene()
+BattleScene* BattleScene::create(SocketClient* _socket_client, SocketServer* _socket_server)
+{
+	BattleScene *battle_scene = new (std::nothrow) BattleScene();
+	if (battle_scene && battle_scene->init(_socket_client, _socket_server))
+	{
+		battle_scene->autorelease();
+		return battle_scene;
+	}
+	CC_SAFE_DELETE(battle_scene);
+
+	return nullptr;
+}
+
+Scene* BattleScene::createScene(SocketClient* _socket_client, SocketServer* _socket_server)
 {
 	auto scene = Scene::create();
 
-	auto layer = BattleScene::create();
+	auto layer = BattleScene::create(_socket_client, _socket_server);
 
 	scene->addChild(layer);
 
 	return scene;
 }
 
-bool BattleScene::init()
+bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_server)
 {
 	if (!Layer::init())
 		return false;
@@ -21,12 +34,8 @@ bool BattleScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-#ifdef SERVER
-	socket_server = SocketServer::create();
-#endif // 
-	socket_client = SocketClient::create();
-
-	//initPlayerID();
+	socket_client = _socket_client;
+	socket_server = _socket_server;
 
 	battle_map = TMXTiledMap::create("map/DefanceOfTheAncient.tmx");
 	battle_map->setAnchorPoint(Vec2(0, 0));
@@ -62,7 +71,23 @@ bool BattleScene::init()
 	keyboard_listener->onKeyPressed = CC_CALLBACK_2(BattleScene::onKeyPressed, this);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyboard_listener, this);
 
+	
+	initPlayerID();
+	unit_manager->setPlayerID(player_id);
+	unit_manager->initiallyCreateUnits();
+	start_flag = 1;
+
 	return true;
+}
+
+void BattleScene::initSockets(SocketClient* _socket_client, SocketServer* _socket_server)
+{
+	socket_client = _socket_client;
+	socket_server = _socket_server;
+	initPlayerID();
+	unit_manager->setPlayerID(player_id);
+	unit_manager->initiallyCreateUnits();
+	start_flag = 1;
 }
 
 void BattleScene::initPlayerID()
