@@ -32,6 +32,7 @@ public:
 	}
 	void write_data(std::string s)
 	{
+		cocos2d::log("Server send data:%d", s.c_str());
 		socket_message msg;
 		msg.body_length(s.size());
 		memcpy(msg.body(), &s[0u], msg.body_length());
@@ -146,7 +147,7 @@ public:
 		for (auto i = 0; i < connections_.size(); i++)
 			connections_[i]->write_data("PLAYER" + std::string(total)+std::to_string(i+1));
 		connection_num = connections_.size();
-
+		cocos2d::log("Server start, total conection:%d", connection_num);
 		this->button_thread_ = new std::thread(std::bind(&SocketServer::loop_process,this));
 
 	}

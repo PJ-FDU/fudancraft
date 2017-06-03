@@ -70,6 +70,7 @@ private:
 		msg.body_length(s.size());
 		memcpy(msg.body(), &s[0u], msg.body_length());
 		msg.encode_header();
+		cocos2d::log("client send data: %s",msg.data());
 		asio::write(socket_,
 			asio::buffer(msg.data(), msg.length()));
 	}
@@ -143,6 +144,7 @@ private:
 		{
 			data_flag = true;
 			std::cout << "read completed\n";
+			cocos2d::log("client receive completed: %s",read_msg_.data());
 //			std::cout << "read:";
 //			std::cout.write(read_msg_.body(), read_msg_.body_length());
 //			std::cout << "\n";
