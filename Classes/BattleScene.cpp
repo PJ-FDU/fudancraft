@@ -173,7 +173,7 @@ void BattleScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* p
 	case EventKeyboard::KeyCode::KEY_K:
 		break;
 	case EventKeyboard::KeyCode::KEY_X:
-		unit_manager->genCreateMessage();
+		unit_manager->genCreateMessage(1, grid_map->getGridPoint(Vec2(Director::getInstance()->getVisibleSize().width / 2, Director::getInstance()->getVisibleSize().height / 2)));
 		break;
 	default:
 		break;
