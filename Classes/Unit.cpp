@@ -391,10 +391,10 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 //生成新单位测试程序
 void UnitManager::genCreateMessage()
 {
-	GridPoint init_gp = getUnitPosition(1);
+	GridPoint init_gp = getUnitPosition(player_id);
 	auto new_msg = msgs->add_game_message();
 	new_msg->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_CRT, next_id, 0, 0, player_id, 1, GridPath{ init_gp });
-	next_id++;
+	next_id += MAX_PLAYER_NUM;
 }
 
 void UnitManager::initiallyCreateUnits()
