@@ -15,11 +15,21 @@ struct GridPoint
 
 typedef std::vector<GridPoint>  GridPath;
 
-//struct GridPath : public std::vector<GridPoint>
-//{
-//	GridPath() {};
-//	GridPath(const std::initializer_list<GridPoint> init_gps) : std::vector<GridPoint>{ init_gps } {}
-//};
+struct GridSize
+{
+	int width;
+	int height;
+
+	GridSize(int _width = 0, int _height = 0) : width(_width), height(_height) {}
+};
+
+struct GridRect
+{
+	GridPoint gp;
+	GridSize size;
+
+	GridRect(GridPoint _gp = GridPoint(), GridSize _size = GridSize()) : gp(_gp), size(_size) {}
+};
 
 class GridMap : public cocos2d::Ref
 {
@@ -27,11 +37,15 @@ public:
 	static GridMap* create(const cocos2d::TMXTiledMap * tiled_map);
 	cocos2d::Point getPoint(const GridPoint& gp);
 	GridPoint getGridPoint(const cocos2d::Point& p);
+	cocos2d::Point getGridRectCenter(const GridRect& grec);
 	cocos2d::Point getPointWithOffset(const GridPoint& gp);
 	GridPoint getGridPointWithOffset(const cocos2d::Point& p);
+	bool checkPosition(const GridRect& grec);
 	bool occupyPosition(const GridPoint& pos);
 	bool occupyPosition(const cocos2d::Point& pos);
+	bool occupyPosition(const GridRect& grec);
 	void leavePosition(const GridPoint& pos);
+	void leavePosition(const GridRect& grec);
 	std::vector<std::vector<int>>& getLogicalGridMap();
 
 	bool hasApproached(const cocos2d::Point& cur_fp, const GridPoint& dest_gp);

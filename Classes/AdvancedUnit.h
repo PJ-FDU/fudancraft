@@ -2,8 +2,6 @@
 
 #include "Unit.h"
 
-USING_NS_CC;
-
 class Fighter : public Unit
 {
 public:

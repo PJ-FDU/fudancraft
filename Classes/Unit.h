@@ -78,7 +78,7 @@ public:
 	void initHPBar();
 	void displayHPBar();
 	void hideHPBar();
-	void addToMaps(cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
+	virtual void addToMaps(const GridPoint & crt_gp, cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
 	void removeFromMaps();
 	GridPoint getGridPosition();
 	void setGridPath(const MsgGridPath& _grid_path);
@@ -87,7 +87,6 @@ public:
 	void setTarget(int _target_id);
 	int getState() const;
 	bool hasArrivedAtDest();
-	bool updateGridPostion();
 	bool underAttack(int damage);
 
 	GridPath planToMoveTo(GridPoint& dest)
@@ -112,6 +111,9 @@ protected:
 	GridPoint final_dest;
 	GridPoint cur_pos;
 	GridPoint cur_dest;
+
+	GridSize size;
+	GridRect cur_grec;
 
 	int rfp_cnt = 0;
 
