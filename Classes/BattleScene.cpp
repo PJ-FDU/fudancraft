@@ -59,13 +59,13 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	//unit_manager->setPlayerID(player_id);
 
 	control_panel_ = ControlPanel::create();
-	control_panel_->setAnchorPoint(Vec2(0,0));
-	control_panel_->setPosition(Vec2(origin.x + 60,	
-		origin.y+50));	
+	
+	control_panel_->setPosition(Vec2(origin.x + visibleSize.width,
+	                                 origin.y + visibleSize.height));
 	control_panel_->setFighterCallback([&](Ref*)
-	{
-		unit_manager->genCreateMessage(1, grid_map->getGridPoint(Vec2(Director::getInstance()->getVisibleSize().width / 2, Director::getInstance()->getVisibleSize().height / 2)));
-	}
+		{
+			unit_manager->genCreateMessage(1, grid_map->getGridPoint(Vec2(Director::getInstance()->getVisibleSize().width / 2, Director::getInstance()->getVisibleSize().height / 2)));
+		}
 	);
 
 	addChild(control_panel_,4);
@@ -109,6 +109,9 @@ bool ControlPanel::init()
 	fighter = MenuItemImage::create("/Picture/menu/airplane-menu-up.png",
 	                                     "/Picture/menu/airplane-menu-down.png"
 	);
+	fighter->setAnchorPoint(Vec2(1, 1));
+	fighter->setPosition(Menu::getContentSize().width, Menu::getContentSize().height);
+
 	
 	Menu::addChild(fighter);
 	Menu::alignItemsVertically();
