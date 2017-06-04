@@ -60,13 +60,20 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 
 	control_panel_ = ControlPanel::create();
 	
-	control_panel_->setPosition(Vec2(origin.x + visibleSize.width,
-	                                 origin.y + visibleSize.height));
+
+	control_panel_->setPosition(Vec2(origin.x + visibleSize.width-10,
+	                                 origin.y + visibleSize.height/2));
+
 	control_panel_->setFighterCallback([&](Ref*)
 		{
 			unit_manager->genCreateMessage(1, grid_map->getGridPoint(Vec2(Director::getInstance()->getVisibleSize().width / 2, Director::getInstance()->getVisibleSize().height / 2)));
 		}
 	);
+
+	//TODO: add a callback function for create a tank and soldier
+	control_panel_->setTankCallback([&](Ref*){});
+	control_panel_->setSoldierCallback([&](Ref*){});
+
 
 	addChild(control_panel_,4);
 
@@ -83,6 +90,15 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	mouse_listener->onTouchEnded = CC_CALLBACK_2(BattleScene::onTouchEnded, this);
 	mouse_listener->setSwallowTouches(true);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(mouse_listener, this);
+
+	auto mouse_event = EventListenerMouse::create();
+	mouse_event->onMouseMove = [&](Event *event)
+	{
+		EventMouse* e = static_cast<EventMouse*>(event);
+		crusor_position = Vec2(e->getCursorX(), e->getCursorY());
+	};
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(mouse_event, 1);
+
 
 	auto keyboard_listener = EventListenerKeyboard::create();
 	keyboard_listener->onKeyPressed = CC_CALLBACK_2(BattleScene::onKeyPressed, this);
@@ -109,11 +125,33 @@ bool ControlPanel::init()
 	fighter = MenuItemImage::create("/Picture/menu/airplane-menu-up.png",
 	                                     "/Picture/menu/airplane-menu-down.png"
 	);
+
+	fighter->setScale(0.8);
 	fighter->setAnchorPoint(Vec2(1, 1));
 	fighter->setPosition(Menu::getContentSize().width, Menu::getContentSize().height);
+	
+
+	tank = MenuItemImage::create("/Picture/menu/tank-menu-up.png",
+	                                     "/Picture/menu/tank-menu-down.png"
+	);
+	tank->setScale(0.8);
+	tank->setAnchorPoint(Vec2(1, 1));
+	tank->setPosition(Menu::getContentSize().width,
+	                     Menu::getContentSize().height - tank->getContentSize().height);
+
+	soldier = MenuItemImage::create("/Picture/menu/soldier-menu-up.png",
+	                                "/Picture/menu/soldier-menu-down.png"
+	);
+	soldier->setScale(0.8);
+	soldier->setAnchorPoint(Vec2(1, 1));
+	soldier->setPosition(Menu::getContentSize().width,
+	                     Menu::getContentSize().height - 2 * soldier->getContentSize().height);
 
 	
 	Menu::addChild(fighter);
+	Menu::addChild(tank);
+	Menu::addChild(soldier);
+
 	Menu::alignItemsVertically();
 	return true;
 }
@@ -124,11 +162,22 @@ void ControlPanel::setFighterCallback(std::function<void(Ref*)> callback)
 }
 
 
+void ControlPanel::setTankCallback(std::function<void(Ref*)> callback)
+{
+	tank->setCallback(callback);
+}
+
+void ControlPanel::setSoldierCallback(std::function<void(Ref*)> callback)
+{
+	soldier->setCallback(callback);
+}
+
+
 
 void BattleScene::update(float f)
 {
 	frame_cnt++;
-
+	scrollMap();
 	if (frame_cnt % KEY_FRAME == 0 && start_flag)
 	{
 		unit_manager->updateUnitsState();
@@ -137,7 +186,7 @@ void BattleScene::update(float f)
 
 bool BattleScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 {
-	Point touch = pTouch->getLocation();//·µ»Øµã»÷µÄÎ»ÖÃ
+	Point touch = pTouch->getLocation();//è¿”å›žç‚¹å‡»çš„ä½ç½®
 	last_touch = touch;
 
 	return true;
@@ -145,7 +194,7 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 
 void BattleScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
-	Point touch = pTouch->getLocation();//·µ»Øµã»÷µÄÎ»ÖÃ
+	Point touch = pTouch->getLocation();//è¿”å›žç‚¹å‡»çš„ä½ç½®
 
 	mouse_rect->clear();
 	Vec2 mouse_rect_points[4];
@@ -154,16 +203,16 @@ void BattleScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 	mouse_rect_points[2] = touch;
 	mouse_rect_points[3] = Vec2(touch.x, last_touch.y);
 
-	//»æÖÆ¿ÕÐÄ¶à±ßÐÎ
-	//Ìî³äÑÕÉ«£ºColor4F(1, 0, 0, 0), Í¸Ã÷
-	//ÂÖÀªÑÕÉ«£ºColor4F(0, 1, 0, 1), ÂÌÉ«
+	//ç»˜åˆ¶ç©ºå¿ƒå¤šè¾¹å½¢
+	//å¡«å……é¢œè‰²ï¼šColor4F(1, 0, 0, 0), é€æ˜Ž
+	//è½®å»“é¢œè‰²ï¼šColor4F(0, 1, 0, 1), ç»¿è‰²
 	mouse_rect->drawPolygon(mouse_rect_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 1, 0, 1));
 	mouse_rect->setVisible(true);
 }
 
 void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
-	Point touch = pTouch->getLocation();//·µ»Øµã»÷µÄÎ»ÖÃ
+	Point touch = pTouch->getLocation();//è¿”å›žç‚¹å‡»çš„ä½ç½®
 
 	mouse_rect->setVisible(false);
 
@@ -182,6 +231,30 @@ void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 			abs(last_maptouch.x - maptouch.x), abs(last_maptouch.y - maptouch.y) };
 		unit_manager->selectUnits(select_rect);
 	}
+}
+
+void BattleScene::scrollMap()
+{
+	auto map_center = battle_map->getPosition();
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	int horizontal_state, vertical_state;
+	horizontal_state = (origin.x + visibleSize.width - BOX_EDGE_WITDH < crusor_position.x) - (origin.x + BOX_EDGE_WITDH > crusor_position.x);
+	//	log("horizontal state: %d", horizontal_state);
+	vertical_state = (origin.y + visibleSize.height - BOX_EDGE_WITDH < crusor_position.y) - (origin.y + BOX_EDGE_WITDH > crusor_position.y);
+	Vec2 scroll(0,0);
+	if(horizontal_state == -1)
+		scroll += Vec2(SCROLL_LENGTH,0 );
+	else if(horizontal_state == 1)
+		scroll += Vec2(-SCROLL_LENGTH, 0);
+	if(vertical_state == -1)
+		scroll += Vec2(0, SCROLL_LENGTH);
+	else if(vertical_state == 1)
+		scroll += Vec2(0, -SCROLL_LENGTH);
+	map_center += scroll;
+	if (battle_map->getBoundingBox().containsPoint((-scroll) + Director::getInstance()->getVisibleSize())
+		&& battle_map->getBoundingBox().containsPoint(-scroll))
+		battle_map->setPosition(map_center);
 }
 
 void BattleScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* pEvent)

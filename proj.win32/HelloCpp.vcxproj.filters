@@ -54,6 +54,9 @@
     <ClCompile Include="..\Classes\PathFinder\PathFinder.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Buliding.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -105,6 +108,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\PathFinder\PathFinder.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Building.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

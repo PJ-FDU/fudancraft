@@ -150,6 +150,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\AdvancedUnit.cpp" />
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\BattleScene.cpp" />
+    <ClCompile Include="..\Classes\Buliding.cpp" />
     <ClCompile Include="..\Classes\GameMessage.pb.cc" />
     <ClCompile Include="..\Classes\GridMap.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
@@ -165,6 +166,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\asio.hpp" />
     <ClInclude Include="..\Classes\BattleScene.h" />
+    <ClInclude Include="..\Classes\Building.h" />
     <ClInclude Include="..\Classes\fudancraft.h" />
     <ClInclude Include="..\Classes\GameMessage.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
