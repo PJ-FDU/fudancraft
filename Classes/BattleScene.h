@@ -63,7 +63,9 @@ public:
 	bool init() override;
 	void setFighterCallback(std::function<void(Ref*)>);
 	void setTankCallback(std::function<void(Ref*)>);
+	void setSoldierCallback(std::function<void(Ref*)>);
 private:
 	cocos2d::MenuItemImage *fighter;
 	cocos2d::MenuItemImage *tank;
+	cocos2d::MenuItemImage *soldier;
 };

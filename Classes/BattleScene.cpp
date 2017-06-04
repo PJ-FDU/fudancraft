@@ -60,15 +60,16 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 
 	control_panel_ = ControlPanel::create();
 	
-	control_panel_->setPosition(Vec2(origin.x + visibleSize.width-20,
+	control_panel_->setPosition(Vec2(origin.x + visibleSize.width-10,
 	                                 origin.y + visibleSize.height/2));
 	control_panel_->setFighterCallback([&](Ref*)
 		{
 			unit_manager->genCreateMessage(1, grid_map->getGridPoint(Vec2(Director::getInstance()->getVisibleSize().width / 2, Director::getInstance()->getVisibleSize().height / 2)));
 		}
 	);
-	//TODO: add a callback function for create a tank
+	//TODO: add a callback function for create a tank and soldier
 	control_panel_->setTankCallback([&](Ref*){});
+	control_panel_->setSoldierCallback([&](Ref*){});
 
 	addChild(control_panel_,4);
 
@@ -111,20 +112,31 @@ bool ControlPanel::init()
 	fighter = MenuItemImage::create("/Picture/menu/airplane-menu-up.png",
 	                                     "/Picture/menu/airplane-menu-down.png"
 	);
+	fighter->setScale(0.8);
 	fighter->setAnchorPoint(Vec2(1, 1));
-	fighter->setPosition(Menu::getContentSize().width, Menu::getContentSize().height)
-	;
+	fighter->setPosition(Menu::getContentSize().width, Menu::getContentSize().height);
+	
+
 	tank = MenuItemImage::create("/Picture/menu/tank-menu-up.png",
 	                                     "/Picture/menu/tank-menu-down.png"
 	);
+	tank->setScale(0.8);
 	tank->setAnchorPoint(Vec2(1, 1));
 	tank->setPosition(Menu::getContentSize().width,
 	                     Menu::getContentSize().height - tank->getContentSize().height);
 
+	soldier = MenuItemImage::create("/Picture/menu/soldier-menu-up.png",
+	                                "/Picture/menu/soldier-menu-down.png"
+	);
+	soldier->setScale(0.8);
+	soldier->setAnchorPoint(Vec2(1, 1));
+	soldier->setPosition(Menu::getContentSize().width,
+	                     Menu::getContentSize().height - 2 * soldier->getContentSize().height);
 
 	
 	Menu::addChild(fighter);
 	Menu::addChild(tank);
+	Menu::addChild(soldier);
 	Menu::alignItemsVertically();
 	return true;
 }
@@ -137,6 +149,11 @@ void ControlPanel::setFighterCallback(std::function<void(Ref*)> callback)
 void ControlPanel::setTankCallback(std::function<void(Ref*)> callback)
 {
 	tank->setCallback(callback);
+}
+
+void ControlPanel::setSoldierCallback(std::function<void(Ref*)> callback)
+{
+	soldier->setCallback(callback);
 }
 
 
