@@ -60,13 +60,15 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 
 	control_panel_ = ControlPanel::create();
 	
-	control_panel_->setPosition(Vec2(origin.x + visibleSize.width,
-	                                 origin.y + visibleSize.height));
+	control_panel_->setPosition(Vec2(origin.x + visibleSize.width-20,
+	                                 origin.y + visibleSize.height/2));
 	control_panel_->setFighterCallback([&](Ref*)
 		{
 			unit_manager->genCreateMessage(1, grid_map->getGridPoint(Vec2(Director::getInstance()->getVisibleSize().width / 2, Director::getInstance()->getVisibleSize().height / 2)));
 		}
 	);
+	//TODO: add a callback function for create a tank
+	control_panel_->setTankCallback([&](Ref*){});
 
 	addChild(control_panel_,4);
 
@@ -110,10 +112,19 @@ bool ControlPanel::init()
 	                                     "/Picture/menu/airplane-menu-down.png"
 	);
 	fighter->setAnchorPoint(Vec2(1, 1));
-	fighter->setPosition(Menu::getContentSize().width, Menu::getContentSize().height);
+	fighter->setPosition(Menu::getContentSize().width, Menu::getContentSize().height)
+	;
+	tank = MenuItemImage::create("/Picture/menu/tank-menu-up.png",
+	                                     "/Picture/menu/tank-menu-down.png"
+	);
+	tank->setAnchorPoint(Vec2(1, 1));
+	tank->setPosition(Menu::getContentSize().width,
+	                     Menu::getContentSize().height - tank->getContentSize().height);
+
 
 	
 	Menu::addChild(fighter);
+	Menu::addChild(tank);
 	Menu::alignItemsVertically();
 	return true;
 }
@@ -123,6 +134,10 @@ void ControlPanel::setFighterCallback(std::function<void(Ref*)> callback)
 	fighter->setCallback(callback);
 }
 
+void ControlPanel::setTankCallback(std::function<void(Ref*)> callback)
+{
+	tank->setCallback(callback);
+}
 
 
 void BattleScene::update(float f)
