@@ -42,9 +42,9 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	socket_client = _socket_client;
 	socket_server = _socket_server;
 
-	battle_map = TMXTiledMap::create("map/DefanceOfTheAncient.tmx");
+	battle_map = TMXTiledMap::create("map/LostTemple.tmx");
 	battle_map->setAnchorPoint(Vec2(0, 0));
-	battle_map->setPosition(0, 0);
+	//battle_map->setPosition(0, 0);
 	addChild(battle_map, 0);
 
 	grid_map = GridMap::create(battle_map);
@@ -56,7 +56,6 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	unit_manager->setTiledMap(battle_map);
 	unit_manager->setGridMap(grid_map);
 	unit_manager->setSocketClient(socket_client);
-	//unit_manager->setPlayerID(player_id);
 
 	control_panel_ = ControlPanel::create();
 	
@@ -65,10 +64,19 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	                                 origin.y + visibleSize.height/2));
 
 	control_panel_->setFighterCallback([&](Ref*)
-		{
-			unit_manager->genCreateMessage(1, grid_map->getGridPoint(Vec2(Director::getInstance()->getVisibleSize().width / 2, Director::getInstance()->getVisibleSize().height / 2)));
-		}
-	);
+	{
+			unit_manager->produceInBase(1);
+	});
+
+	//TODO: add a callback function for create a tank and soldier
+	control_panel_->setTankCallback([&](Ref*)
+	{
+		unit_manager->produceInBase(2);
+	});
+	control_panel_->setSoldierCallback([&](Ref*){
+		unit_manager->produceInBase(3);
+	});
+
 
 	//TODO: add a callback function for create a tank and soldier
 	control_panel_->setTankCallback([&](Ref*){});
@@ -81,8 +89,6 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	addChild(mouse_rect, 3);
 
 	schedule(schedule_selector(BattleScene::update));
-
-	//unit_manager->initiallyCreateUnits();
 
 	auto mouse_listener = EventListenerTouchOneByOne::create();
 	mouse_listener->onTouchBegan = CC_CALLBACK_2(BattleScene::onTouchBegan, this);
@@ -111,6 +117,18 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	start_flag = 1;
 
 	return true;
+}
+
+void BattleScene::focusOnBase()
+{
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	GridPoint base_gp = unit_manager->getBasePosition();
+	Point base_pos = grid_map->getPoint(base_gp);
+	if (battle_map->getBoundingBox().size.height < base_pos.y + visibleSize.height)
+		base_pos.y = battle_map->getBoundingBox().size.height - visibleSize.height;
+	if (battle_map->getBoundingBox().size.width < base_pos.x + visibleSize.width)
+		base_pos.x = battle_map->getBoundingBox().size.width - visibleSize.width;
+	battle_map->setPosition(Point(0, 0) - base_pos);
 }
 
 void BattleScene::initPlayerID()
@@ -186,6 +204,7 @@ void BattleScene::update(float f)
 
 bool BattleScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 {
+
 	Point touch = pTouch->getLocation();//返回点击的位置
 	last_touch = touch;
 
@@ -194,7 +213,9 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 
 void BattleScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
+
 	Point touch = pTouch->getLocation();//返回点击的位置
+
 
 	mouse_rect->clear();
 	Vec2 mouse_rect_points[4];
@@ -202,6 +223,7 @@ void BattleScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 	mouse_rect_points[1] = Vec2(last_touch.x, touch.y);
 	mouse_rect_points[2] = touch;
 	mouse_rect_points[3] = Vec2(touch.x, last_touch.y);
+
 
 	//绘制空心多边形
 	//填充颜色：Color4F(1, 0, 0, 0), 透明
@@ -212,6 +234,7 @@ void BattleScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 
 void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
+
 	Point touch = pTouch->getLocation();//返回点击的位置
 
 	mouse_rect->setVisible(false);

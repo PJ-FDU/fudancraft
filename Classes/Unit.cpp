@@ -44,7 +44,7 @@ void Unit::initHPBar()
 	hpbar = HPBar::create();
 	hpbar->monitor(this);
 	hpbar->setVisible(false);
-	addChild(hpbar);
+	addChild(hpbar, 20);
 }
 
 void Unit::displayHPBar()
@@ -114,6 +114,12 @@ bool Unit::underAttack(int damage)
 		return(false);
 }
 
+
+bool Unit::isMobile()
+{
+	return mobile;
+}
+
 bool Trajectory::init()
 {
 	if(!ParticleFire::init())
@@ -158,7 +164,7 @@ void Unit::addToMaps(const GridPoint & crt_gp, TMXTiledMap* _tiled_map, GridMap*
 	cur_pos = crt_gp;
 	setPosition(grid_map->getPointWithOffset(crt_gp));
 
-	_tiled_map->addChild(this, 1);
+	_tiled_map->addChild(this, z_index);
 
 	_grid_map->occupyPosition(cur_pos);
 }
@@ -325,17 +331,20 @@ GridPoint UnitManager::getUnitPosition(int _unit_id)
 		return{-1, -1};
 }
 
+GridPoint UnitManager::getBasePosition()
+{
+	return getUnitPosition(base_id);
+}
+
+void UnitManager::produceInBase(int _unit_type)
+{
+	//Base* base = id_map.at(base_id);
+	if (base)
+		base->startProduce(_unit_type);
+}
+
 void UnitManager::updateUnitsState()
 {
-
-	/*for (const auto& id : id_map.keys())
-		if (!id_map.at(id)->updateGridPostion())
-		{
-			Unit* unit = id_map.at(id);
-			GridPath grid_path = unit->planToMoveTo(unit->final_dest);
-			msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_MOV, id, 0, 0, player_id, 1, grid_path);
-		}*/
-
 	socket_client->send_string(msgs->SerializeAsString());
 	std::string msg_str = socket_client->get_string();
 	msgs = new GameMessageSet();
@@ -460,17 +469,23 @@ void UnitManager::deleteUnit(int id)
 Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_gp)
 {
 	Unit* nu;
+	Base* tmp_base;
 	switch (unit_type)
 	{
 	case 1:
-		if (camp == 1)
-			nu = Fighter::create("Picture/airplane_red.png");
-		else
-		if (camp == 2)
-			nu = Fighter::create("Picture/airplane_blue.png");
+		nu = Fighter::create("Picture/units/fighter.png");
+		break;
+	case 2:
+		nu = Tank::create("Picture/units/tank.png");
+		break;
+	case 3:
+		nu = Soldier::create("Picture/units/soldier.png");
 		break;
 	case 5:
-		nu = Building::create("Picture/factory.jpg");
+		tmp_base = Base::create("Picture/factory.jpg");
+		if (camp == player_id)
+			base = tmp_base;
+		nu = base;
 		break;
 	default:
 		break;
@@ -500,7 +515,7 @@ void UnitManager::genCreateMessage(int _unit_type, const GridPoint & crt_gp)
 
 void UnitManager::initiallyCreateUnits()
 {
-	auto* obj_group = tiled_map->getObjectGroup("init_unit");
+	auto* obj_group = tiled_map->getObjectGroup("InitialUnits");
 	auto& objs = obj_group->getObjects();
 
 	for (auto& obj : objs)
@@ -512,7 +527,10 @@ void UnitManager::initiallyCreateUnits()
 		int type = dict["type"].asInt();
 		GridPoint crt_gp = grid_map->getGridPoint({ cx, cy });
 
-			//GameMessage的格式、初始化方法、解释方法有待进一步探讨
+		if (camp == player_id && type == BASE_TYPE_NO)
+		{
+			base_id = next_id;
+		}
 		if (camp == player_id)
 		{
 			genCreateMessage(type, crt_gp);
@@ -538,6 +556,8 @@ void UnitManager::selectUnits(Point select_point)
 				{
 					//log("Unit ID: %d, tracing enemy id: %d", id, id_unit.second->id);
 					Unit* unit = id_map.at(id);
+					if (!unit || !unit->isMobile())
+						continue;
 					GridPath grid_path = unit->planToMoveTo(id_unit.second->getGridPosition());
 					msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_TRC, id, id_unit.second->id, 0, player_id, 0, grid_path);
 				}
@@ -554,6 +574,9 @@ void UnitManager::selectUnits(Point select_point)
 		for (auto & id : selected_ids)
 		{
 			Unit* unit = id_map.at(id);
+
+			if (!unit || !unit->isMobile())
+				continue;
 
 			GridPoint grid_dest = grid_map->getGridPoint(select_point);
 			log("Unit ID: %d, plan to move to:(%d, %d)", id, grid_dest.x, grid_dest.y);

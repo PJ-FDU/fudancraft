@@ -11,6 +11,7 @@
 
 class Unit;
 class UnitManager;
+class Base;
 
 class HPBar : public cocos2d::DrawNode
 {
@@ -41,7 +42,9 @@ public:
 	void deleteUnit(int id);
 
 	GridPoint getUnitPosition(int unit_id);
+	GridPoint getBasePosition();
 	void genCreateMessage(int _unit_type, const GridPoint& _crt_gp);
+	void produceInBase(int _unit_type);
 
 	void initiallyCreateUnits();
 	void selectUnits(cocos2d::Point select_point);
@@ -56,6 +59,9 @@ private:
 	GridMap* grid_map = nullptr;
 	SocketClient* socket_client = nullptr;
 	int next_id = 1;
+	int base_id = 1;
+
+	Base* base = nullptr;
 
 	Unit* createNewUnit(int id, int camp, int uint_type, GridPoint crt_gp);
 	void deselectAllUnits();
@@ -68,6 +74,7 @@ class Unit : public cocos2d::Sprite
 public:
 	int id;
 	int camp = 0;
+	int z_index;
 	UnitManager* unit_manager = nullptr;
 
 	static Unit* create(const std::string& filename);
@@ -83,11 +90,12 @@ public:
 	GridPoint getGridPosition();
 	void setGridPath(const MsgGridPath& _grid_path);
 	void motivate();
-	void setState(int _state);
+	virtual void setState(int _state);
 	void setTarget(int _target_id);
 	int getState() const;
 	bool hasArrivedAtDest();
 	bool underAttack(int damage);
+	bool isMobile();
 
 	GridPath planToMoveTo(GridPoint& dest)
 	{
@@ -122,6 +130,8 @@ protected:
 	int cd;
 	int hp;
 
+	bool mobile;
+
 	int atk;
 	int atk_range;
 	int atk_period;
@@ -139,6 +149,7 @@ protected:
 
 	//friend class UnitManager;
 };
+
 
 class Trajectory : public cocos2d::ParticleFire
 {

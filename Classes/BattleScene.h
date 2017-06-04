@@ -24,6 +24,9 @@ public:
 
 	void scrollMap();
 
+	void focusOnBase();
+
+
 	void onKeyPressed(cocos2d::EventKeyboard::KeyCode, cocos2d::Event *) override;
 
 	//CREATE_FUNC(BattleScene);

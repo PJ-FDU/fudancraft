@@ -2,9 +2,9 @@
 
 USING_NS_CC;
 
-Building* Building::create(const std::string& filename)
+Base* Base::create(const std::string& filename)
 {
-	Building *ret = new (std::nothrow) Building();
+	Base *ret = new (std::nothrow) Base();
 	if (ret && ret->initWithFile(filename))
 	{
 		ret->autorelease();
@@ -15,7 +15,7 @@ Building* Building::create(const std::string& filename)
 	return nullptr;
 }
 
-void Building::setProperties()
+void Base::setProperties()
 {
 	atk = 0;
 	atk_range = 0;
@@ -24,13 +24,20 @@ void Building::setProperties()
 	cd_max = 30;
 	move_speed = 0.0f;
 
+	z_index = 5;
+
+	mobile = false;
+
 	size = GridSize(4, 2);
+	period_map[1] = 300;
+	period_map[2] = 200;
+	period_map[3] = 100;
 
 	cd = 0;
 	hp = hp_max;
 }
 
-void Building::addToMaps(const GridPoint & crt_gp, cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map)
+void Base::addToMaps(const GridPoint & crt_gp, cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map)
 {
 	tiled_map = _tiled_map;
 	grid_map = _grid_map;
@@ -44,7 +51,45 @@ void Building::addToMaps(const GridPoint & crt_gp, cocos2d::TMXTiledMap* _tiled_
 	_grid_map->occupyPosition(cur_grec);
 }
 
-void Building::update(float f)
+void Base::update(float f)
 {
+	if (state == 1)
+	{
+		if (++prod_process >= prod_period)
+		{
+			//producing = false;
+			state = 2;
+			prod_process = 0;
+			GridPoint free_pos = grid_map->findFreePositionNear(cur_pos);
+			unit_manager->genCreateMessage(cur_prod, free_pos);
+		}
+	}
 
+	if (state == 2)
+		if (prod_list.size())
+		{
+			//producing = true;
+			state = 1;
+			prod_process = 0;
+			cur_prod = prod_list.back();
+			prod_list.pop_back();
+			prod_period = period_map.at(cur_prod);
+		}
+		else
+			state = 0;
+	
+}
+
+void Base::setState(int _state)
+{
+}
+
+void Base::startProduce(int unit_type)
+{
+	prod_list.insert(prod_list.begin(), unit_type);
+	if (state != 1)
+		state = 2;
+	//state = 1;
+	//producing = true;
+	//state = 2;
 }
