@@ -140,4 +140,17 @@ protected:
 	//friend class UnitManager;
 };
 
+class Trajectory : public cocos2d::ParticleFire
+{
+public:
+	virtual bool init() override;
+	void setPath(cocos2d::Vec2, cocos2d::Vec2);
+
+	CREATE_FUNC(Trajectory);
+private:
+	void updatefire(float);
+	cocos2d::Vec2 from_, to_,move_;
+	int speed_ = 3;
+
+};
 #endif

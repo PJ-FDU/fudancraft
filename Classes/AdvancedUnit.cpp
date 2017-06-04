@@ -21,7 +21,7 @@ void Fighter::setProperties()
 	atk_range = 100;
 	atk_period = 20;
 	hp_max = 100;
-	cd_max = 5;
+	cd_max = 25;
 	move_speed = 3.0f;
 
 	size = GridSize(1, 1);
