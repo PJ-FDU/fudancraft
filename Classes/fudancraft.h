@@ -16,3 +16,7 @@
 #define MAX_PLAYER_NUM 8
 
 #define TRACING_SENSOR 0.5f
+
+#define BOX_EDGE_WITDH 50
+
+#define SCROLL_LENGTH 10
