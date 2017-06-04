@@ -10,8 +10,10 @@ struct GridPoint
 
 
 	bool operator==(const GridPoint& gp2) const;
+	friend GridPoint operator+(const GridPoint& gp1, const GridPoint& gp2);
 };
 
+typedef GridPoint GridVec;
 
 typedef std::vector<GridPoint>  GridPath;
 
@@ -35,12 +37,14 @@ class GridMap : public cocos2d::Ref
 {
 public:
 	static GridMap* create(const cocos2d::TMXTiledMap * tiled_map);
+	GridPoint findFreePositionNear(/*const GridVec& gv,*/ const GridPoint& gp);
 	cocos2d::Point getPoint(const GridPoint& gp);
 	GridPoint getGridPoint(const cocos2d::Point& p);
 	cocos2d::Point getGridRectCenter(const GridRect& grec);
 	cocos2d::Point getPointWithOffset(const GridPoint& gp);
 	GridPoint getGridPointWithOffset(const cocos2d::Point& p);
 	bool checkPosition(const GridRect& grec);
+	bool checkPosition(const GridPoint& gp);
 	bool occupyPosition(const GridPoint& pos);
 	bool occupyPosition(const cocos2d::Point& pos);
 	bool occupyPosition(const GridRect& grec);

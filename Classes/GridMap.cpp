@@ -20,6 +20,20 @@ GridMap* GridMap::create(const cocos2d::TMXTiledMap * tiled_map)
 	return nullptr;
 }
 
+GridPoint GridMap::findFreePositionNear(const GridPoint& origin_gp)
+{
+	constexpr int x_list[] = { 0, -1, 0, 1, 0, -1, 1, 1, -1, -2, 0, 2, 0, -2, -1, 1, 2, 2, 1, -1, -2};
+	constexpr int y_list[] = { 0, 0, -1, 0, 1, -1, -1, 1, 1, 0, -2, 0, 2, -1, -2, -2, -1, 1, 2, 2, 1};
+
+	for (int i = 0; i < sizeof(x_list); i++)
+	{
+		GridPoint gp{ origin_gp.x + x_list[i], origin_gp.y +  y_list[i] };
+		if (checkPosition(gp))
+			return(gp);
+	}
+	return(-1, -1 );
+}
+
 bool GridMap::initWithTiledMap(const TMXTiledMap* tiled_map)
 {
 	map_height = int(tiled_map->getMapSize().height);
@@ -82,6 +96,13 @@ bool GridMap::checkPosition(const GridRect& grec)
 	return(true);
 }
 
+bool GridMap::checkPosition(const GridPoint & gp)
+{
+	if (gp.x >= 0 && gp.x < map_width && gp.y >= 0 && gp.y < map_height && gmap[gp.x][gp.y] == 0)
+		return true;
+	return false;
+}
+
 bool GridMap::occupyPosition(const GridPoint& pos)
 {
 	if (!gmap[pos.x][pos.y])
@@ -130,4 +151,9 @@ bool GridMap::hasApproached(const Point& cur_fp, const GridPoint& dest_gp)
 	if ((dest_fp - cur_fp).length() < POS_OFFSET)
 		return(true);
 	return(false);
+}
+
+GridPoint operator+(const GridPoint & gp1, const GridPoint & gp2)
+{
+	return GridPoint(gp1.x + gp2.x, gp1.y + gp2.y);
 }
