@@ -64,16 +64,18 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	                                 origin.y + visibleSize.height/2));
 
 	control_panel_->setFighterCallback([&](Ref*)
-		{
-			GridPoint base_gp;
+	{
 			unit_manager->produceInBase(1);
-			//grid_map->findFreePositionNear(base_gp);
-		}
-	);
+	});
 
 	//TODO: add a callback function for create a tank and soldier
-	control_panel_->setTankCallback([&](Ref*){});
-	control_panel_->setSoldierCallback([&](Ref*){});
+	control_panel_->setTankCallback([&](Ref*)
+	{
+		unit_manager->produceInBase(2);
+	});
+	control_panel_->setSoldierCallback([&](Ref*){
+		unit_manager->produceInBase(3);
+	});
 
 
 	addChild(control_panel_,4);

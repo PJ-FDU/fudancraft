@@ -90,11 +90,12 @@ public:
 	GridPoint getGridPosition();
 	void setGridPath(const MsgGridPath& _grid_path);
 	void motivate();
-	void setState(int _state);
+	virtual void setState(int _state);
 	void setTarget(int _target_id);
 	int getState() const;
 	bool hasArrivedAtDest();
 	bool underAttack(int damage);
+	bool isMobile();
 
 	GridPath planToMoveTo(GridPoint& dest)
 	{
@@ -128,6 +129,8 @@ protected:
 
 	int cd;
 	int hp;
+
+	bool mobile;
 
 	int atk;
 	int atk_range;
