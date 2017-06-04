@@ -111,11 +111,13 @@ protected:
 	GridPoint final_dest;
 	GridPoint cur_pos;
 	GridPoint cur_dest;
+	GridPoint target_lastpos;
 
 	GridSize size;
 	GridRect cur_grec;
 
 	int rfp_cnt = 0;
+	int roc_cnt = 0;
 
 	int cd;
 	int hp;
