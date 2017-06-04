@@ -114,6 +114,7 @@ bool GameMessage_CmdCode_IsValid(int value) {
 }
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
+const GameMessage_CmdCode GameMessage::EMP;
 const GameMessage_CmdCode GameMessage::CRT;
 const GameMessage_CmdCode GameMessage::MOV;
 const GameMessage_CmdCode GameMessage::ATK;
