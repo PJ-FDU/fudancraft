@@ -19,128 +19,36 @@ class TcpConnection
 public:
 	typedef std::shared_ptr<TcpConnection> pointer;
 	~TcpConnection();
-	static pointer create(asio::io_service& io_service, SocketServer* parent)
-	{		
-		return pointer(new TcpConnection(io_service,parent));
-	}
-	tcp::socket& socket(){return socket_;}
+	static pointer create(asio::io_service& io_service, SocketServer* parent);
+	tcp::socket& socket();
 
-	void start()
-	{
-		asio::async_read(socket_,
-			asio::buffer(read_msg_.data(), socket_message::header_length),
-			std::bind(&TcpConnection::handle_read_header, this,
-				std::placeholders::_1));
-	}
-	void write_data(std::string s)
-	{
-		socket_message msg;
-		if(s.size()==0)
-		{
-			s = std::string("\0");
-			msg.body_length(1);
-		}
-		else
-			msg.body_length(s.size());
-		memcpy(msg.body(), &s[0u], msg.body_length());
-		msg.encode_header();
-//		cocos2d::log("Server send data:%s", msg.data());
-		asio::write(socket_,
-			asio::buffer(msg.data(), msg.length()));
-	}
-	std::string read_data()
-	{
-		std::unique_lock<std::mutex> lk{ mut_ };
-		//		while (!data_flag);
-		while (read_msg_deque_.empty())
-			data_cond_.wait(lk);
-		auto read_msg = read_msg_deque_.front();
-		read_msg_deque_.pop_front();	
-		lk.unlock();
-		auto ret = std::string(read_msg.body(), read_msg.body_length());
-//		data_flag = false;
-		return ret;
-	}
+	void start();
+
+	void write_data(std::string s);
+
+	std::string read_data();
 
 
-	void do_close()
-	{
-		socket_.close();
-	}
+	void do_close();
 private:
 
-	void handle_read_header(const asio::error_code& error)
-	{
-		if (!error && read_msg_.decode_header())
-		{
-			std::cout << "here\n";
-			asio::async_read(socket_,
-				asio::buffer(read_msg_.body(), read_msg_.body_length()),
-				std::bind(&TcpConnection::handle_read_body, this,
-					std::placeholders::_1));
-		}
-		else
-		{
-			do_close();
-		}
-	}
+	void handle_read_header(const asio::error_code& error);
 
-	void handle_read_body(const asio::error_code& error)
-	{
-		if (!error)
-		{
-//			data_flag = true;
-//			std::cout << "read:";
-//			std::cout.write(read_msg_.body(), read_msg_.body_length());
-//			std::cout << "\n";
-//			cocos2d::log("Server receive data: %s", read_msg_.data());
-//			while (data_flag);
-
-			std::lock_guard<std::mutex> lk{ mut_ };
-			read_msg_deque_.push_back(read_msg_);
-//			data_flag = true;
-			data_cond_.notify_one();
-			asio::async_read(socket_,
-				asio::buffer(read_msg_.data(), socket_message::header_length),
-				std::bind(&TcpConnection::handle_read_header, this,
-					std::placeholders::_1));
-		}
-		else
-		{
-			do_close();
-		}
-	}
+	void handle_read_body(const asio::error_code& error);
 
 
-
-	TcpConnection(asio::io_service& io_service, SocketServer* parent) : 
-		socket_(io_service), parent(parent),
-		data_flag{ false } {
-		std::cout << "new tcp" << std::endl;
-		
-	};
-
-//	void handle_connection(int n);
-//	void handle_read(const asio::error_code& error,
-//	                 size_t bytes_transferred);
+	TcpConnection(asio::io_service& io_service, SocketServer* parent);;
 
 
 	void delete_from_parent();
 
 	tcp::socket socket_;
 	SocketServer* parent;
-
-	static int player_num;
-	
-	std::string message_;
-	enum { max_length = 1024 };
-	char data_[max_length]{ 0 };
 	
 	socket_message read_msg_;
 	std::deque<socket_message> read_msg_deque_;
 	std::condition_variable data_cond_;
 	std::mutex mut_;
-	std::atomic<bool> data_flag;
 
 };
 
@@ -148,105 +56,31 @@ class SocketServer
 {
 public:
 
-	static SocketServer* create(int port=8008)
-	{
-//		asio::io_service io_service;
-		auto s= new SocketServer(port);
-		s->thread_ = new std::thread(
-			std::bind(static_cast<std::size_t(asio::io_service::*)()>(&asio::io_service::run),
-				io_service_));
-		return s;
-	}
+	static SocketServer* create(int port = 8008);
 
 	std::vector<TcpConnection::pointer> get_connection() const;
 
 	void remove_connection(TcpConnection::pointer p);
-	void button_start()
-	{
-		using namespace std; // For sprintf and memcpy.
-		char total[4 + 1] = "";
-		sprintf(total, "%4d", static_cast<int>(connections_.size()));
+	void button_start();
 
-		for (auto i = 0; i < connections_.size(); i++)
-			connections_[i]->write_data("PLAYER" + std::string(total)+std::to_string(i+1));
-		connection_num = connections_.size();
-//		cocos2d::log("Server start, total conection:%d", connection_num);
-		this->button_thread_ = new std::thread(std::bind(&SocketServer::loop_process,this));
-		button_thread_->detach();
-
-	}
-
-private:	
-//	void run(){thread_ = std::thread(std::bind(static_cast<std::size_t(asio::io_service::*)()>(&asio::io_service::run), &acceptor_.geis));
-//	}
-//	SocketServer(asio::io_service& io_service_);
-	SocketServer(int port) :
-		acceptor_(*io_service_, tcp::endpoint(tcp::v4(), port))
-	{
-		start_accept();
-	}
+private:
+	SocketServer(int port);
 	void start_accept();
 
 	void handle_accept(TcpConnection::pointer new_connection,
 	                   const asio::error_code& error);
 
-	void loop_process()
-	{
-		while (true)
-		{	
-			if (connections_.size() != connection_num)
-				throw std::exception{ "lost connection" };
-			std::vector<std::string> ret;
-			/*for (auto r : connections_)
-			{
-				GameMessageSet game_message_set;
-				auto ret = r->read_data();
-				game_message_set.ParseFromString(ret);
-				std::cout << game_message_set.DebugString() << std::endl;
-				r->write_data(ret);
-			}*/
-			for (auto r : connections_)
-
-				ret.push_back(r->read_data());
-			auto game_msg = GameMessageWrap::combine_message(ret);
-//			cocos2d::log("Server read all message");
-//			cocos2d::log("Server read all message:%s",game_msg.c_str());
-			/*GameMessageSet game_message_set;
-			game_message_set.ParseFromString(game_msg);
-			std::cout << game_message_set.DebugString() << std::endl;*/
-			for (auto r : connections_)
-				r->write_data(game_msg);
-		}
-	}
+	void loop_process();
 
 
 	tcp::acceptor acceptor_;
 	std::vector<TcpConnection::pointer> connections_;
 	int connection_num;
-	
+
 	static asio::io_service* io_service_;
 
-	std::thread* thread_, *button_thread_;
+	std::thread *thread_, *button_thread_;
 
 	std::condition_variable data_cond_;
 };
 
-//class Server{
-//public:
-//	static Server* create() {return new Server;  };
-//	SocketServer* socket_server()const { return socket_server_; };
-//	std::vector<TcpConnection::pointer> get_connection() const
-//	{
-//		return socket_server_->get_connection();
-//	}
-//private:
-//	Server()
-//	{
-//		socket_server_ = new SocketServer(io_service);		
-//		thread_= new std::thread(std::bind(static_cast<std::size_t(asio::io_service::*)()>(&asio::io_service::run), &io_service));
-//	}
-//
-//	SocketServer* socket_server_;
-//	asio::io_service io_service;
-//	std::thread* thread_;
-//};
