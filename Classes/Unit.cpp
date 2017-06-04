@@ -114,9 +114,46 @@ bool Unit::underAttack(int damage)
 		return(false);
 }
 
+
 bool Unit::isMobile()
 {
 	return mobile;
+}
+
+bool Trajectory::init()
+{
+	if(!ParticleFire::init())
+		return false;
+	setScale(0.1);
+//	setPosition(Vec2(400,20));
+//	log("fire start position:%f,%f", getPosition().x, getPosition().y);
+	setPositionType(PositionType::RELATIVE);
+	return true;
+}
+
+/**
+ * \brief set the path and start move
+ * \param from sender's position
+ * \param to target's position
+ */
+void Trajectory::setPath(cocos2d::Vec2 from, cocos2d::Vec2 to)
+{
+	from_ = from;
+	to_ = to;
+	setPosition(from_);
+	log("fire start position:%f,%f", getPosition().x, getPosition().y);
+//	log("start position:%f,%f", from.x, from.y);
+	move_ =(to_-from_).getNormalized()*speed_;
+	schedule(schedule_selector(Trajectory::updatefire));
+}
+
+void Trajectory::updatefire(float)
+{
+	log("fire position:%f,%f", getPosition().x, getPosition().y);
+	if (((abs(getPosition().x-to_.x)<speed_ )&& (abs(getPosition().y - to_.y)<speed_)))
+		removeFromParent();
+	else
+		setPosition(getPosition() + move_);
 }
 
 void Unit::addToMaps(const GridPoint & crt_gp, TMXTiledMap* _tiled_map, GridMap* _grid_map)
@@ -229,14 +266,20 @@ void Unit::update(float dt)
 			if ((dist_vec).length() < atk_range)
 			{
 				moving = false;
-				if (camp == unit_manager->player_id)
-					if (!cd)
+				if (!cd)
+				{
+					unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_ATK, id, target_id, atk, camp, 0, {});
+					if (!getChildByName("trajectory"))
 					{
-						unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_ATK, id, target_id, atk, camp, 0, {});
-						cd = cd_max;
+						log("position %f,%f,%f,%f", cur_fp.x, cur_fp.y, target_fp.x, target_fp.y);
+						auto trajectory = Trajectory::create();
+						trajectory->setPath(cur_fp,(target_fp));
+						getParent()->addChild(trajectory, 2);
 					}
-					else
-						cd--;
+					cd = cd_max;
+				}
+				else
+					cd--;
 			}
 			else
 				if (offset_vec.length() > TRACING_SENSOR * dist_vec.length())

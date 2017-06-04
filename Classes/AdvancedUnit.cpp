@@ -21,7 +21,9 @@ void Fighter::setProperties()
 	atk_range = 100;
 	atk_period = 20;
 	hp_max = 100;
+
 	cd_max = 20;
+
 	move_speed = 3.0f;
 
 	mobile = true;

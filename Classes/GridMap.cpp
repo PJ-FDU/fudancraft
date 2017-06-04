@@ -35,6 +35,7 @@ GridPoint GridMap::findFreePositionNear(const GridPoint& origin_gp)
 	}*/
 
 
+
 	if (checkPosition(origin_gp))
 		return(origin_gp);
 
