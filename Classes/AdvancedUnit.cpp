@@ -24,6 +24,8 @@ void Fighter::setProperties()
 	cd_max = 5;
 	move_speed = 3.0f;
 
+	z_index = 10;
+
 	size = GridSize(1, 1);
 
 	cd = 0;

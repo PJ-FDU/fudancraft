@@ -22,6 +22,10 @@ public:
 	void onTouchMoved(cocos2d::Touch*, cocos2d::Event*)override;
 	void onTouchEnded(cocos2d::Touch*, cocos2d::Event*)override;
 
+	void scrollMap();
+
+	void focusOnBase();
+
 	void onKeyPressed(cocos2d::EventKeyboard::KeyCode, cocos2d::Event *) override;
 
 	//CREATE_FUNC(BattleScene);
@@ -34,7 +38,7 @@ private:
 
 	int player_id = 0;
 
-	int frame_cnt = 0;
+	unsigned long long frame_cnt = 0;
 
 
 	SocketServer* socket_server = nullptr;
@@ -50,6 +54,7 @@ private:
 	cocos2d::DrawNode* mouse_rect = nullptr;
 
 	cocos2d::Point last_touch{0, 0};
+	cocos2d::Point crusor_position{0, 0};
 
 	void initPlayerID();
 
@@ -62,6 +67,12 @@ public:
 	CREATE_FUNC(ControlPanel);
 	bool init() override;
 	void setFighterCallback(std::function<void(Ref*)>);
+
+	void setTankCallback(std::function<void(Ref*)>);
+	void setSoldierCallback(std::function<void(Ref*)>);
 private:
 	cocos2d::MenuItemImage *fighter;
+	cocos2d::MenuItemImage *tank;
+	cocos2d::MenuItemImage *soldier;
+
 };

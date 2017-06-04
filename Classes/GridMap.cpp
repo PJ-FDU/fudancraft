@@ -21,7 +21,9 @@ GridMap* GridMap::create(const cocos2d::TMXTiledMap * tiled_map)
 }
 
 GridPoint GridMap::findFreePositionNear(const GridPoint& origin_gp)
-{/*
+{
+	/*
+
 	constexpr int x_list[] = { 0, -1, 0, 1, 0, -1, 1, 1, -1, -2, 0, 2, 0, -2, -1, 1, 2, 2, 1, -1, -2};
 	constexpr int y_list[] = { 0, 0, -1, 0, 1, -1, -1, 1, 1, 0, -2, 0, 2, -1, -2, -2, -1, 1, 2, 2, 1};
 
@@ -30,15 +32,14 @@ GridPoint GridMap::findFreePositionNear(const GridPoint& origin_gp)
 		GridPoint gp{ origin_gp.x + x_list[i], origin_gp.y +  y_list[i] };
 		if (checkPosition(gp))
 			return(gp);
-	}
+	}*/
+
 
 	if (checkPosition(origin_gp))
-		return(origin_gp);*/
+		return(origin_gp);
 
 	for(int i = 1; i < map_height + map_width; i++)
 	{
-		//GridPoint gp_start = origin_gp + GridVec(-i, 0);
-		//GridPath search_path = { origin_gp + GridVec(0, i), origin_gp + GridVec(i, 0), origin_gp + GridVec(0, -i), origin_gp + GridVec(0, i) };
 		GridPath dir_vec = {GridVec(1, 1), GridVec(1, -1), GridVec(-1, -1), GridVec(-1, 1)};
 		GridPoint gp = origin_gp + GridVec(-i, 0);
 		for (int dir = 0; dir < 4; dir++)
@@ -63,19 +64,19 @@ bool GridMap::initWithTiledMap(const TMXTiledMap* tiled_map)
 	offset_vec = Vec2(grid_width / 2, grid_height / 2);
 	gmap = std::vector<std::vector<int>>(map_width, std::vector<int>(map_height, 0));
 
-	auto decoration_layer = tiled_map->getLayer("TerrainDecorationsLayer");
+	auto decoration_layer = tiled_map->getLayer("InfoLayer");
 	for (int gx = 0; gx < map_width; gx++)
 		for (int gy = 0; gy < map_height; gy++)
 		{
 			int tile_gid = decoration_layer->getTileGIDAt(Vec2(gx, map_height - 1 - gy));
 			if (tile_gid > 0)
 			{
-				auto prop = tiled_map->getPropertiesForGID(tile_gid);
+				/*auto prop = tiled_map->getPropertiesForGID(tile_gid);
 				if (prop.isNull())
 					continue;
 				auto prop_valuemap = prop.asValueMap();
-				int z_index = prop_valuemap["z_index"].asInt();
-				gmap[gx][gy] = z_index;
+				int z_index = prop_valuemap["z_index"].asInt();*/
+				gmap[gx][gy] = 1;
 			}
 		}
 
