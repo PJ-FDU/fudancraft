@@ -21,7 +21,9 @@ GridMap* GridMap::create(const cocos2d::TMXTiledMap * tiled_map)
 }
 
 GridPoint GridMap::findFreePositionNear(const GridPoint& origin_gp)
-{
+
+{/*
+
 	constexpr int x_list[] = { 0, -1, 0, 1, 0, -1, 1, 1, -1, -2, 0, 2, 0, -2, -1, 1, 2, 2, 1, -1, -2};
 	constexpr int y_list[] = { 0, 0, -1, 0, 1, -1, -1, 1, 1, 0, -2, 0, 2, -1, -2, -2, -1, 1, 2, 2, 1};
 
@@ -31,6 +33,27 @@ GridPoint GridMap::findFreePositionNear(const GridPoint& origin_gp)
 		if (checkPosition(gp))
 			return(gp);
 	}
+
+
+	if (checkPosition(origin_gp))
+		return(origin_gp);*/
+
+	for(int i = 1; i < map_height + map_width; i++)
+	{
+		//GridPoint gp_start = origin_gp + GridVec(-i, 0);
+		//GridPath search_path = { origin_gp + GridVec(0, i), origin_gp + GridVec(i, 0), origin_gp + GridVec(0, -i), origin_gp + GridVec(0, i) };
+		GridPath dir_vec = {GridVec(1, 1), GridVec(1, -1), GridVec(-1, -1), GridVec(-1, 1)};
+		GridPoint gp = origin_gp + GridVec(-i, 0);
+		for (int dir = 0; dir < 4; dir++)
+			for (int j = 1; j <= i; j++)
+			{
+				gp = gp + dir_vec[dir];
+				if (checkPosition(gp))
+					return(gp);
+			}
+		
+	}
+
 	return(-1, -1 );
 }
 

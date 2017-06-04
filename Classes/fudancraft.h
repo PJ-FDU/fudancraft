@@ -17,6 +17,10 @@
 
 #define TRACING_SENSOR 0.5f
 
+
+#define DISREFINDPATH_RANGE 100.0f
+
 #define BOX_EDGE_WITDH 50
 
 #define SCROLL_LENGTH 10
+
