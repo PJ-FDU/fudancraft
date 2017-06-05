@@ -218,6 +218,7 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 	mouse_rect->start = touch - battle_map->getPosition();
 	mouse_rect->touch_start = touch;
 	mouse_rect->touch_end = touch;
+	mouse_rect->schedule(schedule_selector(MouseRect::update));
 
 	return true;
 }
@@ -230,7 +231,6 @@ void BattleScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 	mouse_rect->touch_end = touch;
 	mouse_rect->clear();
 	mouse_rect->setVisible(true);
-	mouse_rect->schedule(schedule_selector(MouseRect::update));
 }
 
 void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)

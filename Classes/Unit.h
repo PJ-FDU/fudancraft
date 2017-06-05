@@ -90,6 +90,7 @@ public:
 	void setGridPath(const MsgGridPath& _grid_path);
 	void motivate();
 	virtual void setState(int _state);
+	void setDestination(const GridPoint& grid_dest);
 	void setTarget(int _target_id);
 	int getState() const;
 	bool hasArrivedAtDest();
@@ -97,19 +98,11 @@ public:
 	bool isMobile();
 	cocos2d::Color4F getCampColor();
 
-	GridPath planToMoveTo(GridPoint& dest)
-	{
-		return(searchForPath(grid_map->getLogicalGridMap(), getGridPosition(), dest));
-	}
-	GridPath searchForPath(std::vector<std::vector<int>>& gmap, const GridPoint& start, const GridPoint& dest)
-	{
-		PathFinder path_finder(gmap, start.x, start.y, dest.x, dest.y);
-		path_finder.searchPath();
-		path_finder.generatePath();
-		GridPath _grid_path = path_finder.getPath();
+	void move();
+	void stall();
 
-		return(_grid_path);
-	}
+	void tryToFindPath();
+	GridPath findPath(const GridPoint& dest);
 protected:
 	int state = 0;
 	bool moving = false;
@@ -126,6 +119,7 @@ protected:
 
 	int rfp_cnt = 0;
 	int roc_cnt = 0;
+	int stl_cnt = -1;
 
 	int cd;
 	int hp;
