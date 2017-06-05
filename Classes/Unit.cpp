@@ -147,7 +147,7 @@ bool Unit::isMobile()
 	return mobile;
 }
 
-bool Trajectory::init()
+bool TrajectoryEffect::init()
 {
 	if(!ParticleFire::init())
 		return false;
@@ -163,7 +163,7 @@ bool Trajectory::init()
  * \param from sender's position
  * \param to target's position
  */
-void Trajectory::setPath(cocos2d::Vec2 from, cocos2d::Vec2 to)
+void TrajectoryEffect::setPath(cocos2d::Vec2 from, cocos2d::Vec2 to)
 {
 	from_ = from;
 	to_ = to;
@@ -171,10 +171,10 @@ void Trajectory::setPath(cocos2d::Vec2 from, cocos2d::Vec2 to)
 	log("fire start position:%f,%f", getPosition().x, getPosition().y);
 //	log("start position:%f,%f", from.x, from.y);
 	move_ =(to_-from_).getNormalized()*speed_;
-	schedule(schedule_selector(Trajectory::updatefire));
+	schedule(schedule_selector(TrajectoryEffect::updatefire));
 }
 
-void Trajectory::updatefire(float)
+void TrajectoryEffect::updatefire(float)
 {
 	log("fire position:%f,%f", getPosition().x, getPosition().y);
 	if (((abs(getPosition().x-to_.x)<speed_ )&& (abs(getPosition().y - to_.y)<speed_)))
@@ -198,8 +198,12 @@ void Unit::addToMaps(const GridPoint & crt_gp, TMXTiledMap* _tiled_map, GridMap*
 
 void Unit::removeFromMaps()
 {
+	// add explosion effect
+	auto explosion_effect = ParticleExplosion::create();
+	explosion_effect->setPosition(this->getPosition());
+	getParent()->addChild(explosion_effect);
 	grid_map->leavePosition(cur_pos);
-	tiled_map->removeChild(this);
+	tiled_map->removeChild(this,1);
 }
 
 bool Unit::hasArrivedAtDest()
@@ -296,13 +300,12 @@ void Unit::update(float dt)
 				if (!cd)
 				{
 					unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_ATK, id, target_id, atk, camp, 0, {});
-					if (!getChildByName("trajectory"))
-					{
-						log("position %f,%f,%f,%f", cur_fp.x, cur_fp.y, target_fp.x, target_fp.y);
-						auto trajectory = Trajectory::create();
-						trajectory->setPath(cur_fp,(target_fp));
-						getParent()->addChild(trajectory, 2);
-					}
+				
+					log("position %f,%f,%f,%f", cur_fp.x, cur_fp.y, target_fp.x, target_fp.y);
+					auto trajectory_effect = TrajectoryEffect::create();
+					trajectory_effect->setPath(cur_fp,(target_fp));
+					getParent()->addChild(trajectory_effect, 2);
+					
 					cd = cd_max;
 				}
 				else

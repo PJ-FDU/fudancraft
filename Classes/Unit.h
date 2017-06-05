@@ -152,17 +152,33 @@ protected:
 };
 
 
-class Trajectory : public cocos2d::ParticleFire
+class TrajectoryEffect : public cocos2d::ParticleFire
 {
 public:
 	virtual bool init() override;
 	void setPath(cocos2d::Vec2, cocos2d::Vec2);
 
-	CREATE_FUNC(Trajectory);
+	CREATE_FUNC(TrajectoryEffect);
 private:
 	void updatefire(float);
 	cocos2d::Vec2 from_, to_,move_;
 	int speed_ = 3;
 
 };
+
+class ExplosionEffect : public cocos2d::ParticleFire
+{
+public:
+	virtual bool init() override;
+	void setPath(cocos2d::Vec2, cocos2d::Vec2);
+
+//	CREATE_FUNC(TrajectoryEffect);
+private:
+	void updatefire(float);
+	cocos2d::Vec2 from_, to_, move_;
+	int speed_ = 3;
+
+};
+
+
 #endif
