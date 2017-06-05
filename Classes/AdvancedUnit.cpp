@@ -17,6 +17,7 @@ Fighter* Fighter::create(const std::string& filename)
 
 void Fighter::setProperties()
 {
+	type = 1;
 	atk = 8;
 	atk_range = 100;
 	atk_period = 20;
@@ -51,6 +52,7 @@ Tank* Tank::create(const std::string& filename)
 
 void Tank::setProperties()
 {
+	type = 2;
 	atk = 10;
 	atk_range = 100;
 	atk_period = 30;
@@ -83,6 +85,7 @@ Soldier* Soldier::create(const std::string& filename)
 
 void Soldier::setProperties()
 {
+	type = 3;
 	atk = 5;
 	atk_range = 50;
 	atk_period = 10;

@@ -1,6 +1,7 @@
 ﻿#include "Unit.h"
 #include "AdvancedUnit.h"
 #include "Building.h"
+#include "BattleScene.h"
 #include <string>
 
 
@@ -40,6 +41,7 @@ Unit* Unit::create(const std::string& filename)
 
 void Unit::setProperties()
 {
+	type = 0;
 	selected = 0;
 	state = 0;
 	target_id = -1;
@@ -130,11 +132,23 @@ void Unit::setTarget(int _target_id)
 {
 	target_lastpos = unit_manager->getUnitPosition(_target_id);
 	target_id = _target_id;
+	tracing = true;
+}
+
+void Unit::abandonTracing()
+{
+	tracing = false;
+	target_id = 0;
 }
 
 int Unit::getState() const
 {
 	return(state);
+}
+
+int Unit::getType() const
+{
+	return type;
 }
 
 bool Unit::underAttack(int damage)
@@ -300,6 +314,42 @@ void Unit::stall()
 			tryToFindPath();
 }
 
+void Unit::trace()
+{
+	GridPoint target_gp = unit_manager->getUnitPosition(target_id);
+	Point target_fp = grid_map->getPointWithOffset(target_gp);
+	Point last_fp = grid_map->getPointWithOffset(target_lastpos);
+	Point cur_fp = getPosition();
+	Vec2 dist_vec = target_fp - cur_fp;
+	Vec2 offset_vec = target_fp - last_fp;
+
+	if (target_gp == GridPoint(-1, -1))
+		tracing = false;
+	else
+		if ((dist_vec).length() < atk_range && camp == unit_manager->player_id)
+		{
+			//moving = false;
+			if (!cd)
+			{
+				unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_ATK, id, target_id, atk, camp, 0, {});
+
+				cd = cd_max;
+			}
+			else
+				cd--;
+		}
+		else
+			if (offset_vec.length() > TRACING_SENSOR * dist_vec.length())
+			{
+				target_lastpos = target_gp;
+				final_dest = target_gp;
+				if (rfp_cnt)
+					rfp_cnt--;
+				log("Unit %d, Tracing FP", id);
+				tryToFindPath();
+			}
+}
+
 void Unit::tryToFindPath()
 {
 	if (camp != unit_manager->player_id)
@@ -349,46 +399,8 @@ void Unit::update(float dt)
 	if (stl_cnt >= 0)
 		stall();
 
-	if (state == 2)
-	{
-		GridPoint target_gp = unit_manager->getUnitPosition(target_id);
-		Point target_fp = grid_map->getPointWithOffset(target_gp);
-		Point last_fp = grid_map->getPointWithOffset(target_lastpos);
-		Point cur_fp = getPosition();
-		Vec2 dist_vec = target_fp - cur_fp;
-		Vec2 offset_vec = target_fp - last_fp;
-		
-		if (target_gp == GridPoint(-1, -1))
-			state = 1;
-		else
-			if ((dist_vec).length() < atk_range && camp == unit_manager->player_id)
-			{
-				moving = false;
-				if (!cd)
-				{
-					unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_ATK, id, target_id, atk, camp, 0, {});
-				
-					//log("position %f,%f,%f,%f", cur_fp.x, cur_fp.y, target_fp.x, target_fp.y);
-					auto trajectory_effect = TrajectoryEffect::create();
-					trajectory_effect->setPath(cur_fp,(target_fp));
-					getParent()->addChild(trajectory_effect, 20);
-					
-					cd = cd_max;
-				}
-				else
-					cd--;
-			}
-			else
-				if (offset_vec.length() > TRACING_SENSOR * dist_vec.length())
-				{
-					target_lastpos = target_gp;
-					final_dest = target_gp;
-					if (rfp_cnt)
-						rfp_cnt--;
-					log("Unit %d, Tracing FP", id);
-					tryToFindPath();
-				}
-	}
+	if (tracing)
+		trace();
 }
 
 bool UnitManager::init()
@@ -415,6 +427,11 @@ void UnitManager::setSocketClient(SocketClient* _socket_client)
 	socket_client = _socket_client;
 }
 
+void UnitManager::setBattleScene(BattleScene * _battle_scene)
+{
+	battle_scene = _battle_scene;
+}
+
 void UnitManager::setPlayerID(int _player_id)
 {
 	player_id = _player_id;
@@ -439,7 +456,6 @@ GridPoint UnitManager::getBasePosition()
 
 void UnitManager::produceInBase(int _unit_type)
 {
-	//Base* base = id_map.at(base_id);
 	if (id_map.at(base_id))
 		base->startProduce(_unit_type);
 }
@@ -471,56 +487,6 @@ void UnitManager::updateUnitsState()
 			id_map.insert(id, new_unit);
 		}
 		else
-		if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_MOV)
-		{
-			log("MOV?");
-			//log("Unit ID: %d, Final Dest(%d, %d)", msg.unit_0(), msg.grid_path().grid_point(0).x(), msg.grid_path().grid_point(0).y());
-			//Unit* u0 = id_map.at(msg.unit_0());
-			//if (u0)
-			//{
-			//	u0->rfp_cnt = 0;
-			//	u0->setGridPath(msg.grid_path());
-			//	u0->setState(1);
-
-			//	u0->motivate();
-
-			//}
-		}
-		else
-		if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_TRC)
-		{
-			log("TRC?");
-			//if (!msg.grid_path().grid_point_size())
-			//	continue;
-			//Unit* u0 = id_map.at(msg.unit_0());
-			//if (u0)
-			//{
-			//	u0->setGridPath(msg.grid_path());
-			//	u0->setState(2);
-			//	u0->setTarget(msg.unit_1());
-			//	u0->motivate();
-			//}
-		}
-		else
-		if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_RFP)
-		{
-			log("RFP?");
-			/*int id = msg.unit_0();
-			Unit* unit = id_map.at(id);
-			if (!unit)
-				continue;
-			unit->rfp_cnt++;
-			if (unit->rfp_cnt >= MAX_PATH_FIND_TIMES)
-			{
-				unit->rfp_cnt = 0;
-				continue;
-			}
-			GridPoint grid_dest{ msg.grid_path().grid_point(0).x(), msg.grid_path().grid_point(0).y() };
-			log("Unit id: %d, Refind Path to: (%d, %d), Times: %d", id, grid_dest.x, grid_dest.y, unit->rfp_cnt);
-			unit->setDestination(grid_dest);
-			unit->tryToFindPath();*/
-		}
-		else
 		if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_UDP)
 		{
 			Unit* u0 = id_map.at(msg.unit_0());
@@ -546,8 +512,13 @@ void UnitManager::updateUnitsState()
 			if (unit_1)
 			{
 				unit_1->displayHPBar();
+				genAttackEffect(unitid_0, unitid_1);
 				if (unit_1->underAttack(damage))
+				{
+					if (unit_1->getType() == 5)
+						checkWinOrLose(unitid_1);
 					deleteUnit(unitid_1);
+				}
 			}
 		}
 	}
@@ -570,6 +541,33 @@ void UnitManager::deleteUnit(int id)
 	}
 }
 
+void UnitManager::checkWinOrLose(int destroyed_base_id)
+{
+	int base_camp = base_map.at(destroyed_base_id);
+	base_map.erase(destroyed_base_id);
+	if (!battle_scene)
+		return;
+	if (base_camp == player_id)
+		battle_scene->lose();
+	else
+		if (base_map.size() == 1)
+			battle_scene->win();
+
+}
+
+void UnitManager::genAttackEffect(int unit_id0, int unit_id1)
+{
+	//log("position %f,%f,%f,%f", cur_fp.x, cur_fp.y, target_fp.x, target_fp.y);
+	Unit* unit_0 = id_map.at(unit_id0);
+	Unit* unit_1 = id_map.at(unit_id1);
+	if (unit_0 && unit_1)
+	{
+		auto trajectory_effect = TrajectoryEffect::create();
+		trajectory_effect->setPath(unit_0->getPosition(), unit_1->getPosition());
+		tiled_map->addChild(trajectory_effect, 20);
+	}
+}
+
 Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_gp)
 {
 	Unit* nu;
@@ -587,8 +585,13 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 		break;
 	case 5:
 		tmp_base = Base::create("Picture/factory.jpg");
+		base_map[id] = camp;
 		if (camp == player_id)
+		{
 			base = tmp_base;
+			base_id = id;
+			battle_scene->focusOnBase();
+		}
 		nu = tmp_base;
 		break;
 	default:
@@ -655,7 +658,7 @@ void UnitManager::selectUnits(Point select_point)
 	if (selected_ids.size())
 	{
 		for (auto & id_unit : id_map)
-			if (/*id_unit.second->camp != player_id &&*/ id_unit.second->getBoundingBox().containsPoint(select_point))
+			if (id_unit.second->camp != player_id && id_unit.second->getBoundingBox().containsPoint(select_point))
 			{
 				for (auto & id : selected_ids)
 				{
@@ -664,7 +667,6 @@ void UnitManager::selectUnits(Point select_point)
 					if (!unit || !unit->isMobile())
 						continue;
 					GridPoint target_pos = getUnitPosition(id_unit.first);
-					unit->setState(2);
 					unit->setTarget(id_unit.second->id);
 					unit->setDestination(target_pos);
 					log("Unit %d, start tracing FP", id);
@@ -692,6 +694,7 @@ void UnitManager::selectUnits(Point select_point)
 
 			unit->setDestination(grid_dest);
 			log("Unit %d, start moving FP", id);
+			unit->abandonTracing();
 			unit->tryToFindPath();
 
 		}

@@ -12,6 +12,7 @@
 class Unit;
 class UnitManager;
 class Base;
+class BattleScene;
 
 class HPBar : public cocos2d::DrawNode
 {
@@ -39,8 +40,11 @@ public:
 	void setGridMap(GridMap* _grid_map);
 	void setPlayerID(int _player_id);
 	void setSocketClient(SocketClient* _socket_client);
+	void setBattleScene(BattleScene* _battle_scene);
 	void updateUnitsState();
 	void deleteUnit(int id);
+	void checkWinOrLose(int destroyed_base_id);
+	void genAttackEffect(int unit_id0, int unit_id1);
 
 	GridPoint getUnitPosition(int unit_id);
 	GridPoint getBasePosition();
@@ -53,11 +57,13 @@ public:
 private:
 	cocos2d::Map<int, Unit*> id_map;
 	std::vector<int> selected_ids;
+	std::map<int, int> base_map;
 
 
 	cocos2d::TMXTiledMap* tiled_map = nullptr;
 	GridMap* grid_map = nullptr;
 	SocketClient* socket_client = nullptr;
+	BattleScene* battle_scene = nullptr;
 	int next_id = 1;
 	int base_id = 1;
 
@@ -92,20 +98,20 @@ public:
 	virtual void setState(int _state);
 	void setDestination(const GridPoint& grid_dest);
 	void setTarget(int _target_id);
+	void abandonTracing();
 	int getState() const;
+	int getType() const;
 	bool hasArrivedAtDest();
 	bool underAttack(int damage);
 	bool isMobile();
 	cocos2d::Color4F getCampColor();
-
-	void move();
-	void stall();
 
 	void tryToFindPath();
 	GridPath findPath(const GridPoint& dest);
 protected:
 	int state = 0;
 	bool moving = false;
+	bool tracing = false;
 	int target_id;
 	bool selected = false;
 	GridPath grid_path;
@@ -121,6 +127,7 @@ protected:
 	int roc_cnt = 0;
 	int stl_cnt = -1;
 
+	int type;
 	int cd;
 	int hp;
 
@@ -138,6 +145,10 @@ protected:
 
 	HPBar* hpbar = nullptr;
 	cocos2d::DrawNode* flag = nullptr;
+
+	void move();
+	void stall();
+	void trace();
 
 	friend void HPBar::update(float ft);
 	friend void UnitManager::updateUnitsState();

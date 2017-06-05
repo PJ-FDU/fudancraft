@@ -5,7 +5,7 @@
 
 #define KEY_FRAME 5
 
-#define MIN_SELECT_RECT_SIZE 10
+#define MIN_SELECT_RECT_SIZE 16
 
 #define POS_OFFSET 5
 

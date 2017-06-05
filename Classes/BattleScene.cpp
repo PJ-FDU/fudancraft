@@ -28,6 +28,30 @@ void BattleScene::create_figher(Ref*)
 
 }
 
+void BattleScene::win()
+{
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto label = LabelTTF::create("You Win!", "Arial", 24);
+
+	label->setPosition(Vec2(origin.x + visibleSize.width / 2,
+		origin.y + visibleSize.height - label->getContentSize().height));
+
+	addChild(label, 30);
+}
+
+void BattleScene::lose()
+{
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto label = LabelTTF::create("You Lose!", "Arial", 24);
+
+	label->setPosition(Vec2(origin.x + visibleSize.width / 2,
+		origin.y + visibleSize.height - label->getContentSize().height));
+
+	addChild(label, 30);
+}
+
 Scene* BattleScene::createScene(SocketClient* _socket_client, SocketServer* _socket_server)
 {
 	auto scene = Scene::create();
@@ -62,6 +86,7 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	unit_manager->setMessageSet(&msg_set);
 	unit_manager->setTiledMap(battle_map);
 	unit_manager->setGridMap(grid_map);
+	unit_manager->setBattleScene(this);
 	unit_manager->setSocketClient(socket_client);
 
 	control_panel_ = ControlPanel::create();
