@@ -10,6 +10,7 @@
 #include "socket_message.h"
 #include "GameMessage.pb.h"
 #include "GameMessageWrap.h"
+#include "HelloWorldScene.h"
 
 using asio::ip::tcp;
 
@@ -36,6 +37,9 @@ public:
 
 	void do_close();
 
+	void start_callback(const std::function<void()>&);
+//	void set_callback(void* a) { client_ = static_cast<ClientMenu*>(a); }
+
 
 	int camp()const { while (!start_flag_); return camp_; }
 	int total()const { while (!start_flag_); return total_; }
@@ -60,7 +64,9 @@ private:
 	std::string read_data();
 private:
 
-
+//	ClientMenu * client_;
+//	void (*start_callback_)() = nullptr ;
+	std::function<void()> start_callback_=nullptr;
 	asio::io_service io_service_;
 	tcp::socket socket_;
 	tcp::endpoint endpoint_;

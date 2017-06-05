@@ -40,6 +40,11 @@ void SocketClient::do_close()
 	socket_.close();
 }
 
+void SocketClient::start_callback(const std::function<void()>& cb)
+{
+	start_callback_ =cb;
+}
+
 void SocketClient::write_data(std::string s)
 {
 	socket_message msg;
@@ -80,6 +85,9 @@ void SocketClient::handle_connect(const asio::error_code& error)
 			total_ = atoi(header);
 			camp_ = atoi(data + 14);
 			start_flag_ = true;
+//			if(start_callback_ != nullptr)
+//				start_callback_();
+//			client_->wait_start();
 			asio::async_read(socket_,
 			                 asio::buffer(read_msg_.data(), socket_message::header_length),
 			                 std::bind(&SocketClient::handle_read_header, this,
@@ -94,6 +102,7 @@ void SocketClient::handle_connect(const asio::error_code& error)
 	catch (std::exception& e)
 	{
 		std::cerr << "Exception in connection: " << e.what() << "\n";
+//		exit(-1);
 	}
 }
 

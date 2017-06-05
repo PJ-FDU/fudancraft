@@ -72,8 +72,8 @@ public:
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(ClientMenu);
-private:
 	void wait_start();
+private:
 
 	SocketClient* socket_client_{ nullptr };
 };
