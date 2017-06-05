@@ -168,7 +168,7 @@ void TrajectoryEffect::setPath(cocos2d::Vec2 from, cocos2d::Vec2 to)
 	from_ = from;
 	to_ = to;
 	setPosition(from_);
-	log("fire start position:%f,%f", getPosition().x, getPosition().y);
+//	log("fire start position:%f,%f", getPosition().x, getPosition().y);
 //	log("start position:%f,%f", from.x, from.y);
 	move_ =(to_-from_).getNormalized()*speed_;
 	schedule(schedule_selector(TrajectoryEffect::updatefire));
@@ -176,11 +176,29 @@ void TrajectoryEffect::setPath(cocos2d::Vec2 from, cocos2d::Vec2 to)
 
 void TrajectoryEffect::updatefire(float)
 {
-	log("fire position:%f,%f", getPosition().x, getPosition().y);
+//	log("fire position:%f,%f", getPosition().x, getPosition().y);
 	if (((abs(getPosition().x-to_.x)<speed_ )&& (abs(getPosition().y - to_.y)<speed_)))
 		removeFromParent();
 	else
 		setPosition(getPosition() + move_);
+}
+
+bool ExplosionEffect::init()
+{
+	if (!ParticleFire::init())
+		return false;
+	setScale(0.0000008);
+	setDuration(1);
+	auto action = ScaleBy::create(0.5, 500000);
+	runAction(action);
+	scheduleOnce(schedule_selector(ExplosionEffect::remove), 1.2);	
+	setPositionType(PositionType::RELATIVE);
+	return true;
+}
+
+void ExplosionEffect::remove(float f)
+{
+	removeFromParent();
 }
 
 void Unit::addToMaps(const GridPoint & crt_gp, TMXTiledMap* _tiled_map, GridMap* _grid_map)
@@ -199,9 +217,9 @@ void Unit::addToMaps(const GridPoint & crt_gp, TMXTiledMap* _tiled_map, GridMap*
 void Unit::removeFromMaps()
 {
 	// add explosion effect
-	auto explosion_effect = ParticleExplosion::create();
+	auto explosion_effect = ExplosionEffect::create();
 	explosion_effect->setPosition(this->getPosition());
-	getParent()->addChild(explosion_effect);
+	getParent()->getParent()->addChild(explosion_effect,20);
 	grid_map->leavePosition(cur_pos);
 	tiled_map->removeChild(this,1);
 }
@@ -304,7 +322,7 @@ void Unit::update(float dt)
 					log("position %f,%f,%f,%f", cur_fp.x, cur_fp.y, target_fp.x, target_fp.y);
 					auto trajectory_effect = TrajectoryEffect::create();
 					trajectory_effect->setPath(cur_fp,(target_fp));
-					getParent()->addChild(trajectory_effect, 2);
+					getParent()->addChild(trajectory_effect, 20);
 					
 					cd = cd_max;
 				}

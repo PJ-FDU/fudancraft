@@ -170,14 +170,10 @@ class ExplosionEffect : public cocos2d::ParticleFire
 {
 public:
 	virtual bool init() override;
-	void setPath(cocos2d::Vec2, cocos2d::Vec2);
 
-//	CREATE_FUNC(TrajectoryEffect);
+	CREATE_FUNC(ExplosionEffect);
 private:
-	void updatefire(float);
-	cocos2d::Vec2 from_, to_, move_;
-	int speed_ = 3;
-
+	void remove(float f);
 };
 
 
