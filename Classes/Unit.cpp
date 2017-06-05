@@ -8,11 +8,21 @@ USING_NS_CC;
 
 void HPBar::update(float dt)
 {
+	if (!owner)
+		return;
 	clear();
-	drawPolygon(frame_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 0, 1, 1));
+	/*drawRect(frame_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 0, 1, 1));
 	bar_points[2].x = frame_points[0].x + (frame_points[3].x - frame_points[0].x) * owner->hp / owner->hp_max;
 	bar_points[3].x = bar_points[2].x;
-	drawPolygon(bar_points, 4, Color4F(0, 0, 1, 1), 1, Color4F(0, 0, 1, 1));
+	drawPolygon(bar_points, 4, Color4F(0, 0, 1, 1), 1, Color4F(0, 0, 1, 1));*/
+	drawRect(Point(0, 0), Point(length, height), Color4F(0, 0, 1, 1));
+	Point endpoint{ length * owner->hp / owner->hp_max, height };
+	drawSolidRect(Point(0, 0), endpoint, Color4F(0, 0, 1, 1));
+}
+
+void HPBar::setLength(float _length)
+{
+	length = _length;
 }
 
 Unit* Unit::create(const std::string& filename)
@@ -42,9 +52,13 @@ void Unit::setProperties()
 void Unit::initHPBar()
 {
 	hpbar = HPBar::create();
+	float unit_width = size.width * tiled_map->getTileSize().width;
+	float unit_height = size.height * tiled_map->getTileSize().height;
+	hpbar->setLength(unit_width);
 	hpbar->monitor(this);
 	hpbar->setVisible(false);
 	addChild(hpbar, 20);
+	hpbar->setPosition(Point(0, unit_height + 5));
 }
 
 void Unit::initFlag()
@@ -510,10 +524,10 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 	nu->id = id;
 	nu->camp = camp;
 	nu->setProperties();
-	nu->initHPBar();
-	nu->initFlag();
 	nu->setAnchorPoint(Vec2(0.5, 0.5));
 	nu->addToMaps(crt_gp, tiled_map, grid_map);
+	nu->initHPBar();
+	nu->initFlag();
 	nu->schedule(schedule_selector(Unit::update));
 
 	return(nu);

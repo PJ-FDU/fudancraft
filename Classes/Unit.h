@@ -18,10 +18,11 @@ class HPBar : public cocos2d::DrawNode
 public:
 	void update(float f) override;
 	CREATE_FUNC(HPBar);
+	void setLength(float _length);
 	void monitor(Unit* _owner) { owner = _owner; }
 private:
-	cocos2d::Point frame_points[4]{ { 0, 40 },{ 0, 43 },{ 32, 43 },{ 32, 40 } };
-	cocos2d::Point bar_points[4]{ { 0, 40 },{ 0, 43 },{ 32, 43 },{ 32, 40 } };
+	float length;
+	float height = 4;
 	Unit* owner = nullptr;
 };
 
