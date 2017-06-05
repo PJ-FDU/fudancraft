@@ -29,7 +29,7 @@ class UnitManager : public cocos2d::Ref
 {
 public:
 	int player_id = 0;
-	GameMessageSet* msgs;
+	GameMessageSet* msgs = nullptr;
 
 	CREATE_FUNC(UnitManager);
 	bool init();
@@ -52,8 +52,7 @@ public:
 private:
 	cocos2d::Map<int, Unit*> id_map;
 	std::vector<int> selected_ids;
-	//cocos2d::Vector<Unit*> own_units;
-	//cocos2d::Vector<Unit*> enemy_units;
+
 
 	cocos2d::TMXTiledMap* tiled_map = nullptr;
 	GridMap* grid_map = nullptr;
@@ -65,8 +64,6 @@ private:
 
 	Unit* createNewUnit(int id, int camp, int uint_type, GridPoint crt_gp);
 	void deselectAllUnits();
-
-	//friend class Unit;
 };
 
 class Unit : public cocos2d::Sprite
@@ -83,6 +80,7 @@ public:
 	virtual void update(float f) override;
 
 	void initHPBar();
+	void initFlag();
 	void displayHPBar();
 	void hideHPBar();
 	virtual void addToMaps(const GridPoint & crt_gp, cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
@@ -96,6 +94,7 @@ public:
 	bool hasArrivedAtDest();
 	bool underAttack(int damage);
 	bool isMobile();
+	cocos2d::Color4F getCampColor();
 
 	GridPath planToMoveTo(GridPoint& dest)
 	{
@@ -143,6 +142,7 @@ protected:
 	GridMap* grid_map = nullptr;
 
 	HPBar* hpbar = nullptr;
+	cocos2d::DrawNode* flag = nullptr;
 
 	friend void HPBar::update(float ft);
 	friend void UnitManager::updateUnitsState();

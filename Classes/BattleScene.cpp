@@ -68,7 +68,7 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 			unit_manager->produceInBase(1);
 	});
 
-	//TODO: add a callback function for create a tank and soldier
+
 	control_panel_->setTankCallback([&](Ref*)
 	{
 		unit_manager->produceInBase(2);
@@ -77,10 +77,6 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 		unit_manager->produceInBase(3);
 	});
 
-
-	//TODO: add a callback function for create a tank and soldier
-	control_panel_->setTankCallback([&](Ref*){});
-	control_panel_->setSoldierCallback([&](Ref*){});
 
 
 	addChild(control_panel_,4);
@@ -123,12 +119,16 @@ void BattleScene::focusOnBase()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	GridPoint base_gp = unit_manager->getBasePosition();
-	Point base_pos = grid_map->getPoint(base_gp);
-	if (battle_map->getBoundingBox().size.height < base_pos.y + visibleSize.height)
-		base_pos.y = battle_map->getBoundingBox().size.height - visibleSize.height;
-	if (battle_map->getBoundingBox().size.width < base_pos.x + visibleSize.width)
-		base_pos.x = battle_map->getBoundingBox().size.width - visibleSize.width;
-	battle_map->setPosition(Point(0, 0) - base_pos);
+	Vec2 base_vec = grid_map->getPoint(base_gp) - visibleSize / 2;
+	if (battle_map->getBoundingBox().size.height < base_vec.y + visibleSize.height)
+		base_vec.y = battle_map->getBoundingBox().size.height - visibleSize.height;
+	if (battle_map->getBoundingBox().size.width < base_vec.x + visibleSize.width)
+		base_vec.x = battle_map->getBoundingBox().size.width - visibleSize.width;
+	if (base_vec.x < 0)
+		base_vec.x = 0;
+	if (base_vec.y < 0)
+		base_vec.y = 0;
+	battle_map->setPosition(Point(0, 0) - base_vec);
 }
 
 void BattleScene::initPlayerID()
@@ -205,7 +205,7 @@ void BattleScene::update(float f)
 bool BattleScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 {
 
-	Point touch = pTouch->getLocation();//返回点击的位置
+	Point touch = pTouch->getLocation();//杩斿洖鐐瑰嚮鐨勪綅缃?
 	last_touch = touch;
 
 	return true;
@@ -214,28 +214,18 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 void BattleScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
 
-	Point touch = pTouch->getLocation();//返回点击的位置
+	Point touch = pTouch->getLocation();//杩斿洖鐐瑰嚮鐨勪綅缃?
 
 
 	mouse_rect->clear();
-	Vec2 mouse_rect_points[4];
-	mouse_rect_points[0] = last_touch;
-	mouse_rect_points[1] = Vec2(last_touch.x, touch.y);
-	mouse_rect_points[2] = touch;
-	mouse_rect_points[3] = Vec2(touch.x, last_touch.y);
-
-
-	//绘制空心多边形
-	//填充颜色：Color4F(1, 0, 0, 0), 透明
-	//轮廓颜色：Color4F(0, 1, 0, 1), 绿色
-	mouse_rect->drawPolygon(mouse_rect_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 1, 0, 1));
+	mouse_rect->drawRect(last_touch, touch, Color4F(0, 1, 0, 1));
 	mouse_rect->setVisible(true);
 }
 
 void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
 
-	Point touch = pTouch->getLocation();//返回点击的位置
+	Point touch = pTouch->getLocation();//杩斿洖鐐瑰嚮鐨勪綅缃?
 
 	mouse_rect->setVisible(false);
 
@@ -310,6 +300,9 @@ void BattleScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* p
 		break;
 	case EventKeyboard::KeyCode::KEY_X:
 		unit_manager->genCreateMessage(1, grid_map->getGridPoint(Vec2(Director::getInstance()->getVisibleSize().width / 2, Director::getInstance()->getVisibleSize().height / 2)));
+		break;
+	case EventKeyboard::KeyCode::KEY_SPACE:
+		focusOnBase();
 		break;
 	default:
 		break;
