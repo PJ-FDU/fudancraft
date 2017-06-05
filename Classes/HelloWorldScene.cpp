@@ -62,7 +62,7 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 void HelloWorld::menuStartCallback(cocos2d::Ref* pSender)
 {
 	auto scene = StartMenu::createScene();
-	Director::getInstance()->replaceScene(scene);
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
 
 cocos2d::Scene* StartMenu::createScene()
@@ -109,19 +109,19 @@ void StartMenu::menuServerCallback(cocos2d::Ref* pSender)
 {
 	log("server button pressed");
 	auto scene = ServerMenu::createScene();
-	Director::getInstance()->replaceScene(scene);
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5,scene));
 }
 
 void StartMenu::menuClientCallback(cocos2d::Ref* pSender)
 {
 	auto scene = ClientMenu::createScene();
-	Director::getInstance()->replaceScene(scene);
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
 
 void StartMenu::menuBackCallback(cocos2d::Ref* pSender)
 {
 	auto scene = HelloWorld::createScene();
-	Director::getInstance()->replaceScene(scene);
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
 
 cocos2d::Scene* ServerMenu::createScene()
@@ -187,7 +187,7 @@ void ServerMenu::menuStartGameCallback(cocos2d::Ref* pSender)
 		//	auto scene = BattleScene::createScene(socket_client,socket_server);
 		socket_server_->button_start();
 		auto scene = BattleScene::createScene(socket_client_, socket_server_);
-		Director::getInstance()->replaceScene(scene);
+		Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 		log("start game");
 	}
 }
@@ -195,7 +195,7 @@ void ServerMenu::menuStartGameCallback(cocos2d::Ref* pSender)
 void ServerMenu::menuBackCallback(cocos2d::Ref* pSender)
 {
 	auto scene = StartMenu::createScene();
-	Director::getInstance()->replaceScene(scene);
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
 
 void ServerMenu::editBoxReturn(cocos2d::ui::EditBox* editBox)
@@ -282,7 +282,7 @@ void ClientMenu::menuStartGameCallback(cocos2d::Ref* pSender)
 void ClientMenu::menuBackCallback(cocos2d::Ref* pSender)
 {
 	auto scene = StartMenu::createScene();
-	Director::getInstance()->replaceScene(scene);
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 
 }
 
@@ -293,5 +293,5 @@ void ClientMenu::wait_start()
 	log("start game");
 	auto scene = BattleScene::createScene(socket_client_, nullptr);
 	//	auto scene = BattleScene::createScene(socket_client_);
-	Director::getInstance()->replaceScene(scene);
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
