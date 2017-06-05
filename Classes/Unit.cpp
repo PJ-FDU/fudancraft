@@ -219,7 +219,7 @@ void Unit::removeFromMaps()
 	// add explosion effect
 	auto explosion_effect = ExplosionEffect::create();
 	explosion_effect->setPosition(this->getPosition());
-	getParent()->getParent()->addChild(explosion_effect,20);
+	getParent()->addChild(explosion_effect,20);
 	grid_map->leavePosition(cur_pos);
 	tiled_map->removeChild(this,1);
 }
