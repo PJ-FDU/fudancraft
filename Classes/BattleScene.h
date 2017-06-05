@@ -8,6 +8,15 @@
 
 class ControlPanel;
 
+class MouseRect : public cocos2d::DrawNode
+{
+public:
+	CREATE_FUNC(MouseRect);
+	cocos2d::Point touch_start, touch_end;
+	cocos2d::Point start, end;
+	void update(float f) override;
+};
+
 class BattleScene : public cocos2d::Layer
 {
 public:
@@ -52,7 +61,7 @@ private:
 	UnitManager* unit_manager = nullptr;
 	ControlPanel* control_panel_;
 
-	cocos2d::DrawNode* mouse_rect = nullptr;
+	MouseRect* mouse_rect = nullptr;
 
 	cocos2d::Point last_touch{0, 0};
 	cocos2d::Point crusor_position{0, 0};

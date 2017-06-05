@@ -2,6 +2,14 @@
 
 USING_NS_CC;
 
+void MouseRect::update(float f)
+{
+	clear();
+	Node* parent = getParent();
+	end = touch_end - parent->getPosition();
+	drawRect(start, end, Color4F(0, 1, 0, 1));
+}
+
 BattleScene* BattleScene::create(SocketClient* _socket_client, SocketServer* _socket_server)
 {
 	BattleScene *battle_scene = new (std::nothrow) BattleScene();
@@ -44,7 +52,6 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 
 	battle_map = TMXTiledMap::create("map/LostTemple.tmx");
 	battle_map->setAnchorPoint(Vec2(0, 0));
-	//battle_map->setPosition(0, 0);
 	addChild(battle_map, 0);
 
 	grid_map = GridMap::create(battle_map);
@@ -81,8 +88,9 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 
 	addChild(control_panel_,4);
 
-	mouse_rect = DrawNode::create();
-	addChild(mouse_rect, 3);
+	mouse_rect = MouseRect::create();
+	mouse_rect->setVisible(false);
+	battle_map->addChild(mouse_rect, 15);
 
 	schedule(schedule_selector(BattleScene::update));
 
@@ -207,6 +215,9 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* pTouch, cocos2d::Event*)
 
 	Point touch = pTouch->getLocation();//杩斿洖鐐瑰嚮鐨勪綅缃?
 	last_touch = touch;
+	mouse_rect->start = touch - battle_map->getPosition();
+	mouse_rect->touch_start = touch;
+	mouse_rect->touch_end = touch;
 
 	return true;
 }
@@ -216,10 +227,10 @@ void BattleScene::onTouchMoved(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 
 	Point touch = pTouch->getLocation();//杩斿洖鐐瑰嚮鐨勪綅缃?
 
-
+	mouse_rect->touch_end = touch;
 	mouse_rect->clear();
-	mouse_rect->drawRect(last_touch, touch, Color4F(0, 1, 0, 1));
 	mouse_rect->setVisible(true);
+	mouse_rect->schedule(schedule_selector(MouseRect::update));
 }
 
 void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
@@ -228,9 +239,11 @@ void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 	Point touch = pTouch->getLocation();//杩斿洖鐐瑰嚮鐨勪綅缃?
 
 	mouse_rect->setVisible(false);
+	mouse_rect->unschedule(schedule_selector(MouseRect::update));
+	mouse_rect->end = touch - battle_map->getPosition();
 
-	Point maptouch = touch - battle_map->getPosition();
-	Point last_maptouch = last_touch - battle_map->getPosition();
+	Point maptouch = mouse_rect->end;
+	Point last_maptouch = mouse_rect->start;
 
 	GridPoint map_touch_grid_point = grid_map->getGridPoint(maptouch);
 

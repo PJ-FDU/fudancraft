@@ -368,7 +368,7 @@ GridPoint UnitManager::getBasePosition()
 void UnitManager::produceInBase(int _unit_type)
 {
 	//Base* base = id_map.at(base_id);
-	if (base)
+	if (id_map.at(base_id))
 		base->startProduce(_unit_type);
 }
 
