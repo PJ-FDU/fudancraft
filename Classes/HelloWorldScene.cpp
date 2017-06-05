@@ -268,21 +268,15 @@ bool ClientMenu::init()
 
 void ClientMenu::menuStartGameCallback(cocos2d::Ref* pSender)
 {
-	if (!socket_client_ )
-	{
-		auto ip_box = static_cast<ui::EditBox*>(getChildByTag(1));
-		std::string ip = ip_box->getText();
-		auto port_box = static_cast<ui::EditBox*>(getChildByTag(2));
-		int port = atoi(port_box->getText());
-		log("ip:%s, port:%d", ip.c_str(), port);
-		socket_client_ = SocketClient::create(ip, port);
-//		socket_client_->set_callback(nullptr);
-//		socket_client_->start_callback(std::bind(&ClientMenu::wait_start, this));
-//		socket_client_->start_callback([&]() {wait_start(); });
-		//	wait_start();
-		//	std::async(&ClientMenu::wait_start, this);
-		//	wait_start();
-	}
+	auto ip_box= static_cast<ui::EditBox*>(getChildByTag(1));
+	std::string ip = ip_box->getText();
+	auto port_box= static_cast<ui::EditBox*>(getChildByTag(2));
+	int port = atoi(port_box->getText());
+	log("ip:%s, port:%d", ip.c_str(), port);
+	socket_client_ = SocketClient::create(ip,port);
+
+//	std::async(&ClientMenu::wait_start, this);
+	wait_start();
 }
 
 void ClientMenu::menuBackCallback(cocos2d::Ref* pSender)
