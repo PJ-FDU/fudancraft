@@ -2,13 +2,11 @@
 // source: GameMessage.proto
 
 
-//#ifdef _DEBUG
-//#pragma comment (lib, "libprotobuf-lited.lib")
-//#else
-//#pragma comment (lib, "libprotobuf-lite.lib")
-//#endif
-
+#ifdef _DEBUG
 #pragma comment (lib, "libprotobuf-lited.lib")
+#else
+#pragma comment (lib, "libprotobuf-lite.lib")
+#endif
 
 
 #ifndef PROTOBUF_GameMessage_2eproto__INCLUDED

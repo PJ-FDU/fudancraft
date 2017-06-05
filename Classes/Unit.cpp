@@ -47,6 +47,19 @@ void Unit::initHPBar()
 	addChild(hpbar, 20);
 }
 
+void Unit::initFlag()
+{
+	flag = DrawNode::create();
+	flag->drawSolidRect(Point(0, 0), Point(5, 5), getCampColor());
+	addChild(flag);
+}
+
+cocos2d::Color4F Unit::getCampColor()
+{
+	std::vector<Color4F> camp_color_list = { { 0, 0, 0, 0 },{ 1, 0, 0, 1 },{ 0, 1, 0, 1 },{ 0, 0, 1, 1 } };
+	return camp_color_list[camp % 4];
+}
+
 void Unit::displayHPBar()
 {
 	if (hpbar)
@@ -336,6 +349,8 @@ GridPoint UnitManager::getBasePosition()
 	return getUnitPosition(base_id);
 }
 
+
+
 void UnitManager::produceInBase(int _unit_type)
 {
 	//Base* base = id_map.at(base_id);
@@ -485,20 +500,20 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 		tmp_base = Base::create("Picture/factory.jpg");
 		if (camp == player_id)
 			base = tmp_base;
-		nu = base;
+		nu = tmp_base;
 		break;
 	default:
 		break;
 	}
 
+	nu->unit_manager = this;
 	nu->id = id;
 	nu->camp = camp;
 	nu->setProperties();
-	//nu->setPosition(grid_map->getPoint(crt_gp));
 	nu->initHPBar();
+	nu->initFlag();
 	nu->setAnchorPoint(Vec2(0.5, 0.5));
 	nu->addToMaps(crt_gp, tiled_map, grid_map);
-	nu->unit_manager = this;
 	nu->schedule(schedule_selector(Unit::update));
 
 	return(nu);
@@ -544,6 +559,7 @@ void UnitManager::deselectAllUnits()
 		id_map.at(id)->hideHPBar();
 	selected_ids.clear();
 }
+
 
 void UnitManager::selectUnits(Point select_point)
 {
