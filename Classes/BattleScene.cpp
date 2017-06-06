@@ -88,6 +88,7 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	unit_manager->setGridMap(grid_map);
 	unit_manager->setBattleScene(this);
 	unit_manager->setSocketClient(socket_client);
+	unit_manager->initRandomGenerator();
 
 	control_panel_ = ControlPanel::create();
 	
