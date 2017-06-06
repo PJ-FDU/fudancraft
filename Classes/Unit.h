@@ -13,6 +13,7 @@ class Unit;
 class UnitManager;
 class Base;
 class BattleScene;
+class Notice;
 
 class HPBar : public cocos2d::DrawNode
 {
@@ -42,6 +43,7 @@ public:
 	void setPlayerID(int _player_id);
 	void setSocketClient(SocketClient* _socket_client);
 	void setBattleScene(BattleScene* _battle_scene);
+	void setNotice(Notice* _notice);
 	void updateUnitsState();
 	void deleteUnit(int id);
 	void checkWinOrLose(int destroyed_base_id);
@@ -75,7 +77,9 @@ private:
 	void deselectAllUnits();
 	void setBase(int _base_id, Base* _base, GridPoint _base_pos);
 
-	std::default_random_engine gen;				
+	std::default_random_engine gen;		
+
+	Notice* notice = nullptr;
 };
 
 class Unit : public cocos2d::Sprite

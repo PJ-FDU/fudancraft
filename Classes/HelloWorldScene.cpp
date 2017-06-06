@@ -339,6 +339,7 @@ void ClientMenu::menuBackCallback(cocos2d::Ref* pSender)
 void ClientMenu::wait_start()
 {
 	//socket_client_->camp();
+	unscheduleAllSelectors();
 	log("get the camp");
 	log("start game");
 	auto scene = BattleScene::createScene(socket_client_, nullptr);

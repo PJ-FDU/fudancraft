@@ -30,26 +30,12 @@ void BattleScene::create_figher(Ref*)
 
 void BattleScene::win()
 {
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	auto label = LabelTTF::create("You Win!", "Arial", 24);
-
-	label->setPosition(Vec2(origin.x + visibleSize.width / 2,
-		origin.y + visibleSize.height - label->getContentSize().height));
-
-	addChild(label, 30);
+	notice->displayNotice("You Win!");
 }
 
 void BattleScene::lose()
 {
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	auto label = LabelTTF::create("You Lose!", "Arial", 24);
-
-	label->setPosition(Vec2(origin.x + visibleSize.width / 2,
-		origin.y + visibleSize.height - label->getContentSize().height));
-
-	addChild(label, 30);
+	notice->displayNotice("You Lose");
 }
 
 Scene* BattleScene::createScene(SocketClient* _socket_client, SocketServer* _socket_server)
@@ -156,7 +142,6 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	initPlayerID();
 	unit_manager->setPlayerID(player_id);
 	unit_manager->initiallyCreateUnits();
-	start_flag = 1;
 
 	auto *money_icon = Sprite::create("Picture/ui/gold.png");
 	addChild(money_icon, 40);
@@ -167,6 +152,16 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	addChild(money, 40);
 	money->setPosition(visibleSize.width - 80, 20);
 	money->schedule(schedule_selector(Money::update));
+
+	notice = Notice::create();
+	addChild(notice, 40);
+	notice->setAnchorPoint(Vec2(0, 0));
+	notice->setPosition(10, visibleSize.height / 2);
+	notice->setScale(0.7);
+	notice->schedule(schedule_selector(Notice::update));
+	unit_manager->setNotice(notice);
+
+	start_flag = 1;
 
 	return true;
 }
@@ -287,7 +282,8 @@ void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 	Point touch = pTouch->getLocation();//杩斿洖鐐瑰嚮鐨勪綅缃?
 
 	mouse_rect->setVisible(false);
-	mouse_rect->unschedule(schedule_selector(MouseRect::update));
+	if (mouse_rect->isScheduled(schedule_selector(MouseRect::update)))
+		mouse_rect->unschedule(schedule_selector(MouseRect::update));
 	mouse_rect->end = touch - battle_map->getPosition();
 
 	Point maptouch = mouse_rect->end;
@@ -403,4 +399,39 @@ void Money::spendMoney(int cost)
 bool Money::checkMoney(int cost) const
 {
 	return(money >= cost);
+}
+
+void Notice::update(float f)
+{
+	if (++timer == ntc_life)
+	{
+		setString("");
+		ntc_life = 0;
+		timer = 0;
+		unschedule(schedule_selector(Notice::update));
+	}
+}
+
+void Notice::displayNotice(std::string ntc, int _ntc_life)
+{
+	setString(ntc);
+	ntc_life = _ntc_life;
+	timer = 0;
+	if (!isScheduled(schedule_selector(Notice::update)))
+		schedule(schedule_selector(Notice::update));
+}
+
+void Notice::displayNotice(std::string ntc)
+{
+	setString(ntc);
+	ntc_life = 0;
+	timer = 0;
+	if (isScheduled(schedule_selector(Notice::update)))
+		unschedule(schedule_selector(Notice::update));
+}
+
+bool Notice::init()
+{
+	ntc_life = 100;
+	return initWithString("Welcome to FudanCraft!", "fonts/NoticeFont.fnt");
 }
