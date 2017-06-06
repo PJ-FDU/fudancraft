@@ -261,6 +261,13 @@ bool ClientMenu::init()
 		origin.y + visibleSize.height / 2));
 
 	menu->alignItemsVerticallyWithPadding(40);
+
+	connection_msg_ = Label::createWithTTF("","/fonts/arial.ttf",18);
+	connection_msg_->setAnchorPoint(Vec2(0.5, 0));
+	connection_msg_->setPosition(Vec2(origin.x + visibleSize.width / 2,
+	                                  origin.y));
+	addChild(connection_msg_);
+	 
 	this->addChild(menu, 1);
 
 	return true;
@@ -268,15 +275,19 @@ bool ClientMenu::init()
 
 void ClientMenu::menuStartGameCallback(cocos2d::Ref* pSender)
 {
-	auto ip_box= static_cast<ui::EditBox*>(getChildByTag(1));
-	std::string ip = ip_box->getText();
-	auto port_box= static_cast<ui::EditBox*>(getChildByTag(2));
-	int port = atoi(port_box->getText());
-	log("ip:%s, port:%d", ip.c_str(), port);
-	socket_client_ = SocketClient::create(ip,port);
+	if (!socket_client_)
+	{
+		auto ip_box = static_cast<ui::EditBox*>(getChildByTag(1));
+		std::string ip = ip_box->getText();
+		auto port_box = static_cast<ui::EditBox*>(getChildByTag(2));
+		int port = atoi(port_box->getText());
+		log("ip:%s, port:%d", ip.c_str(), port);
+		socket_client_ = SocketClient::create(ip, port);
+		schedule(schedule_selector(ClientMenu::startSchedule), 0.1);
+		//	std::async(&ClientMenu::wait_start, this);
+		//	wait_start();	
+	}
 
-//	std::async(&ClientMenu::wait_start, this);
-	wait_start();
 }
 
 void ClientMenu::menuBackCallback(cocos2d::Ref* pSender)
@@ -294,4 +305,18 @@ void ClientMenu::wait_start()
 	auto scene = BattleScene::createScene(socket_client_, nullptr);
 	//	auto scene = BattleScene::createScene(socket_client_);
 	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
+}
+
+void ClientMenu::startSchedule(float f)
+{
+	switch((timer_++%32)/4)
+	{
+	case 0: connection_msg_->setString("Connected, wait for server"); break;
+	case 1: connection_msg_->setString("Connected, wait for server."); break;
+	case 2: connection_msg_->setString("Connected, wait for server.."); break;
+	case 3: connection_msg_->setString("Connected, wait for server..."); break;
+	default: break;
+	}
+	if (socket_client_->started())
+		wait_start();
 }

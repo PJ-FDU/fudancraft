@@ -40,6 +40,18 @@ void SocketClient::do_close()
 	socket_.close();
 }
 
+int SocketClient::camp() const
+{
+	while (!start_flag_);
+	return camp_;
+}
+
+int SocketClient::total() const
+{
+	while (!start_flag_);
+	return total_;
+}
+
 void SocketClient::write_data(std::string s)
 {
 	socket_message msg;

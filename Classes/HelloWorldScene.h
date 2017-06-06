@@ -74,8 +74,11 @@ public:
 	CREATE_FUNC(ClientMenu);
 private:
 	void wait_start();
+	void startSchedule(float f);
 
 	SocketClient* socket_client_{ nullptr };
+	cocos2d::Label* connection_msg_;
+	int timer_ = 0;
 };
 
 
