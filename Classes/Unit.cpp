@@ -466,6 +466,11 @@ void UnitManager::setBattleScene(BattleScene * _battle_scene)
 	battle_scene = _battle_scene;
 }
 
+void UnitManager::setNotice(Notice * _notice)
+{
+	notice = _notice;
+}
+
 void UnitManager::setBase(int _base_id, Base * _base, GridPoint _base_pos)
 {
 	base_id = _base_id;
@@ -571,6 +576,12 @@ void UnitManager::updateUnitsState()
 			{
 				unit_1->displayHPBar();
 				genAttackEffect(unitid_0, unitid_1);
+				if (notice && unit_1->camp == player_id)
+				{
+					char ntc[50];
+					sprintf(ntc, "Unit %d under attack, damage %d", unitid_1, damage);
+					notice->displayNotice(ntc, 30);
+				}
 				if (unit_1->underAttack(damage))
 				{
 					if (unit_1->getType() == 5)
@@ -596,6 +607,13 @@ void UnitManager::deleteUnit(int id)
 		unit->removeFromMaps();
 
 		id_map.erase(id);
+
+		if (notice && unit->camp == player_id)
+		{
+			char ntc[50];
+			sprintf(ntc, "Unit %d destroyed", id);
+			notice->displayNotice(ntc, 80);
+		}
 	}
 }
 
@@ -642,7 +660,7 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 		nu = Soldier::create("Picture/units/soldier.png");
 		break;
 	case 5:
-		tmp_base = Base::create("Picture/units/base.png");
+		tmp_base = Base::create("Picture/factory.jpg");
 		base_map[id] = camp;
 		if (camp == player_id)
 			setBase(id, tmp_base, crt_gp);
