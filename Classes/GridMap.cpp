@@ -8,6 +8,15 @@ bool GridPoint::operator==(const GridPoint& gp2) const
 	return(x == gp2.x && y == gp2.y);
 }
 
+GridPoint GridPoint::getDirectionVector()
+{
+	auto sgn = [](int a)->int 
+	{
+		return ((a)? ((a > 0) ? (1) : (-1)) : (0)); 
+	};
+	return GridPoint(sgn(x), sgn(y));
+}
+
 GridMap* GridMap::create(const cocos2d::TMXTiledMap * tiled_map)
 {
 	GridMap *ret = new (std::nothrow) GridMap();
@@ -178,4 +187,8 @@ bool GridMap::hasApproached(const Point& cur_fp, const GridPoint& dest_gp)
 GridPoint operator+(const GridPoint & gp1, const GridPoint & gp2)
 {
 	return GridPoint(gp1.x + gp2.x, gp1.y + gp2.y);
+}
+GridPoint operator-(const GridPoint & gp1, const GridPoint & gp2)
+{
+	return GridPoint(gp1.x - gp2.x, gp1.y - gp2.y);
 }

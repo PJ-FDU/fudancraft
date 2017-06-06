@@ -5,11 +5,11 @@
 
 #define KEY_FRAME 5
 
-#define MIN_SELECT_RECT_SIZE 10
+#define MIN_SELECT_RECT_SIZE 16
 
 #define POS_OFFSET 5
 
-#define MAX_PATH_FIND_TIMES 4
+#define MAX_PATH_FIND_TIMES 6
 
 #define MAX_REOCCUPY_TIMES 5
 

@@ -3,6 +3,7 @@
 #include "cocos2d.h"
 #include "fudancraft.h"
 
+
 struct GridPoint
 {
 	GridPoint(int _x = 0, int _y = 0) : x(_x), y(_y) {}
@@ -11,6 +12,8 @@ struct GridPoint
 
 	bool operator==(const GridPoint& gp2) const;
 	friend GridPoint operator+(const GridPoint& gp1, const GridPoint& gp2);
+	friend GridPoint operator-(const GridPoint& gp1, const GridPoint& gp2);
+	GridPoint getDirectionVector();
 };
 
 typedef GridPoint GridVec;
