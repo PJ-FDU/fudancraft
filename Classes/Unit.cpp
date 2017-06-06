@@ -3,6 +3,7 @@
 #include "Building.h"
 #include "BattleScene.h"
 #include <string>
+#include <random>
 
 
 USING_NS_CC;
@@ -268,32 +269,22 @@ void Unit::move()
 		}
 		else
 		{
-			/*if (roc_cnt < MAX_REOCCUPY_TIMES)
-			{
-			grid_path.push_back(cur_dest);
-			roc_cnt++;
-			}*/
 			cur_dest = cur_pos;
 
 			Point final_fp = grid_map->getPointWithOffset(final_dest);
 
 			if (camp == unit_manager->player_id && (final_fp - getPosition()).length() > DISREFINDPATH_RANGE)
 			{
-				log("Unit ID: %d, find path again due to cur_dest occupied", id);
-				tryToFindPath();
+				if (!stalling)
+				{
+					log("Unit ID: %d, find path again due to cur_dest occupied", id);
+					tryToFindPath();
+				}
+				else
+					log("Unit ID: %d, Already stalling!", id);
 			}
 			else
 				log("Unit ID: %d, abandon cur_dest again due to cur_dest occupied and in the range of final_dest", id);
-
-			/*if (grid_path.size() && camp == unit_manager->player_id)
-			{
-			GridPath grid_path = planToMoveTo(final_dest);
-			if (grid_path.size())
-			unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_UDP, id, 0, 0, camp, 0, grid_path);
-			else
-			unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_RFP, id, 0, 0, camp, 0, { final_dest });
-
-			}*/
 		}
 
 	if (hasArrivedAtDest())
@@ -350,7 +341,10 @@ void Unit::trace()
 				if (rfp_cnt)
 					rfp_cnt--;
 				log("Unit %d, Tracing FP", id);
-				tryToFindPath();
+				if (!stalling)
+					tryToFindPath();
+				else
+					log("Unit ID: %d, Already stalling!", id);
 			}
 }
 
@@ -369,16 +363,21 @@ void Unit::tryToFindPath()
 	GridPath grid_path = findPath(final_dest);
 	if (grid_path.size())
 	{
-		log("Unit %d, Success FP, Path Length: %d, RFP: %d", id, grid_path.size(), rfp_cnt);
+		log("Unit %d, Success FP, RFP: %d, Path Length: %d", id, rfp_cnt, grid_path.size());
 		rfp_cnt = 0;
 		stl_cnt = -1;
+		stalling = false;
 		unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_UDP, id, 0, 0, camp, 0, grid_path);
 	}
 	else
 	{
-		log("Unit %d, Failure FP, RFP: %d", id, rfp_cnt);
-		stl_cnt = 1 << (2 + rfp_cnt);
+		//stl_cnt = unit_manager->genRandom(8 * (1 + rfp_cnt), 8 * (2 + rfp_cnt));
+		stl_cnt = unit_manager->genRandom(16, 32);
+		stalling = true;
+		log("Unit %d, Failure FP, RFP: %d, Stall Time: %d", id, rfp_cnt, stl_cnt);
 		rfp_cnt++;
+		if (rfp_cnt >= MAX_PATH_FIND_TIMES)
+			rfp_cnt = 1;
 	}
 }
 
@@ -425,7 +424,7 @@ void Unit::update(float dt)
 	if (moving)
 		move();
 
-	if (stl_cnt >= 0)
+	if (stalling)
 		stall();
 
 	if (tracing)
@@ -435,6 +434,12 @@ void Unit::update(float dt)
 bool UnitManager::init()
 {
 	return true;
+}
+
+void UnitManager::initRandomGenerator()
+{
+	std::random_device rd;						//采用非确定性随机数发生器产生随机数种子
+	gen = std::default_random_engine(rd());		//采用默认随机数引擎产生随机数
 }
 
 void UnitManager::setMessageSet(GameMessageSet* _msgs)
@@ -487,6 +492,12 @@ void UnitManager::produceInBase(int _unit_type)
 {
 	if (id_map.at(base_id))
 		base->startProduce(_unit_type);
+}
+
+int UnitManager::genRandom(int start, int end)
+{
+	std::uniform_int_distribution<> u(start, end);
+	return(u(gen));
 }
 
 void UnitManager::updateUnitsState()
