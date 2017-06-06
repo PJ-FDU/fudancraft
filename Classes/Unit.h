@@ -35,6 +35,7 @@ public:
 
 	CREATE_FUNC(UnitManager);
 	bool init();
+	void initRandomGenerator();
 	void setMessageSet(GameMessageSet* _msgs);
 	void setTiledMap(cocos2d::TMXTiledMap* _tiledMap);
 	void setGridMap(GridMap* _grid_map);
@@ -50,6 +51,7 @@ public:
 	GridPoint getBasePosition();
 	void genCreateMessage(int _unit_type, const GridPoint& _crt_gp);
 	void produceInBase(int _unit_type);
+	int genRandom(int start, int end);
 
 	void initiallyCreateUnits();
 	void selectUnits(cocos2d::Point select_point);
@@ -59,7 +61,6 @@ private:
 	std::vector<int> selected_ids;
 	std::map<int, int> base_map;
 
-
 	cocos2d::TMXTiledMap* tiled_map = nullptr;
 	GridMap* grid_map = nullptr;
 	SocketClient* socket_client = nullptr;
@@ -68,9 +69,13 @@ private:
 	int base_id = 1;
 
 	Base* base = nullptr;
+	GridPoint base_pos{0, 0};
 
 	Unit* createNewUnit(int id, int camp, int uint_type, GridPoint crt_gp);
 	void deselectAllUnits();
+	void setBase(int _base_id, Base* _base, GridPoint _base_pos);
+
+	std::default_random_engine gen;				
 };
 
 class Unit : public cocos2d::Sprite
@@ -107,12 +112,11 @@ public:
 	cocos2d::Color4F getCampColor();
 
 	void tryToFindPath();
-	GridPath findPath(const GridPoint& dest) const;
-	GridPath optimizePath(const GridPath& orig_paht) const;
 protected:
 	int state = 0;
 	bool moving = false;
 	bool tracing = false;
+	bool stalling = false;
 	int target_id;
 	bool selected = false;
 	GridPath grid_path;
@@ -150,6 +154,9 @@ protected:
 	void move();
 	void stall();
 	void trace();
+
+	GridPath findPath(const GridPoint& dest) const;
+	GridPath optimizePath(const GridPath& orig_paht) const;
 
 	friend void HPBar::update(float ft);
 	friend void UnitManager::updateUnitsState();

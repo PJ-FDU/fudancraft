@@ -29,7 +29,7 @@ void Base::setProperties()
 
 	mobile = false;
 
-	size = GridSize(4, 2);
+	size = GridSize(3, 3);
 	period_map[1] = 300;
 	period_map[2] = 200;
 	period_map[3] = 100;

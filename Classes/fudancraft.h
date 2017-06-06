@@ -9,7 +9,7 @@
 
 #define POS_OFFSET 5
 
-#define MAX_PATH_FIND_TIMES 6
+#define MAX_PATH_FIND_TIMES 29
 
 #define MAX_REOCCUPY_TIMES 5
 
@@ -18,7 +18,7 @@
 #define TRACING_SENSOR 0.5f
 
 
-#define DISREFINDPATH_RANGE 400.0f
+#define DISREFINDPATH_RANGE 250.0f
 
 
 #define BOX_EDGE_WITDH 50
@@ -26,4 +26,9 @@
 #define SCROLL_LENGTH 10
 
 #define BASE_TYPE_NO 5
+
+#define INITIAL_BUDGET 10000
+
+#define MONEY_INC_PERIOD 20
+#define MONEY_INC_AMOUNT 100
 
