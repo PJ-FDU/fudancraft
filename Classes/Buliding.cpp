@@ -17,6 +17,7 @@ Base* Base::create(const std::string& filename)
 
 void Base::setProperties()
 {
+	type = 5;
 	atk = 0;
 	atk_range = 0;
 	atk_period = 0;
