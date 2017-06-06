@@ -63,6 +63,7 @@ public:
 	void remove_connection(TcpConnection::pointer p);
 	void button_start();
 
+	int connection_num()const { return connections_.size(); }
 private:
 	SocketServer(int port);
 	void start_accept();
@@ -75,7 +76,7 @@ private:
 
 	tcp::acceptor acceptor_;
 	std::vector<TcpConnection::pointer> connections_;
-	int connection_num;
+	int connection_num_;
 
 	static asio::io_service* io_service_;
 

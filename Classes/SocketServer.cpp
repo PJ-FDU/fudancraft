@@ -126,7 +126,7 @@ void SocketServer::button_start()
 
 	for (auto i = 0; i < connections_.size(); i++)
 		connections_[i]->write_data("PLAYER" + std::string(total) + std::to_string(i + 1));
-	connection_num = connections_.size();
+	connection_num_ = connections_.size();
 	this->button_thread_ = new std::thread(std::bind(&SocketServer::loop_process, this));
 	button_thread_->detach();
 }
@@ -141,11 +141,10 @@ void SocketServer::loop_process()
 {
 	while (true)
 	{
-		if (connections_.size() != connection_num)
-			throw std::exception{"lost connection"};
+//		if (connections_.size() != connection_num)
+//			throw std::exception{"lost connection"};
 		std::vector<std::string> ret;
 		for (auto r : connections_)
-
 			ret.push_back(r->read_data());
 		auto game_msg = GameMessageWrap::combine_message(ret);
 		for (auto r : connections_)

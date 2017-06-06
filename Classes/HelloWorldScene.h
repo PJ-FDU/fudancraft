@@ -54,7 +54,9 @@ public:
 	CREATE_FUNC(ServerMenu);
 private:
 	void editBoxReturn(cocos2d::ui::EditBox* editBox) override;
+	void connectionSchdeule(float f);
 
+	cocos2d::Label* connection_msg_;
 	SocketServer* socket_server_{nullptr};
 	SocketClient* socket_client_{nullptr};
 };

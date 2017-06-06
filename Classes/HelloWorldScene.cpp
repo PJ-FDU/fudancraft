@@ -162,8 +162,15 @@ bool ServerMenu::init()
 	auto menu = Menu::create(start_label, start_game_label,back_label, NULL);
 	menu->setPosition(Vec2(origin.x + visibleSize.width / 2,
 		origin.y + visibleSize.height / 2));
-
 	menu->alignItemsVerticallyWithPadding(40);
+
+
+	connection_msg_ = Label::createWithTTF("", "/fonts/arial.ttf", 18);
+	connection_msg_->setAnchorPoint(Vec2(0.5, 0));
+	connection_msg_->setPosition(Vec2(origin.x + visibleSize.width / 2,
+		origin.y));
+	addChild(connection_msg_);
+
 	this->addChild(menu, 1);
 
 	return true;
@@ -176,6 +183,7 @@ void ServerMenu::menuStartServerCallback(cocos2d::Ref* pSender)
 		socket_server_ = SocketServer::create();
 		socket_client_ = SocketClient::create();
 		log("create server and client on 8008");
+		schedule(schedule_selector(ServerMenu::connectionSchdeule), 0.1);
 	}
 
 }
@@ -202,12 +210,17 @@ void ServerMenu::editBoxReturn(cocos2d::ui::EditBox* editBox)
 {
 	log(editBox->getText());
 	int port = atoi(editBox->getText());
-	if (!socket_server_)
-	{
-		socket_server_ = SocketServer::create(port);
-		socket_client_ = SocketClient::create("127.0.0.1", port);
-		log("create server and client on %d", port);
-	}
+//	if (!socket_server_)
+//	{
+//		socket_server_ = SocketServer::create(port);
+//		socket_client_ = SocketClient::create("127.0.0.1", port);
+//		log("create server and client on %d", port);		
+//	}
+}
+
+void ServerMenu::connectionSchdeule(float f)
+{
+	connection_msg_->setString("Total connection num: " + std::to_string(socket_server_->connection_num()));
 }
 
 cocos2d::Scene* ClientMenu::createScene()
