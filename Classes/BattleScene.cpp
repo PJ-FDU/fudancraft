@@ -98,16 +98,28 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 
 	control_panel_->setFighterCallback([&](Ref*)
 	{
+		if (money->checkMoney(5000))
+		{
 			unit_manager->produceInBase(1);
+			money->spendMoney(5000);
+		}
 	});
 
 
 	control_panel_->setTankCallback([&](Ref*)
 	{
-		unit_manager->produceInBase(2);
+		if (money->checkMoney(4000))
+		{
+			unit_manager->produceInBase(2);
+			money->spendMoney(4000);
+		}
 	});
 	control_panel_->setSoldierCallback([&](Ref*){
-		unit_manager->produceInBase(3);
+		if (money->checkMoney(2000))
+		{
+			unit_manager->produceInBase(3);
+			money->spendMoney(2000);
+		}
 	});
 
 
@@ -145,6 +157,16 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	unit_manager->setPlayerID(player_id);
 	unit_manager->initiallyCreateUnits();
 	start_flag = 1;
+
+	auto *money_icon = Sprite::create("Picture/ui/gold.png");
+	addChild(money_icon, 40);
+	money_icon->setPosition(visibleSize.width - 130, 20);
+	money_icon->setScale(0.03);
+
+	money = Money::create();
+	addChild(money, 40);
+	money->setPosition(visibleSize.width - 80, 20);
+	money->schedule(schedule_selector(Money::update));
 
 	return true;
 }
@@ -346,4 +368,39 @@ void BattleScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* p
 	default:
 		break;
 	}
+}
+
+void Money::update(float f)
+{
+	if (++timer % inc_prd == 0)
+	{
+		money += inc_amt;
+		updateMoneyDisplay();
+	}
+}
+
+bool Money::init()
+{
+	money = INITIAL_BUDGET;
+	char money_str[30];
+	sprintf(money_str, "%d", money);
+	return initWithString(money_str, "fonts/MoneyFont.fnt");
+}
+
+void Money::updateMoneyDisplay()
+{
+	char money_str[30];
+	sprintf(money_str, "%d", money);
+	setString(money_str);
+}
+
+void Money::spendMoney(int cost)
+{
+	money -= cost;
+	updateMoneyDisplay();
+}
+
+bool Money::checkMoney(int cost) const
+{
+	return(money >= cost);
 }
