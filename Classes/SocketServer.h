@@ -18,7 +18,7 @@ class TcpConnection
 {
 public:
 	typedef std::shared_ptr<TcpConnection> pointer;
-	~TcpConnection();
+//	~TcpConnection();
 	static pointer create(asio::io_service& io_service, SocketServer* parent);
 	tcp::socket& socket();
 
@@ -57,7 +57,16 @@ class SocketServer
 public:
 
 	static SocketServer* create(int port = 8008);
+//	~SocketServer() { acceptor_.close(); io_service_->stop(); }
+	void close() {
 
+		connections_.clear();
+		io_service_->stop();
+		acceptor_.close();
+		delete io_service_;
+		io_service_ = new asio::io_service;
+		
+	}
 	std::vector<TcpConnection::pointer> get_connection() const;
 
 	void remove_connection(TcpConnection::pointer p);

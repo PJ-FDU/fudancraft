@@ -3,11 +3,11 @@
 
 asio::io_service* SocketServer::io_service_ = new asio::io_service;
 
-TcpConnection::~TcpConnection()
-{
-	std::cout << "delete";
-	delete_from_parent();
-}
+//TcpConnection::~TcpConnection()
+//{
+//	std::cout << "delete";
+//	delete_from_parent();
+//}
 
 TcpConnection::pointer TcpConnection::create(asio::io_service& io_service, SocketServer* parent)
 {
@@ -58,6 +58,7 @@ std::string TcpConnection::read_data()
 void TcpConnection::do_close()
 {
 	socket_.close();
+	delete_from_parent();
 }
 
 void TcpConnection::handle_read_header(const asio::error_code& error)

@@ -37,7 +37,19 @@ std::string SocketClient::get_string()
 
 void SocketClient::do_close()
 {
-	socket_.close();
+	try {
+		asio::error_code ec;
+		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+		if (!ec)
+			throw asio::system_error(ec);
+		socket_.close();
+		thread_->join();
+
+	}catch(std::exception&e)
+	{
+		e.what();
+	}
+	
 }
 
 int SocketClient::camp() const
@@ -81,8 +93,9 @@ void SocketClient::handle_connect(const asio::error_code& error)
 	{
 		if (!error)
 		{
+
 			std::cout << "connected\n";
-			char data[30] = {0};
+			char data[30] = { 0 };
 			asio::error_code error;
 			size_t length = socket_.read_some(asio::buffer(data, 30), error);
 			if (error || length < 10)
@@ -93,18 +106,21 @@ void SocketClient::handle_connect(const asio::error_code& error)
 			camp_ = atoi(data + 14);
 			start_flag_ = true;
 			asio::async_read(socket_,
-			                 asio::buffer(read_msg_.data(), socket_message::header_length),
-			                 std::bind(&SocketClient::handle_read_header, this,
-			                           std::placeholders::_1));
+				asio::buffer(read_msg_.data(), socket_message::header_length),
+				std::bind(&SocketClient::handle_read_header, this,
+					std::placeholders::_1));
+
 		}
 		else
 		{
 			std::cerr << "failed to connect" << std::endl;
-			throw asio::system_error(error);
+//			throw asio::system_error(error);
 		}
 	}
 	catch (std::exception& e)
 	{
+//		std::terminate();
+//		do_close();
 		std::cerr << "Exception in connection: " << e.what() << "\n";
 	}
 }
