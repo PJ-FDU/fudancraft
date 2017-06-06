@@ -27,3 +27,8 @@
 
 #define BASE_TYPE_NO 5
 
+#define INITIAL_BUDGET 10000
+
+#define MONEY_INC_PERIOD 20
+#define MONEY_INC_AMOUNT 100
+

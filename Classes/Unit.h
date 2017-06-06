@@ -69,9 +69,11 @@ private:
 	int base_id = 1;
 
 	Base* base = nullptr;
+	GridPoint base_pos{0, 0};
 
 	Unit* createNewUnit(int id, int camp, int uint_type, GridPoint crt_gp);
 	void deselectAllUnits();
+	void setBase(int _base_id, Base* _base, GridPoint _base_pos);
 
 	std::default_random_engine gen;				
 };

@@ -5,8 +5,10 @@
 #include "Unit.h"
 #include "SocketServer.h"
 #include "SocketClient.h"
+#include <string>
 
 class ControlPanel;
+class Money;
 
 class MouseRect : public cocos2d::DrawNode
 {
@@ -63,6 +65,8 @@ private:
 
 	MouseRect* mouse_rect = nullptr;
 
+	Money* money = nullptr;
+
 	cocos2d::Point last_touch{0, 0};
 	cocos2d::Point crusor_position{0, 0};
 
@@ -85,4 +89,21 @@ private:
 	cocos2d::MenuItemImage *tank;
 	cocos2d::MenuItemImage *soldier;
 
+};
+
+class Money : public cocos2d::LabelBMFont
+{
+public:
+	void update(float f) override;
+	CREATE_FUNC(Money);
+	bool init() override;
+	void updateMoneyDisplay();
+	bool checkMoney(int cost) const;
+	void spendMoney(int cost);
+private:
+	int money = 0;
+	int timer = 0;
+
+	int inc_prd = MONEY_INC_PERIOD;
+	int inc_amt = MONEY_INC_AMOUNT;
 };

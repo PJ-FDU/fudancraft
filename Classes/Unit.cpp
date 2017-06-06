@@ -466,6 +466,15 @@ void UnitManager::setBattleScene(BattleScene * _battle_scene)
 	battle_scene = _battle_scene;
 }
 
+void UnitManager::setBase(int _base_id, Base * _base, GridPoint _base_pos)
+{
+	base_id = _base_id;
+	base = _base;
+	base_pos = _base_pos;
+	if (battle_scene)
+		battle_scene->focusOnBase();
+}
+
 void UnitManager::setPlayerID(int _player_id)
 {
 	player_id = _player_id;
@@ -483,7 +492,7 @@ GridPoint UnitManager::getUnitPosition(int _unit_id)
 
 GridPoint UnitManager::getBasePosition()
 {
-	return getUnitPosition(base_id);
+	return base_pos;
 }
 
 
@@ -633,14 +642,10 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 		nu = Soldier::create("Picture/units/soldier.png");
 		break;
 	case 5:
-		tmp_base = Base::create("Picture/factory.jpg");
+		tmp_base = Base::create("Picture/units/base.png");
 		base_map[id] = camp;
 		if (camp == player_id)
-		{
-			base = tmp_base;
-			base_id = id;
-			battle_scene->focusOnBase();
-		}
+			setBase(id, tmp_base, crt_gp);
 		nu = tmp_base;
 		break;
 	default:
