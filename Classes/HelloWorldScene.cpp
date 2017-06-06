@@ -35,7 +35,7 @@ bool HelloWorld::init()
     Vec2 origin = Director::getInstance()->getVisibleOrigin();   
    
 
-	MenuItemFont::setFontName("Blackwood Castle Shadow");
+	MenuItemFont::setFontName("fonts/Blackwood Castle Shadow.ttf");
 	auto start_label = MenuItemFont::create("Start Game",CC_CALLBACK_1(HelloWorld::menuStartCallback,this));
 	auto quit_label = MenuItemFont::create("Quit Game",CC_CALLBACK_1(HelloWorld::menuCloseCallback,this));
 	MenuItemFont::setFontSize(24);
@@ -90,7 +90,7 @@ bool StartMenu::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	MenuItemFont::setFontName("Blackwood Castle Shadow");
+	MenuItemFont::setFontName("fonts/Blackwood Castle Shadow.ttf");
 	MenuItemFont::setFontSize(24);
 	auto server_label = MenuItemFont::create("Start As Server", CC_CALLBACK_1(StartMenu::menuServerCallback, this));
 	auto client_label = MenuItemFont::create("Start As Client", CC_CALLBACK_1(StartMenu::menuClientCallback, this));
@@ -154,7 +154,7 @@ bool ServerMenu::init()
 
 	this->addChild(inputbox, 1);
 	
-	MenuItemFont::setFontName("Blackwood Castle Shadow");
+	MenuItemFont::setFontName("fonts/Blackwood Castle Shadow.ttf");
 	MenuItemFont::setFontSize(24);
 	auto start_label = MenuItemFont::create("Start Server", CC_CALLBACK_1(ServerMenu::menuStartServerCallback, this));
 	auto start_game_label = MenuItemFont::create("Start Game", CC_CALLBACK_1(ServerMenu::menuStartGameCallback, this));
@@ -283,7 +283,7 @@ bool ClientMenu::init()
 	port_box->setTag(2);
 	this->addChild(ip_box, 1);
 	this->addChild(port_box, 1);
-	MenuItemFont::setFontName("Blackwood Castle Shadow");
+	MenuItemFont::setFontName("fonts/Blackwood Castle Shadow.ttf");
 	MenuItemFont::setFontSize(24);
 	auto start_label = MenuItemFont::create("Start", CC_CALLBACK_1(ClientMenu::menuStartGameCallback, this));
 //	auto start_game_label = MenuItemFont::create("Start Game", CC_CALLBACK_1(ClientMenu::menuStartGameCallback, this));
