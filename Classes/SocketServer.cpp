@@ -57,7 +57,19 @@ std::string TcpConnection::read_data()
 
 void TcpConnection::do_close()
 {
-	socket_.close();
+	try {
+		asio::error_code ec;
+		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+		if (!ec)
+			throw asio::system_error(ec);
+		socket_.close();
+		
+
+	}
+	catch (std::exception&e)
+	{
+		e.what();
+	}
 	delete_from_parent();
 }
 

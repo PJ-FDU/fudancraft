@@ -348,6 +348,16 @@ void ClientMenu::wait_start()
 
 void ClientMenu::startSchedule(float f)
 {
+	if (socket_client_->error())
+	{
+//		menuBackCallback(nullptr);
+		unscheduleAllSelectors();
+		socket_client_->close();
+		delete socket_client_;
+		socket_client_ = nullptr;
+		connection_msg_->setString("Cannot connect to the server, please try again");
+		return;
+	}
 	switch((timer_++%32)/4)
 	{
 	case 0: connection_msg_->setString("Connected, wait for server"); break;

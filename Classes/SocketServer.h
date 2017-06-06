@@ -63,6 +63,7 @@ public:
 		connections_.clear();
 		io_service_->stop();
 		acceptor_.close();
+		thread_->join();
 		delete io_service_;
 		io_service_ = new asio::io_service;
 		

@@ -115,6 +115,8 @@ void SocketClient::handle_connect(const asio::error_code& error)
 		{
 			std::cerr << "failed to connect" << std::endl;
 //			throw asio::system_error(error);
+			error_flag_ = true;
+
 		}
 	}
 	catch (std::exception& e)
