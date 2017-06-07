@@ -1,4 +1,5 @@
-﻿#include "HelloWorldScene.h"
+﻿#pragma execution_character_set("utf-8")
+#include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
 #include "BattleScene.h"
 #include "SocketServer.h"
@@ -37,10 +38,11 @@ bool HelloWorld::init()
 
 	MenuItemFont::setFontName("fonts/Blackwood Castle Shadow.ttf");
 	auto start_label = MenuItemFont::create("Start Game",CC_CALLBACK_1(HelloWorld::menuStartCallback,this));
+	auto credits_label = MenuItemFont::create("Credits",CC_CALLBACK_1(HelloWorld::menuCreditsCallback,this));
 	auto quit_label = MenuItemFont::create("Quit Game",CC_CALLBACK_1(HelloWorld::menuCloseCallback,this));
 	MenuItemFont::setFontSize(24);
 	
-    auto menu = Menu::create(start_label,quit_label,NULL);
+    auto menu = Menu::create(start_label,credits_label,quit_label,NULL);
     menu->setPosition(Vec2(origin.x + visibleSize.width/2,
                             origin.y + visibleSize.height/2));
 	
@@ -52,11 +54,15 @@ bool HelloWorld::init()
 
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
-{
-  
+{  
 	unscheduleUpdate();
-    Director::getInstance()->end();    
-    
+    Director::getInstance()->end();       
+}
+
+void HelloWorld::menuCreditsCallback(cocos2d::Ref* pSender)
+{
+	auto scene = CreditsScene::createScene();
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
 
 void HelloWorld::menuStartCallback(cocos2d::Ref* pSender)
@@ -369,4 +375,62 @@ void ClientMenu::startSchedule(float f)
 	}
 	if (socket_client_->started())
 		wait_start();
+}
+
+cocos2d::Scene* CreditsScene::createScene()
+{
+	auto scene = Scene::create();
+	auto layer = create();
+	scene->addChild(layer);
+	return scene;
+}
+
+bool CreditsScene::init()
+{
+	if (!Layer::init())
+		return false;
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	std::string credits_content = "Producer/主创：\n赵凌丰\n朱灵均\n潘健\n\
+	User Interface/用户界面:\n赵凌丰\n\
+	Unit Logic/单位逻辑：\n朱灵均\n赵凌丰\n潘健\n\
+	Map/地图：\n潘健\n\
+	Pathfinding/寻路：\n潘健\n朱灵均\n\
+	Socket/套接字编程：\n赵凌丰\n\
+	Network Synchronization Logic/网络同步策略：\n赵凌丰\n朱灵均\n\
+	Message Format/消息格式：\n朱灵均\n赵凌丰\n\
+	Art Designer/美工：\n潘健\n赵凌丰\n\n\
+	Special Thanks to/特别感谢：\n\n周学功老师\n\n\n Cocos2dx\nBoost::Asio\nGoogle Protocal Buffer\nTiled\nAdobe Photoshop\nMicrosoft Visual Studio\nGitHub\nFudan University\n\
+	";
+
+	label = Label::createWithTTF(credits_content, "/fonts/SIMLI.TTF",22);
+	label->setHorizontalAlignment(TextHAlignment::CENTER);
+	label->setPosition(Vec2(origin.x+visibleSize.width/2,origin.y-label->getContentSize().height/2));
+	addChild(label);
+	schedule(schedule_selector(CreditsScene::scheduleMove));
+
+	MenuItemFont::setFontName("fonts/Blackwood Castle Shadow.ttf");
+	MenuItemFont::setFontSize(24);
+	auto back_label = MenuItemFont::create("Back", CC_CALLBACK_1(CreditsScene::menuBackCallback, this));
+	back_label->setPosition(Vec2(origin.x + visibleSize.width - back_label->getContentSize().width,
+		origin.y + back_label->getContentSize().height));
+	auto menu = Menu::create(back_label, NULL);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu, 1);
+	return true;
+
+}
+
+void CreditsScene::menuBackCallback(cocos2d::Ref* pSender)
+{
+	auto scene = HelloWorld::createScene();
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
+}
+
+void CreditsScene::scheduleMove(float f)
+{
+	label->setPosition(label->getPosition() + Vec2(0, 1));
+	if (label->getPosition().y -label->getContentSize().height/2> Director::getInstance()->getVisibleSize().height)
+		label->setPosition(Vec2(Director::getInstance()->getVisibleSize().width / 2, -label->getContentSize().height / 2));
 }
