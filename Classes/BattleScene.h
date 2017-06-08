@@ -39,6 +39,8 @@ public:
 
 	void focusOnBase();
 
+	void destroyReward(int destroyed_type);
+
 
 	void onKeyPressed(cocos2d::EventKeyboard::KeyCode, cocos2d::Event *) override;
 
@@ -102,6 +104,7 @@ public:
 	void updateMoneyDisplay();
 	bool checkMoney(int cost) const;
 	void spendMoney(int cost);
+	void increaseMoney(int amount);
 private:
 	int money = 0;
 	int timer = 0;

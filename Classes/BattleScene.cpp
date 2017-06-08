@@ -36,6 +36,7 @@ void BattleScene::win()
 void BattleScene::lose()
 {
 	notice->displayNotice("You Lose");
+	start_flag = 0;
 }
 
 Scene* BattleScene::createScene(SocketClient* _socket_client, SocketServer* _socket_server)
@@ -180,6 +181,13 @@ void BattleScene::focusOnBase()
 	if (base_vec.y < 0)
 		base_vec.y = 0;
 	battle_map->setPosition(Point(0, 0) - base_vec);
+}
+
+void BattleScene::destroyReward(int destroyed_type)
+{
+	std::vector<int> reward_list = { 0, 5000, 4000, 2000, 0, 0, 10000 };
+	money->increaseMoney(reward_list[destroyed_type]);
+	money->updateMoneyDisplay();
 }
 
 void BattleScene::initPlayerID()
@@ -394,6 +402,11 @@ void Money::spendMoney(int cost)
 {
 	money -= cost;
 	updateMoneyDisplay();
+}
+
+void Money::increaseMoney(int amount)
+{
+	money += amount;
 }
 
 bool Money::checkMoney(int cost) const

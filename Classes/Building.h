@@ -23,3 +23,14 @@ private:
 
 	void setProperties() override;
 };
+
+class Tower : public Unit
+{
+public:
+	static Tower* create(const std::string& filename);
+	//void addToMaps(const GridPoint & crt_gp, cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map) override;
+	void update(float f) override;
+	void setState(int _state) override;
+private:
+	void setProperties() override;
+};

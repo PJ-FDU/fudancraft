@@ -31,20 +31,6 @@ GridMap* GridMap::create(const cocos2d::TMXTiledMap * tiled_map)
 
 GridPoint GridMap::findFreePositionNear(const GridPoint& origin_gp)
 {
-	/*
-
-	constexpr int x_list[] = { 0, -1, 0, 1, 0, -1, 1, 1, -1, -2, 0, 2, 0, -2, -1, 1, 2, 2, 1, -1, -2};
-	constexpr int y_list[] = { 0, 0, -1, 0, 1, -1, -1, 1, 1, 0, -2, 0, 2, -1, -2, -2, -1, 1, 2, 2, 1};
-
-	for (int i = 0; i < sizeof(x_list); i++)
-	{
-		GridPoint gp{ origin_gp.x + x_list[i], origin_gp.y +  y_list[i] };
-		if (checkPosition(gp))
-			return(gp);
-	}*/
-
-
-
 	if (checkPosition(origin_gp))
 		return(origin_gp);
 
@@ -73,6 +59,7 @@ bool GridMap::initWithTiledMap(const TMXTiledMap* tiled_map)
 	grid_width = int(tiled_map->getTileSize().width);
 	offset_vec = Vec2(grid_width / 2, grid_height / 2);
 	gmap = std::vector<std::vector<int>>(map_width, std::vector<int>(map_height, 0));
+	umap = std::vector<std::vector<int>>(map_width, std::vector<int>(map_height, 0));
 
 	auto decoration_layer = tiled_map->getLayer("InfoLayer");
 	for (int gx = 0; gx < map_width; gx++)
@@ -81,11 +68,6 @@ bool GridMap::initWithTiledMap(const TMXTiledMap* tiled_map)
 			int tile_gid = decoration_layer->getTileGIDAt(Vec2(gx, map_height - 1 - gy));
 			if (tile_gid > 0)
 			{
-				/*auto prop = tiled_map->getPropertiesForGID(tile_gid);
-				if (prop.isNull())
-					continue;
-				auto prop_valuemap = prop.asValueMap();
-				int z_index = prop_valuemap["z_index"].asInt();*/
 				gmap[gx][gy] = 1;
 			}
 		}
@@ -134,46 +116,80 @@ bool GridMap::checkPosition(const GridPoint & gp)
 	return false;
 }
 
-bool GridMap::occupyPosition(const GridPoint& pos)
+bool GridMap::occupyPosition(int id, const GridPoint& pos, bool occupy_grid)
 {
-	if (!gmap[pos.x][pos.y])
+	if (checkPosition(pos))
 	{
-		gmap[pos.x][pos.y] = 1;
+		if (occupy_grid)
+			gmap[pos.x][pos.y] = 1;
+		umap[pos.x][pos.y] = id;
 		return(1);
 	}
 	return(0);
 }
 
-bool GridMap::occupyPosition(const Point& pos)
+bool GridMap::occupyPosition(int id, const Point& pos, bool occupy_grid)
 {
-	return(occupyPosition(getGridPoint(pos)));
+	return(occupyPosition(id, getGridPoint(pos)), occupy_grid);
 }
 
-bool GridMap::occupyPosition(const GridRect& grec)
+bool GridMap::occupyPosition(int id, const GridRect& grec, bool occupy_grid)
 {
 	if (checkPosition(grec))
 		for (int x = grec.gp.x; x < grec.gp.x + grec.size.width; x++)
 			for (int y = grec.gp.y; y < grec.gp.y + grec.size.height; y++)
-				gmap[x][y] = 1;
+			{
+				if (occupy_grid)
+					gmap[x][y] = 1;
+				umap[x][y] = id;
+			}
 	else
 		return(false);
+}
+
+bool GridMap::checkPointInMap(const GridPoint & gp)
+{
+	return checkPointInMap(gp.x, gp.y);
+}
+
+bool GridMap::checkPointInMap(int x, int y)
+{
+	return (x >= 0 && x < map_width && y >= 0 && y < map_height);
 }
 
 void GridMap::leavePosition(const GridPoint& pos)
 {
 	gmap[pos.x][pos.y] = 0;
+	umap[pos.x][pos.y] = 0;
 }
 
 void GridMap::leavePosition(const GridRect& grec)
 {
 	for (int x = grec.gp.x; x < grec.gp.x + grec.size.width; x++)
 		for (int y = grec.gp.y; y < grec.gp.y + grec.size.height; y++)
+		{
 			gmap[x][y] = 0;
+			umap[x][y] = 0;
+		}
 }
 
 std::vector<std::vector<int>>& GridMap::getLogicalGridMap()
 {
 	return(gmap);
+}
+
+std::vector<int> GridMap::getUnitIDs(const GridRect & grec)
+{
+	std::vector<int> unit_ids(grec.size.width * grec.size.height);
+	int i = 0;
+	for (int x = grec.gp.x; x < grec.gp.x + grec.size.width; x++)
+		for (int y = grec.gp.y; y < grec.gp.y + grec.size.height; y++)
+			if (checkPointInMap(x, y) && umap[x][y])
+			{
+				unit_ids[i] = umap[x][y];
+				i++;
+			}
+	return unit_ids;
 }
 
 bool GridMap::hasApproached(const Point& cur_fp, const GridPoint& dest_gp)
@@ -191,4 +207,14 @@ GridPoint operator+(const GridPoint & gp1, const GridPoint & gp2)
 GridPoint operator-(const GridPoint & gp1, const GridPoint & gp2)
 {
 	return GridPoint(gp1.x - gp2.x, gp1.y - gp2.y);
+}
+
+GridPoint operator-(const GridPoint & gp, const GridSize & gz)
+{
+	return GridPoint(gp.x - gz.width, gp.y - gz.height);
+}
+
+GridSize operator/(const GridSize & gz, int s)
+{
+	return GridSize(gz.width / s, gz.height / s);
 }

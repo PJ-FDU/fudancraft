@@ -231,7 +231,7 @@ void Unit::addToMaps(const GridPoint & crt_gp, TMXTiledMap* _tiled_map, GridMap*
 
 	_tiled_map->addChild(this, z_index);
 
-	_grid_map->occupyPosition(cur_pos);
+	_grid_map->occupyPosition(id, cur_pos);
 }
 
 void Unit::removeFromMaps()
@@ -260,7 +260,7 @@ void Unit::move()
 		setPosition(next_pos);
 	}
 	else
-		if (grid_map->occupyPosition(next_gp))
+		if (grid_map->occupyPosition(id, next_gp))
 		{
 			roc_cnt = 0;
 			setPosition(next_pos);
@@ -348,6 +348,43 @@ void Unit::trace()
 			}
 }
 
+void Unit::auto_atk()
+{
+	GridPoint target_gp = unit_manager->getUnitPosition(target_id);
+	Point target_fp = grid_map->getPointWithOffset(target_gp);
+	Point cur_fp = getPosition();
+	Vec2 dist_vec = target_fp - cur_fp;
+
+	if (target_gp == GridPoint(-1, -1) || (dist_vec).length() >= atk_range)
+		auto_atking = false;
+	else
+		if (!cd)
+		{
+			unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_ATK, id, target_id, atk, camp, 0, {});
+
+			cd = cd_max;
+		}
+		else
+			cd--;
+}
+
+void Unit::searchForNearbyEnemy()
+{
+	const auto & auto_atk_rect = GridRect(cur_pos - auto_atk_range / 2, auto_atk_range);
+	const auto & unit_ids = grid_map->getUnitIDs(auto_atk_rect);
+	for (auto id : unit_ids)
+	{
+		int its_camp = unit_manager->getUnitCamp(id);
+		if (its_camp != 0 && its_camp != camp)
+		{
+			target_id = id;
+			auto_atking = true;
+			return;
+		}
+	}
+	return;
+}
+
 void Unit::tryToFindPath()
 {
 	if (camp != unit_manager->player_id)
@@ -421,14 +458,25 @@ GridPath Unit::optimizePath(const GridPath & orig_path) const
 
 void Unit::update(float dt)
 {
+	++timer;
+
 	if (moving)
 		move();
 
-	if (stalling)
-		stall();
+	if (camp == unit_manager->player_id)
+	{
+		if (stalling)
+			stall();
 
-	if (tracing)
-		trace();
+		if (tracing)
+			trace();
+
+		if (auto_atking)
+			auto_atk();
+		else
+			if (timer % auto_atk_freq == 0)
+				searchForNearbyEnemy();
+	}
 }
 
 bool UnitManager::init()
@@ -493,6 +541,15 @@ GridPoint UnitManager::getUnitPosition(int _unit_id)
 		return(unit->getGridPosition());
 	else
 		return{-1, -1};
+}
+
+int UnitManager::getUnitCamp(int unit_id)
+{
+	Unit* unit = id_map.at(unit_id);
+	if (unit)
+		return(unit->camp);
+	else 
+		return 0;
 }
 
 GridPoint UnitManager::getBasePosition()
@@ -586,6 +643,8 @@ void UnitManager::updateUnitsState()
 				{
 					if (unit_1->getType() == 5)
 						checkWinOrLose(unitid_1);
+					if (getUnitCamp(unitid_0) == player_id)
+						battle_scene->destroyReward(unit_1->getType());
 					deleteUnit(unitid_1);
 				}
 			}
@@ -648,23 +707,34 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 {
 	Unit* nu;
 	Base* tmp_base;
+	std::vector<std::string > pic_paths = { 
+		"", "Picture/units/airplane_", "Picture/units/robot_front_", "Picture/units/footman_front_",
+		"", "Picture/units/base_", "Picture/units/tower_"
+	};
+	std::vector<std::string > suffixes = { ".png", ".jpg" };
+	
+	int pic_num = camp % 4;
+	std::string pic_file = pic_paths[unit_type] + std::to_string(pic_num) + suffixes[0];
 	switch (unit_type)
 	{
 	case 1:
-		nu = Fighter::create("Picture/units/fighter.png");
+		nu = Fighter::create(pic_file);
 		break;
 	case 2:
-		nu = Tank::create("Picture/units/tank.png");
+		nu = Tank::create(pic_file);
 		break;
 	case 3:
-		nu = Soldier::create("Picture/units/soldier.png");
+		nu = Soldier::create(pic_file);
 		break;
 	case 5:
-		tmp_base = Base::create("Picture/factory.jpg");
+		tmp_base = Base::create(pic_file);
 		base_map[id] = camp;
 		if (camp == player_id)
 			setBase(id, tmp_base, crt_gp);
 		nu = tmp_base;
+		break;
+	case 6:
+		nu = Tower::create(pic_file);
 		break;
 	default:
 		break;
@@ -677,7 +747,7 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 	nu->setAnchorPoint(Vec2(0.5, 0.5));
 	nu->addToMaps(crt_gp, tiled_map, grid_map);
 	nu->initHPBar();
-	nu->initFlag();
+	//nu->initFlag();
 	nu->schedule(schedule_selector(Unit::update));
 
 	return(nu);

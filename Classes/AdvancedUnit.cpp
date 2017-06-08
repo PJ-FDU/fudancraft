@@ -20,7 +20,6 @@ void Fighter::setProperties()
 	type = 1;
 	atk = 8;
 	atk_range = 100;
-	atk_period = 20;
 	hp_max = 100;
 
 	cd_max = 20;
@@ -28,6 +27,9 @@ void Fighter::setProperties()
 	move_speed = 3.0f;
 
 	mobile = true;
+
+	auto_atk_freq = 80;
+	auto_atk_range = GridSize(5, 5);
 
 	z_index = 10;
 
@@ -55,7 +57,6 @@ void Tank::setProperties()
 	type = 2;
 	atk = 10;
 	atk_range = 100;
-	atk_period = 30;
 	hp_max = 200;
 	cd_max = 30;
 	move_speed = 1.0f;
@@ -63,6 +64,9 @@ void Tank::setProperties()
 	z_index = 10;
 
 	mobile = true;
+
+	auto_atk_freq = 80;
+	auto_atk_range = GridSize(3, 3);
 
 	size = GridSize(1, 1);
 
@@ -88,7 +92,6 @@ void Soldier::setProperties()
 	type = 3;
 	atk = 5;
 	atk_range = 50;
-	atk_period = 10;
 	hp_max = 80;
 	cd_max = 10;
 	move_speed = 1.5f;
@@ -96,6 +99,9 @@ void Soldier::setProperties()
 	z_index = 10;
 
 	mobile = true;
+
+	auto_atk_freq = 80;
+	auto_atk_range = GridSize(3, 3);
 
 	size = GridSize(1, 1);
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" nextobjectid="19">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" nextobjectid="47">
  <tileset firstgid="1" name="RMXP_Grid" tilewidth="32" tileheight="32" tilecount="3880" columns="8">
   <image source="RMXP_Grid.png" width="256" height="15520"/>
   <tile id="3702">
@@ -674,55 +674,49 @@
 </data>
  </layer>
  <objectgroup name="InitialUnits">
-  <object id="1" x="2178" y="3733">
+  <object id="1" x="2157" y="3600">
    <properties>
     <property name="camp" type="int" value="1"/>
     <property name="type" type="int" value="1"/>
    </properties>
   </object>
-  <object id="3" x="2277" y="3634">
+  <object id="3" x="2280" y="3598">
    <properties>
     <property name="camp" type="int" value="1"/>
     <property name="type" type="int" value="2"/>
    </properties>
   </object>
-  <object id="4" x="2374" y="3701">
+  <object id="4" x="2380" y="3625">
    <properties>
     <property name="camp" type="int" value="1"/>
     <property name="type" type="int" value="3"/>
    </properties>
   </object>
-  <object id="5" x="2238" y="3790" width="116" height="52">
+  <object id="5" x="2244" y="3780" width="54" height="56">
    <properties>
     <property name="camp" type="int" value="1"/>
     <property name="type" type="int" value="5"/>
    </properties>
   </object>
-  <object id="7" x="1870.67" y="242.667" width="116" height="52">
-   <properties>
-    <property name="camp" type="int" value="2"/>
-    <property name="type" type="int" value="5"/>
-   </properties>
-  </object>
-  <object id="8" x="1881.67" y="348.667">
+  <object id="8" x="1873.67" y="493.667">
    <properties>
     <property name="camp" type="int" value="2"/>
     <property name="type" type="int" value="3"/>
    </properties>
   </object>
-  <object id="9" x="1782.67" y="447.667">
+  <object id="9" x="1772.67" y="527.667">
    <properties>
     <property name="camp" type="int" value="2"/>
     <property name="type" type="int" value="2"/>
    </properties>
   </object>
-  <object id="10" x="1978.67" y="415.667">
+  <object id="10" x="1979.67" y="477.667">
    <properties>
     <property name="camp" type="int" value="2"/>
     <property name="type" type="int" value="1"/>
    </properties>
   </object>
-  <object id="11" x="338" y="2649">
+  <object id="11" x="357" y="2595">
    <properties>
     <property name="camp" type="int" value="3"/>
     <property name="type" type="int" value="1"/>
@@ -740,34 +734,136 @@
     <property name="type" type="int" value="3"/>
    </properties>
   </object>
-  <object id="14" x="398" y="2706" width="116" height="52">
+  <object id="14" x="327" y="2789" width="50" height="53">
    <properties>
     <property name="camp" type="int" value="3"/>
     <property name="type" type="int" value="5"/>
    </properties>
   </object>
-  <object id="15" x="3623.33" y="1478.33">
+  <object id="15" x="3555.33" y="1562.33">
    <properties>
     <property name="camp" type="int" value="4"/>
     <property name="type" type="int" value="3"/>
    </properties>
   </object>
-  <object id="16" x="3669" y="1559.33">
+  <object id="16" x="3600" y="1649.33">
    <properties>
     <property name="camp" type="int" value="4"/>
     <property name="type" type="int" value="2"/>
    </properties>
   </object>
-  <object id="17" x="3766" y="1626.33">
+  <object id="17" x="3725" y="1714.33">
    <properties>
     <property name="camp" type="int" value="4"/>
     <property name="type" type="int" value="1"/>
    </properties>
   </object>
-  <object id="18" x="3723.33" y="1446" width="116" height="52">
+  <object id="18" x="3780.33" y="1446" width="56" height="52">
    <properties>
     <property name="camp" type="int" value="4"/>
     <property name="type" type="int" value="5"/>
+   </properties>
+  </object>
+  <object id="21" x="2318" y="3666">
+   <properties>
+    <property name="camp" type="int" value="1"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="26" x="2093" y="3824">
+   <properties>
+    <property name="camp" type="int" value="1"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="27" x="2449" y="3791">
+   <properties>
+    <property name="camp" type="int" value="1"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="28" x="2160" y="3700">
+   <properties>
+    <property name="camp" type="int" value="1"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="30" x="1680" y="400">
+   <properties>
+    <property name="camp" type="int" value="2"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="31" x="1837" y="431">
+   <properties>
+    <property name="camp" type="int" value="2"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="32" x="1999" y="211">
+   <properties>
+    <property name="camp" type="int" value="2"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="33" x="1996" y="373">
+   <properties>
+    <property name="camp" type="int" value="2"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="34" x="1796" y="257" width="54" height="56">
+   <properties>
+    <property name="camp" type="int" value="2"/>
+    <property name="type" type="int" value="5"/>
+   </properties>
+  </object>
+  <object id="35" x="3634" y="1356">
+   <properties>
+    <property name="camp" type="int" value="4"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="38" x="3600" y="1488">
+   <properties>
+    <property name="camp" type="int" value="4"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="39" x="3727" y="1588">
+   <properties>
+    <property name="camp" type="int" value="4"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="40" x="3886" y="1585">
+   <properties>
+    <property name="camp" type="int" value="4"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="41" x="272" y="2675">
+   <properties>
+    <property name="camp" type="int" value="3"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="44" x="399" y="2674">
+   <properties>
+    <property name="camp" type="int" value="3"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="45" x="531" y="2737">
+   <properties>
+    <property name="camp" type="int" value="3"/>
+    <property name="type" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="46" x="526" y="2866">
+   <properties>
+    <property name="camp" type="int" value="3"/>
+    <property name="type" type="int" value="6"/>
    </properties>
   </object>
  </objectgroup>
