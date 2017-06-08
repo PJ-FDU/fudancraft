@@ -91,6 +91,7 @@ private:
 	static asio::io_service* io_service_;
 
 	std::thread *thread_, *button_thread_;
+	std::mutex delete_mutex_;
 
 	std::condition_variable data_cond_;
 };

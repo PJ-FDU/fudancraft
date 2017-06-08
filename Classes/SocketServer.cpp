@@ -124,6 +124,7 @@ void TcpConnection::delete_from_parent()
 
 SocketServer* SocketServer::create(int port)
 {
+//	io_service_ = new asio::io_service;
 	auto s = new SocketServer(port);
 	s->thread_ = new std::thread(
 		std::bind(static_cast<std::size_t(asio::io_service::*)()>(&asio::io_service::run),
@@ -173,11 +174,11 @@ std::vector<TcpConnection::pointer> SocketServer::get_connection() const
 void SocketServer::remove_connection(TcpConnection::pointer p)
 {
 	//		connections_.erase(std::remove(connections_.begin(), connections_.end(), p), connections_.end());
+	std::unique_lock<std::mutex> lock(delete_mutex_);
 	auto position = std::find(connections_.begin(), connections_.end(), p);
 
 	if (position == connections_.end())
 		std::cout << "delete not succ\n";
-
 	else
 		connections_.erase(position);
 	std::cout << "delete succ\n";

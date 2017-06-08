@@ -212,19 +212,20 @@ void ServerMenu::menuBackCallback(cocos2d::Ref* pSender)
 	{
 		unscheduleAllSelectors();
 //		try {
-			socket_client_->close();
-			delete socket_client_;
+			
 //			std::this_thread::sleep_for(std::chrono::seconds(2));
-			socket_server_->close();
-			delete socket_server_;
+			
 
 //		}
 //		catch(std::exception&e)
 //		{
 //			std::cerr << e.what();
 //		}
-		
+		socket_client_->close();
+		delete socket_client_;
 		socket_client_ = nullptr;
+		socket_server_->close();
+		delete socket_server_;
 		socket_server_ = nullptr;
 	}
 	auto scene = StartMenu::createScene();
