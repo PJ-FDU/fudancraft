@@ -271,7 +271,7 @@ void ControlPanel::setSoldierCallback(std::function<void(Ref*)> callback)
 void BattleScene::update(float f)
 {
 	frame_cnt++;
-	if (socket_server&&socket_server->error())
+	if (socket_client->error() || (socket_server&&socket_server->error()))
 		menuBackCallback(nullptr);
 	scrollMap();
 	if (frame_cnt % KEY_FRAME == 0 && start_flag)
