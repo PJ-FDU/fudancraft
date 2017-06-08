@@ -27,6 +27,7 @@ public:
 	void write_data(std::string s);
 
 	std::string read_data();
+	bool error()const { return error_flag_; }
 
 
 	void do_close();
@@ -44,6 +45,7 @@ private:
 
 	tcp::socket socket_;
 	SocketServer* parent;
+	bool error_flag_{ false };
 	
 	socket_message read_msg_;
 	std::deque<socket_message> read_msg_deque_;
@@ -73,6 +75,8 @@ public:
 	void remove_connection(TcpConnection::pointer p);
 	void button_start();
 
+	bool error()const { return error_flag_; }
+
 	int connection_num()const { return connections_.size(); }
 private:
 	SocketServer(int port);
@@ -92,7 +96,7 @@ private:
 
 	std::thread *thread_, *button_thread_;
 	std::mutex delete_mutex_;
-
+	bool error_flag_{ false };
 	std::condition_variable data_cond_;
 };
 

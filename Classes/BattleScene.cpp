@@ -1,4 +1,5 @@
 #include "BattleScene.h"
+#include "HelloWorldScene.h"
 
 USING_NS_CC;
 
@@ -21,6 +22,12 @@ BattleScene* BattleScene::create(SocketClient* _socket_client, SocketServer* _so
 	CC_SAFE_DELETE(battle_scene);
 
 	return nullptr;
+}
+
+void BattleScene::menuBackCallback(cocos2d::Ref* pSender)
+{
+	auto scene = HelloWorld::createScene();
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
 
 void BattleScene::create_figher(Ref*)
