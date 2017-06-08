@@ -26,6 +26,16 @@ BattleScene* BattleScene::create(SocketClient* _socket_client, SocketServer* _so
 
 void BattleScene::menuBackCallback(cocos2d::Ref* pSender)
 {
+	unscheduleAllSelectors();
+	socket_client->close();
+	delete socket_client;
+	socket_client = nullptr;
+	if (socket_server)
+	{	
+		socket_server->close();
+		delete socket_server;
+		socket_server = nullptr;
+	}
 	auto scene = HelloWorld::createScene();
 	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
@@ -253,6 +263,8 @@ void ControlPanel::setSoldierCallback(std::function<void(Ref*)> callback)
 void BattleScene::update(float f)
 {
 	frame_cnt++;
+	if (socket_server&&socket_server->error())
+		menuBackCallback(nullptr);
 	scrollMap();
 	if (frame_cnt % KEY_FRAME == 0 && start_flag)
 	{

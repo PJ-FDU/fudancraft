@@ -29,6 +29,7 @@ void TcpConnection::start()
 
 void TcpConnection::write_data(std::string s)
 {
+	if (error_flag_) return;
 	socket_message msg;
 	if (s.size() == 0)
 	{
@@ -58,6 +59,11 @@ std::string TcpConnection::read_data()
 void TcpConnection::do_close()
 {
 	try {
+		error_flag_ = true;
+		socket_message empty_msg;
+		memcpy(empty_msg.data(), "0001\0", 5);
+		read_msg_deque_.push_back(empty_msg);
+		data_cond_.notify_one();
 		asio::error_code ec;
 		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
 		if (!ec)
@@ -155,12 +161,23 @@ void SocketServer::loop_process()
 {
 	while (true)
 	{
-//		if (connections_.size() != connection_num)
+		if (connections_.size() != connection_num_)
+		{
+			error_flag_ = true;
+			break;
+		}
 //			throw std::exception{"lost connection"};
+//		std::unique_lock<std::mutex> lock(delete_mutex_);
 		std::vector<std::string> ret;
 		for (auto r : connections_)
+		{
+			if (r->error())
+//				break;
+				error_flag_ |= r->error();
 			ret.push_back(r->read_data());
+		}
 		auto game_msg = GameMessageWrap::combine_message(ret);
+
 		for (auto r : connections_)
 			r->write_data(game_msg);
 	}

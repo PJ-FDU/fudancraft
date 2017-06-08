@@ -45,7 +45,7 @@ private:
 
 	tcp::socket socket_;
 	SocketServer* parent;
-	bool error_flag_{ false };
+	bool error_flag_{ false };	
 	
 	socket_message read_msg_;
 	std::deque<socket_message> read_msg_deque_;
@@ -61,7 +61,8 @@ public:
 	static SocketServer* create(int port = 8008);
 //	~SocketServer() { acceptor_.close(); io_service_->stop(); }
 	void close() {
-
+		if (button_thread_)
+			button_thread_->join();
 		connections_.clear();
 		io_service_->stop();
 		acceptor_.close();
@@ -94,7 +95,7 @@ private:
 
 	static asio::io_service* io_service_;
 
-	std::thread *thread_, *button_thread_;
+	std::thread *thread_, *button_thread_{nullptr};
 	std::mutex delete_mutex_;
 	bool error_flag_{ false };
 	std::condition_variable data_cond_;
