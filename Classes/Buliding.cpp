@@ -21,7 +21,7 @@ void Base::setProperties()
 	atk = 0;
 	atk_range = 0;
 	atk_period = 0;
-	hp_max = 500;
+	hp_max = 800;
 	cd_max = 30;
 	move_speed = 0.0f;
 

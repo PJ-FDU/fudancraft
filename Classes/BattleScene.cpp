@@ -115,10 +115,10 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 		}
 	});
 	control_panel_->setSoldierCallback([&](Ref*){
-		if (money->checkMoney(2000))
+		if (money->checkMoney(1000))
 		{
 			unit_manager->produceInBase(3);
-			money->spendMoney(2000);
+			money->spendMoney(1000);
 		}
 	});
 	
