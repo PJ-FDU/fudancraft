@@ -26,13 +26,14 @@ BattleScene* BattleScene::create(SocketClient* _socket_client, SocketServer* _so
 
 void BattleScene::menuBackCallback(cocos2d::Ref* pSender)
 {
-	unscheduleAllSelectors();
+	unscheduleAllCallbacks();
 	socket_client->close();
 	delete socket_client;
 	socket_client = nullptr;
 	if (socket_server)
 	{	
 		socket_server->close();
+		std::this_thread::sleep_for(std::chrono::microseconds(200));
 		delete socket_server;
 		socket_server = nullptr;
 	}
@@ -40,10 +41,6 @@ void BattleScene::menuBackCallback(cocos2d::Ref* pSender)
 	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
 
-void BattleScene::create_figher(Ref*)
-{
-
-}
 
 void BattleScene::win()
 {
@@ -124,10 +121,8 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 			money->spendMoney(2000);
 		}
 	});
-
-
-
-	addChild(control_panel_,4);
+	
+	addChild(control_panel_,10);
 
 	mouse_rect = MouseRect::create();
 	mouse_rect->setVisible(false);
@@ -177,6 +172,19 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	notice->setScale(0.7);
 	notice->schedule(schedule_selector(Notice::update));
 	unit_manager->setNotice(notice);
+	
+/*	auto back_label = MenuItemFont::create("Back", CC_CALLBACK_1(BattleScene::menuBackCallback, this));
+	back_label->setPosition(Vec2(origin.x + visibleSize.width - back_label->getContentSize().width,
+		origin.y + visibleSize.height-back_label->getContentSize().height));
+	back_label->setColor(Color3B(255, 236, 139));
+//	back_label->setFontSize(16);
+	back_label->setFontName("fonts/Blackwood Castle.ttf");
+	auto menu = Menu::create(back_label, NULL);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu, 20);*/
+
+
+
 
 	start_flag = 1;
 

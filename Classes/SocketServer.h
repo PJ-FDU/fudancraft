@@ -61,9 +61,16 @@ public:
 	static SocketServer* create(int port = 8008);
 //	~SocketServer() { acceptor_.close(); io_service_->stop(); }
 	void close() {
-		if (button_thread_)
-			button_thread_->join();
-		connections_.clear();
+//		if (button_thread_)
+//			try {
+//			button_thread_->join();
+//		}catch(std::exception&e){
+//			e.what();
+//		}
+		{
+//			std::unique_lock<std::mutex> lock(delete_mutex_);
+			connections_.clear();
+		}
 		io_service_->stop();
 		acceptor_.close();
 		thread_->join();

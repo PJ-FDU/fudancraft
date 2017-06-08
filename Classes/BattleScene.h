@@ -47,7 +47,7 @@ public:
 
 	void menuBackCallback(cocos2d::Ref* pSender);
 private:
-	void create_figher(Ref*);
+//	void create_figher(Ref*);
 
 
 	int player_id = 0;
