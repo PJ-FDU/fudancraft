@@ -309,18 +309,26 @@ void BattleScene::scrollMap()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	int horizontal_state, vertical_state;
-	horizontal_state = (origin.x + visibleSize.width - BOX_EDGE_WITDH < crusor_position.x) - (origin.x + BOX_EDGE_WITDH > crusor_position.x);
+	horizontal_state = (origin.x + visibleSize.width - BOX_EDGE_WITDH_SMALL < crusor_position.x)
+		+ (origin.x + visibleSize.width - BOX_EDGE_WITDH < crusor_position.x)
+		- (origin.x + BOX_EDGE_WITDH_SMALL > crusor_position.x)
+		- (origin.x + BOX_EDGE_WITDH > crusor_position.x);
 	//	log("horizontal state: %d", horizontal_state);
-	vertical_state = (origin.y + visibleSize.height - BOX_EDGE_WITDH < crusor_position.y) - (origin.y + BOX_EDGE_WITDH > crusor_position.y);
+	vertical_state = (origin.y + visibleSize.height - BOX_EDGE_WITDH_SMALL < crusor_position.y)
+		+ (origin.y + visibleSize.height - BOX_EDGE_WITDH < crusor_position.y)
+		- (origin.y + BOX_EDGE_WITDH_SMALL > crusor_position.y)
+		- (origin.y + BOX_EDGE_WITDH > crusor_position.y);
 	Vec2 scroll(0,0);
-	if(horizontal_state == -1)
+/*	if(horizontal_state == -1)
 		scroll += Vec2(SCROLL_LENGTH,0 );
 	else if(horizontal_state == 1)
 		scroll += Vec2(-SCROLL_LENGTH, 0);
 	if(vertical_state == -1)
 		scroll += Vec2(0, SCROLL_LENGTH);
 	else if(vertical_state == 1)
-		scroll += Vec2(0, -SCROLL_LENGTH);
+		scroll += Vec2(0, -SCROLL_LENGTH);*/
+	scroll += Vec2(-SCROLL_LENGTH, 0)*horizontal_state;
+	scroll += Vec2(0, -SCROLL_LENGTH)*vertical_state;
 	map_center += scroll;
 	if (battle_map->getBoundingBox().containsPoint((-scroll) + Director::getInstance()->getVisibleSize())
 		&& battle_map->getBoundingBox().containsPoint(-scroll))
