@@ -358,17 +358,18 @@ void Unit::trace()
 	GridPoint target_gp = unit_manager->getUnitPosition(target_id);
 	Point target_fp = grid_map->getPointWithOffset(target_gp);
 	Point last_fp = grid_map->getPointWithOffset(target_lastpos);
-	Point cur_fp = getPosition();
+	Point cur_fp = grid_map->getPointWithOffset(cur_pos);//getPosition();
 	Vec2 dist_vec = target_fp - cur_fp;
 	Vec2 offset_vec = target_fp - last_fp;
 
 	if (target_gp == GridPoint(-1, -1))
 		tracing = false;
 	else
-		if ((dist_vec).length() < atk_range && camp == unit_manager->player_id)
+		if (dist_vec.length() < atk_range && camp == unit_manager->player_id)
 		{
-			cur_dest = grid_map->getGridPoint(cur_fp);
-			//grid_path.clear();
+			cur_dest = cur_pos;
+			final_dest = cur_pos;
+			grid_path.clear();
 			attack();
 		}
 		else
@@ -393,7 +394,7 @@ void Unit::auto_atk()
 	Point cur_fp = getPosition();
 	Vec2 dist_vec = target_fp - cur_fp;
 
-	if (target_gp == GridPoint(-1, -1) || (dist_vec).length() >= atk_range)
+	if (target_gp == GridPoint(-1, -1) || dist_vec.length() >= atk_range)
 		auto_atking = false;
 	else
 		attack();
@@ -403,12 +404,12 @@ void Unit::searchForNearbyEnemy()
 {
 	const auto & auto_atk_rect = GridRect(cur_pos - auto_atk_range / 2, auto_atk_range);
 	const auto & unit_ids = grid_map->getUnitIDAt(auto_atk_rect);
-	for (auto id : unit_ids)
+	for (auto its_id : unit_ids)
 	{
-		int its_camp = unit_manager->getUnitCamp(id);
+		int its_camp = unit_manager->getUnitCamp(its_id);
 		if (its_camp != 0 && its_camp != camp)
 		{
-			target_id = id;
+			target_id = its_id;
 			auto_atking = true;
 			return;
 		}
@@ -494,13 +495,13 @@ void Unit::update(float dt)
 	if (moving)
 		move();
 
+	if (tracing)
+		trace();
+
 	if (camp == unit_manager->player_id)
 	{
 		if (stalling)
 			stall();
-
-		if (tracing)
-			trace();
 
 		if (auto_atking)
 			auto_atk();
