@@ -371,7 +371,7 @@ void Unit::auto_atk()
 void Unit::searchForNearbyEnemy()
 {
 	const auto & auto_atk_rect = GridRect(cur_pos - auto_atk_range / 2, auto_atk_range);
-	const auto & unit_ids = grid_map->getUnitIDs(auto_atk_rect);
+	const auto & unit_ids = grid_map->getUnitIDAt(auto_atk_rect);
 	for (auto id : unit_ids)
 	{
 		int its_camp = unit_manager->getUnitCamp(id);

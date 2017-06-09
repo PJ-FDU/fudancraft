@@ -54,12 +54,13 @@ public:
 	bool occupyPosition(int id, const GridPoint& pos, bool occupy_grid = true);
 	bool occupyPosition(int id, const cocos2d::Point& pos, bool occupy_grid = true);
 	bool occupyPosition(int id, const GridRect& grec, bool occupy_grid = true);
-	bool checkPointInMap(const GridPoint& gp);
-	bool checkPointInMap(int x, int y);
-	void leavePosition(const GridPoint& pos);
-	void leavePosition(const GridRect& grec);
+	bool checkPointInMap(const GridPoint& gp) const;
+	bool checkPointInMap(int x, int y) const;
+	void leavePosition(const GridPoint& pos, bool occupy_grid = true);
+	void leavePosition(const GridRect& grec, bool occupy_grid = true);
 	std::vector<std::vector<int>>& getLogicalGridMap();
-	std::vector<int> getUnitIDs(const GridRect& range);
+	std::vector<int> getUnitIDAt(const GridRect& range) const;
+	int getUnitIDAt(const GridPoint& gp) const;
 
 	bool hasApproached(const cocos2d::Point& cur_fp, const GridPoint& dest_gp);
 private:

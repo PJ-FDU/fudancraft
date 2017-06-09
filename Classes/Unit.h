@@ -104,7 +104,7 @@ public:
 	void removeFromMaps();
 	GridPoint getGridPosition() const;
 	void setGridPath(const MsgGridPath& _grid_path);
-	void motivate();
+	virtual void motivate();
 	virtual void setState(int _state);
 	void setDestination(const GridPoint& grid_dest);
 	void setTarget(int _target_id);
@@ -159,13 +159,13 @@ protected:
 	HPBar* hpbar = nullptr;
 	cocos2d::DrawNode* flag = nullptr;
 
-	void move();
+	virtual void move();
 	void stall();
 	void trace();
 	void auto_atk();
 	void searchForNearbyEnemy();
 
-	GridPath findPath(const GridPoint& dest) const;
+	virtual GridPath findPath(const GridPoint& dest) const;
 	GridPath optimizePath(const GridPath& orig_paht) const;
 
 	friend void HPBar::update(float ft);

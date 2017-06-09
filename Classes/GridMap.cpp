@@ -118,14 +118,22 @@ bool GridMap::checkPosition(const GridPoint & gp)
 
 bool GridMap::occupyPosition(int id, const GridPoint& pos, bool occupy_grid)
 {
-	if (checkPosition(pos))
-	{
-		if (occupy_grid)
+	if (occupy_grid)
+		if (checkPosition(pos))
+		{
 			gmap[pos.x][pos.y] = 1;
+			umap[pos.x][pos.y] = id;
+			return(true);
+		}
+		else
+			return(false);
+	else
+	{
 		umap[pos.x][pos.y] = id;
-		return(1);
+		return(true);
 	}
-	return(0);
+
+	return(false);
 }
 
 bool GridMap::occupyPosition(int id, const Point& pos, bool occupy_grid)
@@ -136,6 +144,7 @@ bool GridMap::occupyPosition(int id, const Point& pos, bool occupy_grid)
 bool GridMap::occupyPosition(int id, const GridRect& grec, bool occupy_grid)
 {
 	if (checkPosition(grec))
+	{
 		for (int x = grec.gp.x; x < grec.gp.x + grec.size.width; x++)
 			for (int y = grec.gp.y; y < grec.gp.y + grec.size.height; y++)
 			{
@@ -143,32 +152,36 @@ bool GridMap::occupyPosition(int id, const GridRect& grec, bool occupy_grid)
 					gmap[x][y] = 1;
 				umap[x][y] = id;
 			}
+		return(true);
+	}
 	else
 		return(false);
 }
 
-bool GridMap::checkPointInMap(const GridPoint & gp)
+bool GridMap::checkPointInMap(const GridPoint & gp) const
 {
 	return checkPointInMap(gp.x, gp.y);
 }
 
-bool GridMap::checkPointInMap(int x, int y)
+bool GridMap::checkPointInMap(int x, int y) const
 {
 	return (x >= 0 && x < map_width && y >= 0 && y < map_height);
 }
 
-void GridMap::leavePosition(const GridPoint& pos)
+void GridMap::leavePosition(const GridPoint& pos, bool occupy_grid)
 {
-	gmap[pos.x][pos.y] = 0;
+	if (occupy_grid)
+		gmap[pos.x][pos.y] = 0;
 	umap[pos.x][pos.y] = 0;
 }
 
-void GridMap::leavePosition(const GridRect& grec)
+void GridMap::leavePosition(const GridRect& grec, bool occupy_grid)
 {
 	for (int x = grec.gp.x; x < grec.gp.x + grec.size.width; x++)
 		for (int y = grec.gp.y; y < grec.gp.y + grec.size.height; y++)
 		{
-			gmap[x][y] = 0;
+			if (occupy_grid)
+				gmap[x][y] = 0;
 			umap[x][y] = 0;
 		}
 }
@@ -178,18 +191,26 @@ std::vector<std::vector<int>>& GridMap::getLogicalGridMap()
 	return(gmap);
 }
 
-std::vector<int> GridMap::getUnitIDs(const GridRect & grec)
+std::vector<int> GridMap::getUnitIDAt(const GridRect & grec) const
 {
-	std::vector<int> unit_ids(grec.size.width * grec.size.height);
+	std::vector<int> unit_ids;
 	int i = 0;
 	for (int x = grec.gp.x; x < grec.gp.x + grec.size.width; x++)
 		for (int y = grec.gp.y; y < grec.gp.y + grec.size.height; y++)
 			if (checkPointInMap(x, y) && umap[x][y])
 			{
-				unit_ids[i] = umap[x][y];
+				unit_ids.push_back(umap[x][y]);
 				i++;
 			}
 	return unit_ids;
+}
+
+int GridMap::getUnitIDAt(const GridPoint & gp) const
+{
+	if (checkPointInMap(gp))
+		return(umap[gp.x][gp.y]);
+	else
+		return(0);
 }
 
 bool GridMap::hasApproached(const Point& cur_fp, const GridPoint& dest_gp)

@@ -124,7 +124,7 @@ void Tower::setState(int _state)
 void Tower::setProperties()
 {
 	type = 6;
-	atk = 20;
+	atk = 15;
 	atk_range = 300;
 	hp_max = 300;
 	cd_max = 10;
