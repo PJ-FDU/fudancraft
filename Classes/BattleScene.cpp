@@ -217,7 +217,7 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	notice->schedule(schedule_selector(Notice::update));
 	unit_manager->setNotice(notice);
 	
-/*	auto back_label = MenuItemFont::create("Back", CC_CALLBACK_1(BattleScene::menuBackCallback, this));
+	auto back_label = MenuItemFont::create("Back", CC_CALLBACK_1(BattleScene::menuBackCallback, this));
 	back_label->setPosition(Vec2(origin.x + visibleSize.width - back_label->getContentSize().width,
 		origin.y + visibleSize.height-back_label->getContentSize().height));
 	back_label->setColor(Color3B(255, 236, 139));
@@ -225,7 +225,7 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	back_label->setFontName("fonts/Blackwood Castle.ttf");
 	auto menu = Menu::create(back_label, NULL);
 	menu->setPosition(Vec2::ZERO);
-	this->addChild(menu, 20);*/
+	this->addChild(menu, 20);
 
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/killbill.wav",true);
 	log("if back ground music playing %d", CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying());
