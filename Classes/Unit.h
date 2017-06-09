@@ -15,17 +15,23 @@ class Base;
 class BattleScene;
 class Notice;
 
-class HPBar : public cocos2d::DrawNode
+class Bar : public cocos2d::DrawNode
 {
 public:
 	void update(float f) override;
-	CREATE_FUNC(HPBar);
+	void updateBarDisplay(float rate, int _disp_time = 0);
+	CREATE_FUNC(Bar);
 	void setLength(float _length);
-	void monitor(Unit* _owner) { owner = _owner; }
+	void setColor(const cocos2d::Color4F& _color);
+	void keepVisible();
+	void stopKeepingVisible();
 private:
-	float length;
+	int timer = 0;
+	int disp_time = 0;
+	float length = 32;
 	float height = 4;
-	Unit* owner = nullptr;
+	bool kept_visible = false;
+	cocos2d::Color4F color{ 0.8, 0, 0, 0.8 };
 };
 
 class UnitManager : public cocos2d::Ref
@@ -96,9 +102,9 @@ public:
 	virtual void setProperties();
 	virtual void update(float f) override;
 
-	void initHPBar();
+	virtual void initBars();
 	void initFlag();
-	void displayHPBar();
+	void displayHPBar(int _disp_time = 0);
 	void hideHPBar();
 	virtual void addToMaps(const GridPoint & crt_gp, cocos2d::TMXTiledMap* _tiled_map, GridMap* _grid_map);
 	void removeFromMaps();
@@ -156,10 +162,11 @@ protected:
 	cocos2d::TMXTiledMap* tiled_map = nullptr;
 	GridMap* grid_map = nullptr;
 
-	HPBar* hpbar = nullptr;
+	Bar* hpbar = nullptr;
 	cocos2d::DrawNode* flag = nullptr;
 
 	virtual void move();
+	virtual void attack();
 	void stall();
 	void trace();
 	void auto_atk();
@@ -168,7 +175,6 @@ protected:
 	virtual GridPath findPath(const GridPoint& dest) const;
 	GridPath optimizePath(const GridPath& orig_paht) const;
 
-	friend void HPBar::update(float ft);
 	friend void UnitManager::updateUnitsState();
 
 	//friend class UnitManager;

@@ -9,23 +9,55 @@
 
 USING_NS_CC;
 
-void HPBar::update(float dt)
+void Bar::update(float dt)
 {
-	if (!owner)
-		return;
-	clear();
-	/*drawRect(frame_points, 4, Color4F(1, 0, 0, 0), 1, Color4F(0, 0, 1, 1));
-	bar_points[2].x = frame_points[0].x + (frame_points[3].x - frame_points[0].x) * owner->hp / owner->hp_max;
-	bar_points[3].x = bar_points[2].x;
-	drawPolygon(bar_points, 4, Color4F(0, 0, 1, 1), 1, Color4F(0, 0, 1, 1));*/
-	drawRect(Point(0, 0), Point(length, height), Color4F(0, 0, 1, 1));
-	Point endpoint{ length * owner->hp / owner->hp_max, height };
-	drawSolidRect(Point(0, 0), endpoint, Color4F(0, 0, 1, 1));
+	if (++timer == disp_time)
+	{
+		timer = 0;
+		disp_time = 0;
+		unschedule(schedule_selector(Bar::update));
+		setVisible(false);
+	}
 }
 
-void HPBar::setLength(float _length)
+void Bar::updateBarDisplay(float rate, int _disp_time)
+{
+	setVisible(true);
+	clear();
+	drawRect(Point(0, 0), Point(length, height), color);
+	Point endpoint{ length * rate, height };
+	drawSolidRect(Point(0, 0), endpoint, color);
+	if (!kept_visible)
+		if (_disp_time)
+		{
+			schedule(schedule_selector(Bar::update));
+			disp_time = _disp_time;
+			timer = 0;
+		}
+		else
+			kept_visible = true;
+}
+
+void Bar::setLength(float _length)
 {
 	length = _length;
+}
+
+void Bar::setColor(const cocos2d::Color4F & _color)
+{
+	color = _color;
+}
+
+void Bar::keepVisible()
+{
+	setVisible(true);
+	kept_visible = true;
+}
+
+void Bar::stopKeepingVisible()
+{
+	setVisible(false);
+	kept_visible = false;
 }
 
 Unit* Unit::create(const std::string& filename)
@@ -53,13 +85,12 @@ void Unit::setProperties()
 
 }
 
-void Unit::initHPBar()
+void Unit::initBars()
 {
-	hpbar = HPBar::create();
+	hpbar = Bar::create();
 	float unit_width = size.width * tiled_map->getTileSize().width;
 	float unit_height = size.height * tiled_map->getTileSize().height;
 	hpbar->setLength(unit_width);
-	hpbar->monitor(this);
 	hpbar->setVisible(false);
 	addChild(hpbar, 20);
 	hpbar->setPosition(Point(0, unit_height + 5));
@@ -78,11 +109,11 @@ cocos2d::Color4F Unit::getCampColor()
 	return camp_color_list[camp % 4];
 }
 
-void Unit::displayHPBar()
+void Unit::displayHPBar(int _disp_time)
 {
 	if (hpbar)
 	{
-		hpbar->scheduleUpdate();
+		hpbar->updateBarDisplay(float(hp) / float(hp_max), _disp_time);
 		hpbar->setVisible(true);
 	}
 }
@@ -91,8 +122,7 @@ void Unit::hideHPBar()
 {
 	if (hpbar)
 	{
-		hpbar->unscheduleUpdate();
-		hpbar->setVisible(false);
+		hpbar->stopKeepingVisible();
 	}
 }
 
@@ -156,6 +186,7 @@ int Unit::getType() const
 bool Unit::underAttack(int damage)
 {
 	hp -= damage;
+	displayHPBar(200);
 	if (hp < 0)
 		return(true);
 	else
@@ -301,6 +332,18 @@ void Unit::move()
 		}
 }
 
+void Unit::attack()
+{
+	if (!cd)
+	{
+		unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_ATK, id, target_id, atk, camp, 0, {});
+
+		cd = cd_max;
+	}
+	else
+		cd--;
+}
+
 void Unit::stall()
 {
 	if (stl_cnt > 0)
@@ -324,15 +367,9 @@ void Unit::trace()
 	else
 		if ((dist_vec).length() < atk_range && camp == unit_manager->player_id)
 		{
-			//moving = false;
-			if (!cd)
-			{
-				unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_ATK, id, target_id, atk, camp, 0, {});
-
-				cd = cd_max;
-			}
-			else
-				cd--;
+			cur_dest = grid_map->getGridPoint(cur_fp);
+			//grid_path.clear();
+			attack();
 		}
 		else
 			if (offset_vec.length() > TRACING_SENSOR * dist_vec.length())
@@ -359,14 +396,7 @@ void Unit::auto_atk()
 	if (target_gp == GridPoint(-1, -1) || (dist_vec).length() >= atk_range)
 		auto_atking = false;
 	else
-		if (!cd)
-		{
-			unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_ATK, id, target_id, atk, camp, 0, {});
-
-			cd = cd_max;
-		}
-		else
-			cd--;
+		attack();
 }
 
 void Unit::searchForNearbyEnemy()
@@ -632,7 +662,6 @@ void UnitManager::updateUnitsState()
 			Unit* unit_1 = id_map.at(unitid_1);
 			if (unit_1)
 			{
-				unit_1->displayHPBar();
 				genAttackEffect(unitid_0, unitid_1);
 				if (notice && unit_1->camp == player_id)
 				{
@@ -751,7 +780,7 @@ Unit* UnitManager::createNewUnit(int id, int camp, int unit_type, GridPoint crt_
 	nu->setProperties();
 	nu->setAnchorPoint(Vec2(0.5, 0.5));
 	nu->addToMaps(crt_gp, tiled_map, grid_map);
-	nu->initHPBar();
+	nu->initBars();
 	//nu->initFlag();
 	nu->schedule(schedule_selector(Unit::update));
 

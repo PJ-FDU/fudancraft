@@ -57,18 +57,19 @@ void Base::update(float f)
 	{
 		if (++prod_process >= prod_period)
 		{
-			//producing = false;
 			state = 2;
 			prod_process = 0;
 			GridPoint free_pos = grid_map->findFreePositionNear(cur_pos);
 			unit_manager->genCreateMessage(cur_prod, free_pos);
+			prod_bar->setVisible(false);
 		}
+		else
+			displayProdBar();
 	}
 
 	if (state == 2)
 		if (prod_list.size())
 		{
-			//producing = true;
 			state = 1;
 			prod_process = 0;
 			cur_prod = prod_list.back();
@@ -82,6 +83,31 @@ void Base::update(float f)
 
 void Base::setState(int _state)
 {
+}
+
+void Base::initBars()
+{
+	float unit_width = size.width * tiled_map->getTileSize().width;
+	float unit_height = size.height * tiled_map->getTileSize().height;
+
+	hpbar = Bar::create();
+	hpbar->setLength(unit_width);
+	hpbar->setVisible(false);
+	addChild(hpbar, 20);
+	hpbar->setPosition(Point(0, unit_height + 5));
+
+	prod_bar = Bar::create();
+	prod_bar->setLength(unit_width);
+	prod_bar->setColor(Color4F(0, 0, 0.8, 0.8));
+	prod_bar->setVisible(false);
+	addChild(prod_bar, 20);
+	prod_bar->setPosition(Point(0, unit_height + 13));
+}
+
+void Base::displayProdBar()
+{
+	if (prod_bar)
+		prod_bar->updateBarDisplay(float(prod_process) / float(prod_period));
 }
 
 void Base::startProduce(int unit_type)
