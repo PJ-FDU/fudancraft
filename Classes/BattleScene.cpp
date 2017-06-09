@@ -42,6 +42,40 @@ void BattleScene::menuBackCallback(cocos2d::Ref* pSender)
 }
 
 
+void BattleScene::onExit()
+{
+	unscheduleAllCallbacks();
+	if(socket_client)
+	{
+		socket_client->close();
+		delete socket_client;
+		socket_client = nullptr;
+	}
+	std::this_thread::sleep_for(std::chrono::milliseconds(200));
+	if (socket_server)
+	{
+		socket_server->close();
+		std::this_thread::sleep_for(std::chrono::microseconds(200));
+		delete socket_server;
+		socket_server = nullptr;
+	}
+
+	if (_onExitCallback)
+		_onExitCallback();
+
+	if (_componentContainer && !_componentContainer->isEmpty())
+	{
+		_componentContainer->onExit();
+	}
+
+	this->pause();
+
+	_running = false;
+
+	for (const auto &child : _children)
+		child->onExit();
+}
+
 void BattleScene::win()
 {
 	notice->displayNotice("You Win!");

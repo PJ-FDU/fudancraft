@@ -140,6 +140,30 @@ SocketServer* SocketServer::create(int port)
 	return s;
 }
 
+void SocketServer::close()
+{
+	//		if (button_thread_)
+	//			try {
+	//			button_thread_->join();
+	//		}catch(std::exception&e){
+	//			e.what();
+	//		}
+
+		//			std::unique_lock<std::mutex> lock(delete_mutex_);
+	try {
+		connections_.clear();
+
+		io_service_->stop();
+		acceptor_.close();
+		thread_->join();
+		delete io_service_;
+	}catch(std::exception&e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	io_service_ = new asio::io_service;
+}
+
 void SocketServer::button_start()
 {
 	using namespace std; // For sprintf and memcpy.

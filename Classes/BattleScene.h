@@ -24,6 +24,7 @@ class BattleScene : public cocos2d::Layer
 {
 public:
 	GameMessageSet msg_set;
+	void onExit()override;
 
 	void win();
 	void lose();

@@ -60,24 +60,7 @@ public:
 
 	static SocketServer* create(int port = 8008);
 //	~SocketServer() { acceptor_.close(); io_service_->stop(); }
-	void close() {
-//		if (button_thread_)
-//			try {
-//			button_thread_->join();
-//		}catch(std::exception&e){
-//			e.what();
-//		}
-		{
-//			std::unique_lock<std::mutex> lock(delete_mutex_);
-			connections_.clear();
-		}
-		io_service_->stop();
-		acceptor_.close();
-		thread_->join();
-		delete io_service_;
-		io_service_ = new asio::io_service;
-		
-	}
+	void close();
 	std::vector<TcpConnection::pointer> get_connection() const;
 
 	void remove_connection(TcpConnection::pointer p);

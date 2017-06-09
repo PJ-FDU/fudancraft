@@ -233,6 +233,7 @@ void ServerMenu::menuBackCallback(cocos2d::Ref* pSender)
 		socket_client_->close();
 		delete socket_client_;
 		socket_client_ = nullptr;
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 		socket_server_->close();
 		delete socket_server_;
 		socket_server_ = nullptr;
@@ -255,7 +256,10 @@ void ServerMenu::editBoxReturn(cocos2d::ui::EditBox* editBox)
 
 void ServerMenu::connectionSchdeule(float f)
 {
-	connection_msg_->setString("Total connection num: " + std::to_string(socket_server_->connection_num()));
+	if (socket_server_->connection_num())
+		connection_msg_->setString("Total connection num: " + std::to_string(socket_server_->connection_num()));
+	else
+		connection_msg_->setString("Port already used, please change another one");
 }
 
 cocos2d::Scene* ClientMenu::createScene()
@@ -411,6 +415,7 @@ bool CreditsScene::init()
 	Network Synchronization Logic/网络同步策略：\n赵凌丰\n朱灵均\n\
 	Message Format/消息格式：\n朱灵均\n赵凌丰\n\
 	Art Designer/美工：\n潘健\n赵凌丰\n\n\
+	Audio Effect/音效：\n赵凌丰\n\
 	Special Thanks to/特别感谢：\n\n周学功老师\n\n\n Cocos2dx\nBoost::Asio\nGoogle Protocal Buffer\nTiled\nAdobe Photoshop\nMicrosoft Visual Studio\nGitHub\nFudan University\n\
 	";
 
