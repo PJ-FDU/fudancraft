@@ -27,16 +27,15 @@ BattleScene* BattleScene::create(SocketClient* _socket_client, SocketServer* _so
 void BattleScene::menuBackCallback(cocos2d::Ref* pSender)
 {
 	unscheduleAllCallbacks();
-	socket_client->close();
-	delete socket_client;
-	socket_client = nullptr;
-	if (socket_server)
+/*	if (socket_server)
 	{	
 		socket_server->close();
-		std::this_thread::sleep_for(std::chrono::microseconds(200));
 		delete socket_server;
 		socket_server = nullptr;
 	}
+	socket_client->close();
+	delete socket_client;
+	socket_client = nullptr;*/
 	auto scene = HelloWorld::createScene();
 	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
@@ -44,6 +43,7 @@ void BattleScene::menuBackCallback(cocos2d::Ref* pSender)
 
 void BattleScene::onExit()
 {
+	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 	unscheduleAllCallbacks();
 	if(socket_client)
 	{
@@ -55,7 +55,6 @@ void BattleScene::onExit()
 	if (socket_server)
 	{
 		socket_server->close();
-		std::this_thread::sleep_for(std::chrono::microseconds(200));
 		delete socket_server;
 		socket_server = nullptr;
 	}
@@ -227,6 +226,7 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 20);
 
+	CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.7);
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/killbill.wav",true);
 	log("if back ground music playing %d", CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying());
 	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/battlefieldcontrol.wav");

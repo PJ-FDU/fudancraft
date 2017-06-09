@@ -65,6 +65,7 @@ void TcpConnection::do_close()
 		socket_message empty_msg;
 		memcpy(empty_msg.data(), "0001\0", 5);
 		read_msg_deque_.push_back(empty_msg);
+		read_msg_deque_.push_back(empty_msg);
 		data_cond_.notify_one();
 		asio::error_code ec;
 		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
@@ -142,20 +143,13 @@ SocketServer* SocketServer::create(int port)
 
 void SocketServer::close()
 {
-	//		if (button_thread_)
-	//			try {
-	//			button_thread_->join();
-	//		}catch(std::exception&e){
-	//			e.what();
-	//		}
-
-		//			std::unique_lock<std::mutex> lock(delete_mutex_);
 	try {
 		connections_.clear();
 
 		io_service_->stop();
 		acceptor_.close();
 		thread_->join();
+		thread_ = nullptr;
 		delete io_service_;
 	}catch(std::exception&e)
 	{
