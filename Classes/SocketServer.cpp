@@ -65,6 +65,7 @@ void TcpConnection::do_close()
 		socket_message empty_msg;
 		memcpy(empty_msg.data(), "0001\0", 5);
 		read_msg_deque_.push_back(empty_msg);
+		read_msg_deque_.push_back(empty_msg);
 		data_cond_.notify_one();
 		asio::error_code ec;
 		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
@@ -138,6 +139,23 @@ SocketServer* SocketServer::create(int port)
 		std::bind(static_cast<std::size_t(asio::io_service::*)()>(&asio::io_service::run),
 		          io_service_));
 	return s;
+}
+
+void SocketServer::close()
+{
+	try {
+		connections_.clear();
+
+		io_service_->stop();
+		acceptor_.close();
+		thread_->join();
+		thread_ = nullptr;
+		delete io_service_;
+	}catch(std::exception&e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	io_service_ = new asio::io_service;
 }
 
 void SocketServer::button_start()

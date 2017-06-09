@@ -9,7 +9,7 @@ SocketClient* SocketClient::create(std::string ip, int port)
 	s->thread_ = new std::thread(
 		std::bind(static_cast<std::size_t(asio::io_service::*)()>(&asio::io_service::run),
 		          &s->io_service_));
-	s->thread_->detach();
+//	s->thread_->detach();
 	return s;
 }
 
@@ -46,15 +46,18 @@ void SocketClient::do_close()
 		memcpy(empty_msg.data(), "0001\0", 5);
 		read_msg_deque_.push_back(empty_msg);
 		data_cond_.notify_one();
+		io_service_.stop();
+		thread_->join();
 		asio::error_code ec;
 		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
 		if (!ec)
 			throw asio::system_error(ec);
 		socket_.close();
-		thread_->join();
+	
 
 	}catch(std::exception&e)
 	{
+		
 		e.what();
 	}
 	

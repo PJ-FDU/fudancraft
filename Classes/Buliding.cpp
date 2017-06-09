@@ -1,4 +1,5 @@
 #include "Building.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -20,7 +21,7 @@ void Base::setProperties()
 	type = 5;
 	atk = 0;
 	atk_range = 0;
-	hp_max = 500;
+	hp_max = 800;
 	cd_max = 30;
 	move_speed = 0.0f;
 
@@ -31,7 +32,7 @@ void Base::setProperties()
 	size = GridSize(2, 2);
 	period_map[1] = 300;
 	period_map[2] = 200;
-	period_map[3] = 100;
+	period_map[3] = 80;
 
 	cd = 0;
 	hp = hp_max;
@@ -62,6 +63,8 @@ void Base::update(float f)
 			GridPoint free_pos = grid_map->findFreePositionNear(cur_pos);
 			unit_manager->genCreateMessage(cur_prod, free_pos);
 			prod_bar->setVisible(false);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/unitready.wav");
+
 		}
 		else
 			displayProdBar();
@@ -153,7 +156,7 @@ void Tower::setProperties()
 	atk = 15;
 	atk_range = 300;
 	hp_max = 300;
-	cd_max = 10;
+	cd_max = 20;
 	move_speed = 0.0f;
 
 	z_index = 10;
