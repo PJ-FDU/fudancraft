@@ -365,15 +365,17 @@ void Unit::trace()
 	if (target_gp == GridPoint(-1, -1))
 		tracing = false;
 	else
-		if (dist_vec.length() < atk_range && camp == unit_manager->player_id)
+		if (dist_vec.length() < atk_range)
 		{
-			cur_dest = cur_pos;
+			/*cur_dest = cur_pos;
 			final_dest = cur_pos;
-			grid_path.clear();
+			grid_path.clear();*/
+			if (moving)
+				unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_UDP, id, 0, 0, camp, 0, {cur_pos});
 			attack();
 		}
 		else
-			if (offset_vec.length() > TRACING_SENSOR * dist_vec.length())
+			if (offset_vec.length() > TRACING_SENSOR * dist_vec.length() && camp == unit_manager->player_id)
 			{
 				target_lastpos = target_gp;
 				final_dest = target_gp;
