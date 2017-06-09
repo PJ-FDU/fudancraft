@@ -64,8 +64,7 @@ void Fighter::move()
 		setPosition(next_pos);
 		grid_map->leavePosition(cur_pos, false);
 		cur_pos = next_gp;
-	}
-		
+	}		
 
 	if (hasArrivedAtDest())
 		if (grid_path.size())
@@ -75,7 +74,7 @@ void Fighter::move()
 		}
 		else
 		{
-			if (id == grid_map->getUnitIDAt(cur_dest))
+			if (grid_map->checkPosition(cur_dest))
 			{
 				log("Unit ID: %d, fighter landing", id);
 				grid_map->occupyPosition(id, next_gp, true);

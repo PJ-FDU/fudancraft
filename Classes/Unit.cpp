@@ -475,7 +475,7 @@ void Unit::update(float dt)
 		if (auto_atking)
 			auto_atk();
 		else
-			if (timer % auto_atk_freq == 0)
+			if (!tracing && timer % auto_atk_freq == 0)
 				searchForNearbyEnemy();
 	}
 }
