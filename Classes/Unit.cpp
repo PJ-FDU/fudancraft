@@ -562,6 +562,7 @@ GridPoint UnitManager::getBasePosition()
 
 void UnitManager::produceInBase(int _unit_type)
 {
+	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/traning.wav");
 	if (id_map.at(base_id))
 		base->startProduce(_unit_type);
 }
@@ -637,7 +638,13 @@ void UnitManager::updateUnitsState()
 				if (notice && unit_1->camp == player_id)
 				{
 					char ntc[50];
-					sprintf(ntc, "Unit %d under attack, damage %d", unitid_1, damage);
+					if (unit_1->type == 5)
+					{
+						CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/baseunderatack.wav");
+						sprintf(ntc, "Our base is under attack, damage %d", unitid_1, damage);
+					}
+					else						
+						sprintf(ntc, "Unit %d under attack, damage %d", unitid_1, damage);
 					notice->displayNotice(ntc, 30);
 				}
 				if (unit_1->underAttack(damage))
@@ -672,6 +679,7 @@ void UnitManager::deleteUnit(int id)
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/die1.wav");
 		else
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/bomb1.wav");
+		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/unitlost.wav");
 		if (notice && unit->camp == player_id)
 		{
 			char ntc[50];
@@ -807,6 +815,7 @@ void UnitManager::selectUnits(Point select_point)
 		for (auto & id_unit : id_map)
 			if (id_unit.second->camp != player_id && id_unit.second->getBoundingBox().containsPoint(select_point))
 			{
+
 				for (auto & id : selected_ids)
 				{
 					//log("Unit ID: %d, tracing enemy id: %d", id, id_unit.second->id);
@@ -826,6 +835,7 @@ void UnitManager::selectUnits(Point select_point)
 			{
 				deselectAllUnits();
 				selected_ids.push_back(id_unit.first);
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/selecttarget.wav");
 				id_unit.second->displayHPBar();
 				return;
 			}
@@ -852,6 +862,7 @@ void UnitManager::selectUnits(Point select_point)
 			if (id_unit.second->camp == player_id && id_unit.second->getBoundingBox().containsPoint(select_point))
 			{
 				deselectAllUnits();
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/selecttarget.wav");
 				selected_ids.push_back(id_unit.first);
 				id_unit.second->displayHPBar();
 				return;
@@ -866,6 +877,7 @@ void UnitManager::selectUnits(Rect select_rect)
 	for (auto & id_unit : id_map)
 		if (id_unit.second->camp == player_id && select_rect.containsPoint(id_unit.second->getPosition()))
 		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/selecttarget.wav");
 			selected_ids.push_back(id_unit.first);
 			id_unit.second->displayHPBar();
 		}

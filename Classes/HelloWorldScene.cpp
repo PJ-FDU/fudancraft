@@ -50,7 +50,13 @@ bool HelloWorld::init()
 	this->addChild(menu, 1);
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("audio/killbill.wav");
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/bomb1.wav");
-	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/die1.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/baseunderatack.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/battlefieldcontrol.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/selecttarget.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/unitlost.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/unitready.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/insufficientfound.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/traning.wav");
 
     return true;
 }

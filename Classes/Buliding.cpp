@@ -1,4 +1,5 @@
 #include "Building.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -62,6 +63,8 @@ void Base::update(float f)
 			prod_process = 0;
 			GridPoint free_pos = grid_map->findFreePositionNear(cur_pos);
 			unit_manager->genCreateMessage(cur_prod, free_pos);
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/unitready.wav");
+
 		}
 	}
 

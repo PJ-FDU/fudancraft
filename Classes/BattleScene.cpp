@@ -104,6 +104,9 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 			unit_manager->produceInBase(1);
 			money->spendMoney(5000);
 		}
+		else
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/insufficientfound.wav");
+
 	});
 
 
@@ -114,6 +117,9 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 			unit_manager->produceInBase(2);
 			money->spendMoney(4000);
 		}
+		else
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/insufficientfound.wav");
+
 	});
 	control_panel_->setSoldierCallback([&](Ref*){
 		if (money->checkMoney(1000))
@@ -121,6 +127,9 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 			unit_manager->produceInBase(3);
 			money->spendMoney(1000);
 		}
+		else
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/insufficientfound.wav");
+
 	});
 	
 	addChild(control_panel_,10);
@@ -186,6 +195,7 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/killbill.wav",true);
 	log("if back ground music playing %d", CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying());
+	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/battlefieldcontrol.wav");
 
 
 
