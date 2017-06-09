@@ -21,6 +21,9 @@ tcp::socket& TcpConnection::socket()
 
 void TcpConnection::start()
 {
+//	
+//	_timer_.async_wait(std::bind(&TcpConnection::check_timer, this));
+//	steady_timer_.expires_from_now(std::chrono::seconds(60));
 	asio::async_read(socket_,
 	                 asio::buffer(read_msg_.data(), socket_message::header_length),
 	                 std::bind(&TcpConnection::handle_read_header, this,
@@ -61,6 +64,7 @@ std::string TcpConnection::read_data()
 void TcpConnection::do_close()
 {
 	try {
+//		steady_timer_.cancel();
 		error_flag_ = true;
 		socket_message empty_msg;
 		memcpy(empty_msg.data(), "0001\0", 5);
@@ -86,6 +90,7 @@ void TcpConnection::handle_read_header(const asio::error_code& error)
 {
 	if (!error && read_msg_.decode_header())
 	{
+//		steady_timer_.expires_from_now(std::chrono::seconds(10));
 		std::cout << "here\n";
 		asio::async_read(socket_,
 		                 asio::buffer(read_msg_.body(), read_msg_.body_length()),
@@ -102,6 +107,7 @@ void TcpConnection::handle_read_body(const asio::error_code& error)
 {
 	if (!error)
 	{
+//		steady_timer_.expires_from_now(std::chrono::seconds(10));
 		std::lock_guard<std::mutex> lk{mut_};
 		read_msg_deque_.push_back(read_msg_);
 		data_cond_.notify_one();
@@ -118,9 +124,25 @@ void TcpConnection::handle_read_body(const asio::error_code& error)
 
 TcpConnection::TcpConnection(asio::io_service& io_service, SocketServer* parent):
 	socket_(io_service), parent(parent)
+//,steady_timer_(io_service)
 {
 	std::cout << "new tcp" << std::endl;
 }
+
+//void TcpConnection::check_timer()
+//{
+//	if (steady_timer_.expires_at() <= std::chrono::steady_clock::now())
+//	{
+//		// The deadline has passed. The socket is closed so that any outstanding
+//		// asynchronous operations are cancelled.
+//		do_close();
+//		steady_timer_.expires_at(std::chrono::steady_clock::time_point::max());
+//		return;
+//	}
+//
+//	// Put the actor back to sleep.
+//	steady_timer_.async_wait(std::bind(&TcpConnection::check_timer, this));
+//}
 
 
 void TcpConnection::delete_from_parent()
