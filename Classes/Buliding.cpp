@@ -21,7 +21,7 @@ void Base::setProperties()
 	type = 5;
 	atk = 0;
 	atk_range = 0;
-	hp_max = 500;
+	hp_max = 800;
 	cd_max = 30;
 	move_speed = 0.0f;
 
@@ -130,7 +130,7 @@ void Tower::setProperties()
 	atk = 15;
 	atk_range = 300;
 	hp_max = 300;
-	cd_max = 10;
+	cd_max = 20;
 	move_speed = 0.0f;
 
 	z_index = 10;
