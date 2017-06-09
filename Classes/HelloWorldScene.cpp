@@ -267,7 +267,6 @@ void ServerMenu::menuBackCallback(cocos2d::Ref* pSender)
 	if (socket_server_)
 	{
 		unscheduleAllSelectors();
-
 		socket_client_->close();
 		delete socket_client_;
 		socket_client_ = nullptr;

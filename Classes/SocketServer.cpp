@@ -170,8 +170,8 @@ void SocketServer::close()
 
 		io_service_->stop();
 		acceptor_.close();
+//		thread_ = nullptr;
 		thread_->join();
-		thread_ = nullptr;
 		delete io_service_;
 	}catch(std::exception&e)
 	{
@@ -182,6 +182,7 @@ void SocketServer::close()
 
 void SocketServer::button_start()
 {
+	acceptor_.close();
 	using namespace std; // For sprintf and memcpy.
 	char total[4 + 1] = "";
 	sprintf(total, "%4d", static_cast<int>(connections_.size()));

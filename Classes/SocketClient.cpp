@@ -47,12 +47,12 @@ void SocketClient::do_close()
 		read_msg_deque_.push_back(empty_msg);
 		data_cond_.notify_one();
 		io_service_.stop();
-		thread_->join();
 		asio::error_code ec;
 		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
 		if (!ec)
 			throw asio::system_error(ec);
 		socket_.close();
+		thread_->join();
 	
 
 	}catch(std::exception&e)
