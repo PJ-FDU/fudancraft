@@ -50,6 +50,7 @@ public:
 	void genAttackEffect(int unit_id0, int unit_id1);
 
 	GridPoint getUnitPosition(int unit_id);
+	int getUnitCamp(int unit_id);
 	GridPoint getBasePosition();
 	void genCreateMessage(int _unit_type, const GridPoint& _crt_gp);
 	void produceInBase(int _unit_type);
@@ -103,7 +104,7 @@ public:
 	void removeFromMaps();
 	GridPoint getGridPosition() const;
 	void setGridPath(const MsgGridPath& _grid_path);
-	void motivate();
+	virtual void motivate();
 	virtual void setState(int _state);
 	void setDestination(const GridPoint& grid_dest);
 	void setTarget(int _target_id);
@@ -117,10 +118,12 @@ public:
 
 	void tryToFindPath();
 protected:
+	int timer = 0;
 	int state = 0;
 	bool moving = false;
 	bool tracing = false;
 	bool stalling = false;
+	bool auto_atking = false;
 	int target_id;
 	bool selected = false;
 	GridPath grid_path;
@@ -144,10 +147,11 @@ protected:
 
 	int atk;
 	int atk_range;
-	int atk_period;
 	int hp_max;
 	int cd_max;
 	float move_speed;
+	int auto_atk_freq;
+	GridSize auto_atk_range;
 
 	cocos2d::TMXTiledMap* tiled_map = nullptr;
 	GridMap* grid_map = nullptr;
@@ -155,11 +159,13 @@ protected:
 	HPBar* hpbar = nullptr;
 	cocos2d::DrawNode* flag = nullptr;
 
-	void move();
+	virtual void move();
 	void stall();
 	void trace();
+	void auto_atk();
+	void searchForNearbyEnemy();
 
-	GridPath findPath(const GridPoint& dest) const;
+	virtual GridPath findPath(const GridPoint& dest) const;
 	GridPath optimizePath(const GridPath& orig_paht) const;
 
 	friend void HPBar::update(float ft);

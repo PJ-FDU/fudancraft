@@ -6,8 +6,11 @@ class Fighter : public Unit
 {
 public:
 	static Fighter* create(const std::string& filename);
+	void motivate() override;
 private:
 	void setProperties() override;
+	void move() override;
+	GridPath findPath(const GridPoint& dest) const override;
 };
 
 class Tank : public Unit
