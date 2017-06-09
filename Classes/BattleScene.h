@@ -47,8 +47,9 @@ public:
 
 	static BattleScene* create(SocketClient* _socket_client, SocketServer* _socket_server);
 
+	void menuBackCallback(cocos2d::Ref* pSender);
 private:
-	void create_figher(Ref*);
+//	void create_figher(Ref*);
 
 
 	int player_id = 0;
@@ -65,6 +66,7 @@ private:
 	GridMap* grid_map = nullptr;
 	UnitManager* unit_manager = nullptr;
 	ControlPanel* control_panel_;
+
 
 	MouseRect* mouse_rect = nullptr;
 

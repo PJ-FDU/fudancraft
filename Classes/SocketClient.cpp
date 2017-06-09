@@ -27,6 +27,8 @@ void SocketClient::send_game_message(const std::vector<GameMessage>& vec_game_ms
 
 void SocketClient::send_string(std::string s)
 {
+	if (error_flag_)
+		return;
 	write_data(s);
 }
 
@@ -38,6 +40,12 @@ std::string SocketClient::get_string()
 void SocketClient::do_close()
 {
 	try {
+		std::lock_guard<std::mutex> lk{ mut };
+		error_flag_ = true;
+		socket_message empty_msg;
+		memcpy(empty_msg.data(), "0001\0", 5);
+		read_msg_deque_.push_back(empty_msg);
+		data_cond_.notify_one();
 		asio::error_code ec;
 		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
 		if (!ec)
@@ -115,6 +123,8 @@ void SocketClient::handle_connect(const asio::error_code& error)
 		{
 			std::cerr << "failed to connect" << std::endl;
 //			throw asio::system_error(error);
+			error_flag_ = true;
+
 		}
 	}
 	catch (std::exception& e)
@@ -162,6 +172,8 @@ void SocketClient::handle_read_body(const asio::error_code& error)
 
 std::string SocketClient::read_data()
 {
+	if (error_flag_)
+		return "";
 	std::unique_lock<std::mutex> lk{mut};
 	while (read_msg_deque_.empty())
 		data_cond_.wait(lk);

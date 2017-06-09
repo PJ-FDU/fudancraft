@@ -1,5 +1,6 @@
 #include "BattleScene.h"
-
+#include "HelloWorldScene.h"
+#include "SimpleAudioEngine.h"
 USING_NS_CC;
 
 void MouseRect::update(float f)
@@ -23,10 +24,23 @@ BattleScene* BattleScene::create(SocketClient* _socket_client, SocketServer* _so
 	return nullptr;
 }
 
-void BattleScene::create_figher(Ref*)
+void BattleScene::menuBackCallback(cocos2d::Ref* pSender)
 {
-
+	unscheduleAllCallbacks();
+	socket_client->close();
+	delete socket_client;
+	socket_client = nullptr;
+	if (socket_server)
+	{	
+		socket_server->close();
+		std::this_thread::sleep_for(std::chrono::microseconds(200));
+		delete socket_server;
+		socket_server = nullptr;
+	}
+	auto scene = HelloWorld::createScene();
+	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
+
 
 void BattleScene::win()
 {
@@ -102,16 +116,14 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 		}
 	});
 	control_panel_->setSoldierCallback([&](Ref*){
-		if (money->checkMoney(2000))
+		if (money->checkMoney(1000))
 		{
 			unit_manager->produceInBase(3);
-			money->spendMoney(2000);
+			money->spendMoney(1000);
 		}
 	});
-
-
-
-	addChild(control_panel_,4);
+	
+	addChild(control_panel_,10);
 
 	mouse_rect = MouseRect::create();
 	mouse_rect->setVisible(false);
@@ -161,6 +173,21 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	notice->setScale(0.7);
 	notice->schedule(schedule_selector(Notice::update));
 	unit_manager->setNotice(notice);
+	
+/*	auto back_label = MenuItemFont::create("Back", CC_CALLBACK_1(BattleScene::menuBackCallback, this));
+	back_label->setPosition(Vec2(origin.x + visibleSize.width - back_label->getContentSize().width,
+		origin.y + visibleSize.height-back_label->getContentSize().height));
+	back_label->setColor(Color3B(255, 236, 139));
+//	back_label->setFontSize(16);
+	back_label->setFontName("fonts/Blackwood Castle.ttf");
+	auto menu = Menu::create(back_label, NULL);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu, 20);*/
+
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/killbill.wav",true);
+	log("if back ground music playing %d", CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying());
+
+
 
 	start_flag = 1;
 
@@ -254,6 +281,8 @@ void ControlPanel::setSoldierCallback(std::function<void(Ref*)> callback)
 void BattleScene::update(float f)
 {
 	frame_cnt++;
+	if (socket_client->error() || (socket_server&&socket_server->error()))
+		menuBackCallback(nullptr);
 	scrollMap();
 	if (frame_cnt % KEY_FRAME == 0 && start_flag)
 	{
@@ -317,18 +346,26 @@ void BattleScene::scrollMap()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	int horizontal_state, vertical_state;
-	horizontal_state = (origin.x + visibleSize.width - BOX_EDGE_WITDH < crusor_position.x) - (origin.x + BOX_EDGE_WITDH > crusor_position.x);
+	horizontal_state = (origin.x + visibleSize.width - BOX_EDGE_WITDH_SMALL < crusor_position.x)
+		+ (origin.x + visibleSize.width - BOX_EDGE_WITDH < crusor_position.x)
+		- (origin.x + BOX_EDGE_WITDH_SMALL > crusor_position.x)
+		- (origin.x + BOX_EDGE_WITDH > crusor_position.x);
 	//	log("horizontal state: %d", horizontal_state);
-	vertical_state = (origin.y + visibleSize.height - BOX_EDGE_WITDH < crusor_position.y) - (origin.y + BOX_EDGE_WITDH > crusor_position.y);
+	vertical_state = (origin.y + visibleSize.height - BOX_EDGE_WITDH_SMALL < crusor_position.y)
+		+ (origin.y + visibleSize.height - BOX_EDGE_WITDH < crusor_position.y)
+		- (origin.y + BOX_EDGE_WITDH_SMALL > crusor_position.y)
+		- (origin.y + BOX_EDGE_WITDH > crusor_position.y);
 	Vec2 scroll(0,0);
-	if(horizontal_state == -1)
+/*	if(horizontal_state == -1)
 		scroll += Vec2(SCROLL_LENGTH,0 );
 	else if(horizontal_state == 1)
 		scroll += Vec2(-SCROLL_LENGTH, 0);
 	if(vertical_state == -1)
 		scroll += Vec2(0, SCROLL_LENGTH);
 	else if(vertical_state == 1)
-		scroll += Vec2(0, -SCROLL_LENGTH);
+		scroll += Vec2(0, -SCROLL_LENGTH);*/
+	scroll += Vec2(-SCROLL_LENGTH, 0)*horizontal_state;
+	scroll += Vec2(0, -SCROLL_LENGTH)*vertical_state;
 	map_center += scroll;
 	if (battle_map->getBoundingBox().containsPoint((-scroll) + Director::getInstance()->getVisibleSize())
 		&& battle_map->getBoundingBox().containsPoint(-scroll))

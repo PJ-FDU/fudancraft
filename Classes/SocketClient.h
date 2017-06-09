@@ -40,6 +40,7 @@ public:
 	void do_close();
 
 	bool started() const { return start_flag_; }
+	bool error()const { return error_flag_; }
 
 	int camp() const;
 
@@ -72,7 +73,7 @@ private:
 	std::deque<socket_message> read_msg_deque_;
 	socket_message read_msg_;
 
-	bool start_flag_{false};
+	bool start_flag_{false},error_flag_{false};
 
 	std::thread *thread_, *read_thread_;
 	int camp_, total_;

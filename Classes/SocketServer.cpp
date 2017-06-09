@@ -29,6 +29,7 @@ void TcpConnection::start()
 
 void TcpConnection::write_data(std::string s)
 {
+	if (error_flag_) return;
 	socket_message msg;
 	if (s.size() == 0)
 	{
@@ -45,6 +46,8 @@ void TcpConnection::write_data(std::string s)
 
 std::string TcpConnection::read_data()
 {
+	if (error_flag_)
+		return "";
 	std::unique_lock<std::mutex> lk{mut_};
 	while (read_msg_deque_.empty())
 		data_cond_.wait(lk);
@@ -57,7 +60,24 @@ std::string TcpConnection::read_data()
 
 void TcpConnection::do_close()
 {
-	socket_.close();
+	try {
+		error_flag_ = true;
+		socket_message empty_msg;
+		memcpy(empty_msg.data(), "0001\0", 5);
+		read_msg_deque_.push_back(empty_msg);
+		data_cond_.notify_one();
+		asio::error_code ec;
+		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+		if (!ec)
+			throw asio::system_error(ec);
+		socket_.close();
+		
+
+	}
+	catch (std::exception&e)
+	{
+		e.what();
+	}
 	delete_from_parent();
 }
 
@@ -112,6 +132,7 @@ void TcpConnection::delete_from_parent()
 
 SocketServer* SocketServer::create(int port)
 {
+//	io_service_ = new asio::io_service;
 	auto s = new SocketServer(port);
 	s->thread_ = new std::thread(
 		std::bind(static_cast<std::size_t(asio::io_service::*)()>(&asio::io_service::run),
@@ -142,12 +163,23 @@ void SocketServer::loop_process()
 {
 	while (true)
 	{
-//		if (connections_.size() != connection_num)
+		if (connections_.size() != connection_num_)
+		{
+			error_flag_ = true;
+			break;
+		}
 //			throw std::exception{"lost connection"};
+		std::unique_lock<std::mutex> lock(delete_mutex_);
 		std::vector<std::string> ret;
 		for (auto r : connections_)
+		{
+			if (r->error())
+//				break;
+				error_flag_ |= r->error();
 			ret.push_back(r->read_data());
+		}
 		auto game_msg = GameMessageWrap::combine_message(ret);
+
 		for (auto r : connections_)
 			r->write_data(game_msg);
 	}
@@ -161,11 +193,11 @@ std::vector<TcpConnection::pointer> SocketServer::get_connection() const
 void SocketServer::remove_connection(TcpConnection::pointer p)
 {
 	//		connections_.erase(std::remove(connections_.begin(), connections_.end(), p), connections_.end());
+	std::unique_lock<std::mutex> lock(delete_mutex_);
 	auto position = std::find(connections_.begin(), connections_.end(), p);
 
 	if (position == connections_.end())
 		std::cout << "delete not succ\n";
-
 	else
 		connections_.erase(position);
 	std::cout << "delete succ\n";

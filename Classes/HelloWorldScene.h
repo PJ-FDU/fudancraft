@@ -19,6 +19,7 @@ public:
 	bool init() override;
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
+    void menuCreditsCallback(cocos2d::Ref* pSender);
 	void menuStartCallback(cocos2d::Ref* pSender);
     
     // implement the "static create()" method manually
@@ -83,6 +84,19 @@ private:
 	int timer_ = 0;
 };
 
+class CreditsScene : public cocos2d::Layer
+{
+public:
+	static cocos2d::Scene* createScene();
 
+	bool init() override;
+	
+	void menuBackCallback(cocos2d::Ref* pSender);
+	void scheduleMove(float f);
+	
+	CREATE_FUNC(CreditsScene);
+private:
+	cocos2d::Label *label;
+};
 
 #endif // __HELLOWORLD_SCENE_H__

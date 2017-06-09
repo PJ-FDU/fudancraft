@@ -27,6 +27,7 @@ public:
 	void write_data(std::string s);
 
 	std::string read_data();
+	bool error()const { return error_flag_; }
 
 
 	void do_close();
@@ -44,6 +45,7 @@ private:
 
 	tcp::socket socket_;
 	SocketServer* parent;
+	bool error_flag_{ false };	
 	
 	socket_message read_msg_;
 	std::deque<socket_message> read_msg_deque_;
@@ -59,10 +61,19 @@ public:
 	static SocketServer* create(int port = 8008);
 //	~SocketServer() { acceptor_.close(); io_service_->stop(); }
 	void close() {
-
-		connections_.clear();
+//		if (button_thread_)
+//			try {
+//			button_thread_->join();
+//		}catch(std::exception&e){
+//			e.what();
+//		}
+		{
+//			std::unique_lock<std::mutex> lock(delete_mutex_);
+			connections_.clear();
+		}
 		io_service_->stop();
 		acceptor_.close();
+		thread_->join();
 		delete io_service_;
 		io_service_ = new asio::io_service;
 		
@@ -71,6 +82,8 @@ public:
 
 	void remove_connection(TcpConnection::pointer p);
 	void button_start();
+
+	bool error()const { return error_flag_; }
 
 	int connection_num()const { return connections_.size(); }
 private:
@@ -89,8 +102,9 @@ private:
 
 	static asio::io_service* io_service_;
 
-	std::thread *thread_, *button_thread_;
-
+	std::thread *thread_, *button_thread_{nullptr};
+	std::mutex delete_mutex_;
+	bool error_flag_{ false };
 	std::condition_variable data_cond_;
 };
 
