@@ -1,6 +1,6 @@
 #include "BattleScene.h"
 #include "HelloWorldScene.h"
-
+#include "SimpleAudioEngine.h"
 USING_NS_CC;
 
 void MouseRect::update(float f)
@@ -183,6 +183,8 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 20);*/
 
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/killbill.wav",true);
+	log("if back ground music playing %d", CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying());
 
 
 

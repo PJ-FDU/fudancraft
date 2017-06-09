@@ -48,6 +48,7 @@ bool HelloWorld::init()
 	
 	menu->alignItemsVerticallyWithPadding(40);
 	this->addChild(menu, 1);
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("audio/killbill.wav");
 
     return true;
 }
