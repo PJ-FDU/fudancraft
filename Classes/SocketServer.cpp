@@ -46,6 +46,8 @@ void TcpConnection::write_data(std::string s)
 
 std::string TcpConnection::read_data()
 {
+	if (error_flag_)
+		return "";
 	std::unique_lock<std::mutex> lk{mut_};
 	while (read_msg_deque_.empty())
 		data_cond_.wait(lk);
@@ -167,7 +169,7 @@ void SocketServer::loop_process()
 			break;
 		}
 //			throw std::exception{"lost connection"};
-//		std::unique_lock<std::mutex> lock(delete_mutex_);
+		std::unique_lock<std::mutex> lock(delete_mutex_);
 		std::vector<std::string> ret;
 		for (auto r : connections_)
 		{
