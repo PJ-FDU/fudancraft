@@ -32,7 +32,7 @@ void Base::setProperties()
 	size = GridSize(2, 2);
 	period_map[1] = 300;
 	period_map[2] = 200;
-	period_map[3] = 100;
+	period_map[3] = 80;
 
 	cd = 0;
 	hp = hp_max;
