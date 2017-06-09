@@ -4,6 +4,7 @@
 #include "BattleScene.h"
 #include <string>
 #include <random>
+#include "SimpleAudioEngine.h"
 
 
 USING_NS_CC;
@@ -607,7 +608,11 @@ void UnitManager::deleteUnit(int id)
 		unit->removeFromMaps();
 
 		id_map.erase(id);
-
+		//human
+		if(unit->getType()== 3) 
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/die1.wav");
+		else
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/bomb1.wav");
 		if (notice && unit->camp == player_id)
 		{
 			char ntc[50];

@@ -49,6 +49,8 @@ bool HelloWorld::init()
 	menu->alignItemsVerticallyWithPadding(40);
 	this->addChild(menu, 1);
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("audio/killbill.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/bomb1.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/die1.wav");
 
     return true;
 }
