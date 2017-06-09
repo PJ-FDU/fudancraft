@@ -63,6 +63,7 @@ bool HelloWorld::init()
 	menu->alignItemsVerticallyWithPadding(10);
 	this->addChild(menu, 1);
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("audio/killbill.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("audio/mainv.wav");
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/bomb1.wav");
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/baseunderatack.wav");
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/battlefieldcontrol.wav");
@@ -186,12 +187,14 @@ bool ServerMenu::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	auto inputbox = ui::EditBox::create(Size(80, 60), ui::Scale9Sprite::create("/picture/editbox.png"));
+	auto inputbox = ui::EditBox::create(Size(80, 60), ui::Scale9Sprite::create("/picture/menuitems/InputPort.png"));
 	inputbox->setPosition(Vec2(origin.x + visibleSize.width / 2,
 		origin.y + visibleSize.height-inputbox->getContentSize().height));
-	inputbox->setFontSize(20);
+	inputbox->setTextHorizontalAlignment(TextHAlignment::CENTER);
 	inputbox->setMaxLength(7);
 	inputbox->setFontColor(Color3B::WHITE);
+	inputbox->setFontName("/fonts/AGENCYR.TTF");
+	inputbox->setFontSize(20);
 	inputbox->setText("8008");
 //	inputbox->setPlaceHolder("8008");
 	inputbox->setInputMode(ui::EditBox::InputMode::NUMERIC);
@@ -311,9 +314,11 @@ bool ClientMenu::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	auto ip_box = ui::EditBox::create(Size(150, 60), ui::Scale9Sprite::create("/picture/editbox.png"));
+	auto ip_box = ui::EditBox::create(Size(150, 60), ui::Scale9Sprite::create("/picture/menuitems/InputIP.png"));
 	ip_box->setPosition(Vec2(origin.x + visibleSize.width / 2-ip_box->getContentSize().width/2,
 		origin.y + visibleSize.height - ip_box->getContentSize().height));
+	ip_box->setTextHorizontalAlignment(TextHAlignment::CENTER);
+	ip_box->setFontName("/fonts/AGENCYR.TTF");
 	ip_box->setFontSize(20);
 	ip_box->setMaxLength(20);
 	ip_box->setFontColor(Color3B::WHITE);
@@ -322,9 +327,11 @@ bool ClientMenu::init()
 //	inputbox->setInputMode(ui::EditBox::InputMode::NUMERIC);
 //	iptbox->setDelegate(this);
 	ip_box->setTag(1);
-	auto port_box = ui::EditBox::create(Size(80, 60), ui::Scale9Sprite::create("/picture/editbox.png"));
+	auto port_box = ui::EditBox::create(Size(80, 60), ui::Scale9Sprite::create("/picture/menuitems/InputPort.png"));
 	port_box->setPosition(Vec2(origin.x + visibleSize.width / 2 + port_box->getContentSize().width,
 		origin.y + visibleSize.height - port_box->getContentSize().height));
+	port_box->setTextHorizontalAlignment(TextHAlignment::CENTER);
+	port_box->setFontName("/fonts/AGENCYR.TTF");
 	port_box->setFontSize(20);
 	port_box->setMaxLength(20);
 	port_box->setFontColor(Color3B::WHITE);
@@ -451,18 +458,20 @@ bool CreditsScene::init()
 		return false;
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/mainv.wav");
 
 	std::string credits_content = "Producer/主创：\n赵凌丰\n朱灵均\n潘健\n\
-	User Interface/用户界面:\n赵凌丰\n\
 	Unit Logic/单位逻辑：\n朱灵均\n赵凌丰\n潘健\n\
+	Unit Design/单位设计：\n朱灵均\n潘健\n赵凌丰\n\
 	Map/地图：\n潘健\n\
 	Pathfinding/寻路：\n潘健\n朱灵均\n\
-	Socket/套接字编程：\n赵凌丰\n\
+	User Interface/用户界面:\n赵凌丰\n\
 	Network Synchronization Logic/网络同步策略：\n赵凌丰\n朱灵均\n\
+	Socket/套接字编程：\n赵凌丰\n\
 	Message Format/消息格式：\n朱灵均\n赵凌丰\n\
-	Art Designer/美工：\n潘健\n赵凌丰\n\n\
-	Audio Effect/音效：\n赵凌丰\n\
-	Special Thanks to/特别感谢：\n\n周学功老师\n\n\n Cocos2dx\nBoost::Asio\nGoogle Protocal Buffer\nTiled\nAdobe Photoshop\nMicrosoft Visual Studio\nGitHub\nFudan University\n\
+	Art Designer/美工：\n潘健\n赵凌丰\n\
+	Audio Effect/音效：\n赵凌丰\n\n\
+	Special Thanks to/特别感谢：\n\n周学功老师\n\n\n Cocos2dx\nBoost::Asio\nGoogle Protocal Buffer\nTiled\nAdobe Photoshop\nAdobe Audition\nMicrosoft Visual Studio\nGitHub\nFudan University\n\
 	";
 
 	label = Label::createWithTTF(credits_content, "/fonts/SIMLI.TTF",22);
@@ -485,6 +494,7 @@ bool CreditsScene::init()
 
 void CreditsScene::menuBackCallback(cocos2d::Ref* pSender)
 {
+	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 	auto scene = HelloWorld::createScene();
 	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
 }
