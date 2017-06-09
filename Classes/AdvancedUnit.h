@@ -18,6 +18,8 @@ class Tank : public Unit
 public:
 	static Tank* create(const std::string& filename);
 private:
+	GridSize splash_range;
+	void attack() override;
 	void setProperties() override;
 };
 

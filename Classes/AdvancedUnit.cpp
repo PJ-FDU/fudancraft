@@ -25,8 +25,10 @@ void Fighter::setProperties()
 {
 	type = 1;
 
-	atk = 10;
-	atk_range = 150;
+
+	atk = 8;
+	atk_range = 200;
+
   
 	hp_max = 100;
 
@@ -64,8 +66,7 @@ void Fighter::move()
 		setPosition(next_pos);
 		grid_map->leavePosition(cur_pos, false);
 		cur_pos = next_gp;
-	}
-		
+	}		
 
 	if (hasArrivedAtDest())
 		if (grid_path.size())
@@ -75,7 +76,7 @@ void Fighter::move()
 		}
 		else
 		{
-			if (id == grid_map->getUnitIDAt(cur_dest))
+			if (grid_map->checkPosition(cur_dest))
 			{
 				log("Unit ID: %d, fighter landing", id);
 				grid_map->occupyPosition(id, next_gp, true);
@@ -108,16 +109,38 @@ Tank* Tank::create(const std::string& filename)
 	return nullptr;
 }
 
+void Tank::attack()
+{
+	if (!cd)
+	{
+		const auto& splash_center = unit_manager->getUnitPosition(target_id);
+		const auto& splash_rect = GridRect(splash_center - splash_range / 2, splash_range);
+		const auto& splash_ids = grid_map->getUnitIDAt(splash_rect);
+		for (const auto& its_id : splash_ids)
+		{
+			log("Tank %d attack! Unit: %d been splashed", id, its_id);
+			int its_camp = unit_manager->getUnitCamp(its_id);
+			if (its_camp != 0 && its_camp != camp)
+				unit_manager->msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_ATK, id, its_id, atk, camp, 0, {});
+		}
+
+		cd = cd_max;
+	}
+	else
+		cd--;
+}
+
 void Tank::setProperties()
 {
 	type = 2;
-	atk = 50;
-	atk_range = 100;
+	atk = 10;
+	atk_range = 150;
 
 	hp_max = 250;
 
-	cd_max = 30;
-	move_speed = 2.5f;
+	cd_max = 45;
+	move_speed = 2.0f;
+
 
 	z_index = 10;
 
@@ -127,6 +150,7 @@ void Tank::setProperties()
 	auto_atk_range = GridSize(3, 3);
 
 	size = GridSize(1, 1);
+	splash_range = GridSize(3, 3);
 
 	cd = 0;
 	hp = hp_max;
@@ -149,7 +173,7 @@ void Soldier::setProperties()
 {
 	type = 3;
 	atk = 5;
-	atk_range = 50;
+	atk_range = 100;
 
 	hp_max = 80;
 	cd_max = 10;
