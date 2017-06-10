@@ -39,12 +39,6 @@ bool HelloWorld::init()
 	background->setScaleX(visibleSize.width / background->getContentSize().width);
 	background->setScaleY(visibleSize.height / background->getContentSize().height);
 	addChild(background, -5);
-//
-//	MenuItemFont::setFontName("fonts/Blackwood Castle Shadow.ttf");
-//	auto start_label = MenuItemFont::create("Start Game",CC_CALLBACK_1(HelloWorld::menuStartCallback,this));
-//	auto credits_label = MenuItemFont::create("Credits",CC_CALLBACK_1(HelloWorld::menuCreditsCallback,this));
-//	auto quit_label = MenuItemFont::create("Quit Game",CC_CALLBACK_1(HelloWorld::menuCloseCallback,this));
-//	MenuItemFont::setFontSize(24);
 	auto start_label = MenuItemImage::create("/Picture/MenuItems/ButtonStart.png",
 	                                         "/Picture/MenuItems/ButtonStartSelected.png",
 	                                         CC_CALLBACK_1(HelloWorld::menuStartCallback, this));
@@ -62,6 +56,7 @@ bool HelloWorld::init()
 	
 	menu->alignItemsVerticallyWithPadding(10);
 	this->addChild(menu, 1);
+	// preload all the audio resourses
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("audio/killbill.wav");
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("audio/mainv.wav");
 	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/bomb1.wav");
@@ -135,12 +130,6 @@ bool StartMenu::init()
 		"/Picture/MenuItems/ButtonBackSelected.png",
 		CC_CALLBACK_1(StartMenu::menuBackCallback, this));
 
-
-//	MenuItemFont::setFontName("fonts/Blackwood Castle Shadow.ttf");
-//	MenuItemFont::setFontSize(24);
-//	auto server_label = MenuItemFont::create("Start As Server", CC_CALLBACK_1(StartMenu::menuServerCallback, this));
-//	auto client_label = MenuItemFont::create("Start As Client", CC_CALLBACK_1(StartMenu::menuClientCallback, this));
-//	auto back_label = MenuItemFont::create("Back", CC_CALLBACK_1(StartMenu::menuBackCallback, this));
 	auto menu = Menu::create(server_label, client_label,back_label, NULL);
 	menu->setPosition(Vec2(origin.x + visibleSize.width / 2,
 		origin.y + visibleSize.height / 2));
@@ -218,26 +207,17 @@ bool ServerMenu::init()
 		"/Picture/MenuItems/ButtonBackSelected.png",
 		CC_CALLBACK_1(ServerMenu::menuBackCallback, this));
 
-//	
-//	MenuItemFont::setFontName("fonts/Blackwood Castle Shadow.ttf");
-//	MenuItemFont::setFontSize(24);
-//	auto start_label = MenuItemFont::create("Start Server", CC_CALLBACK_1(ServerMenu::menuStartServerCallback, this));
-//	auto start_game_label = MenuItemFont::create("Start Game", CC_CALLBACK_1(ServerMenu::menuStartGameCallback, this));
-//	auto back_label = MenuItemFont::create("Back", CC_CALLBACK_1(ServerMenu::menuBackCallback, this));
 	auto menu = Menu::create(start_label, start_game_label,back_label, NULL);
 	menu->setPosition(Vec2(origin.x + visibleSize.width / 2,
 		origin.y + visibleSize.height / 2));
 	menu->alignItemsVerticallyWithPadding(10);
-
 
 	connection_msg_ = Label::createWithTTF("", "/fonts/arial.ttf", 18);
 	connection_msg_->setAnchorPoint(Vec2(0.5, 0));
 	connection_msg_->setPosition(Vec2(origin.x + visibleSize.width / 2,
 		origin.y));
 	addChild(connection_msg_);
-
 	this->addChild(menu, 1);
-
 	return true;
 }
 
@@ -269,7 +249,7 @@ void ServerMenu::menuBackCallback(cocos2d::Ref* pSender)
 {
 	if (socket_server_)
 	{
-		unscheduleAllSelectors();
+		unscheduleAllCallbacks();
 		socket_client_->close();
 		delete socket_client_;
 		socket_client_ = nullptr;
@@ -323,9 +303,7 @@ bool ClientMenu::init()
 	ip_box->setMaxLength(20);
 	ip_box->setFontColor(Color3B::WHITE);
 	ip_box->setText("127.0.0.1");
-	//	inputbox->setPlaceHolder("8008");
-//	inputbox->setInputMode(ui::EditBox::InputMode::NUMERIC);
-//	iptbox->setDelegate(this);
+
 	ip_box->setTag(1);
 	auto port_box = ui::EditBox::create(Size(80, 60), ui::Scale9Sprite::create("/picture/menuitems/InputPort.png"));
 	port_box->setPosition(Vec2(origin.x + visibleSize.width / 2 + port_box->getContentSize().width,
@@ -355,12 +333,6 @@ bool ClientMenu::init()
 	auto back_label = MenuItemImage::create("/Picture/MenuItems/ButtonBack.png",
 		"/Picture/MenuItems/ButtonBackSelected.png",
 		CC_CALLBACK_1(ClientMenu::menuBackCallback, this));
-
-//	MenuItemFont::setFontName("fonts/Blackwood Castle Shadow.ttf");
-//	MenuItemFont::setFontSize(24);
-//	auto start_label = MenuItemFont::create("Start", CC_CALLBACK_1(ClientMenu::menuStartGameCallback, this));
-////	auto start_game_label = MenuItemFont::create("Start Game", CC_CALLBACK_1(ClientMenu::menuStartGameCallback, this));
-//	auto back_label = MenuItemFont::create("Back", CC_CALLBACK_1(ClientMenu::menuBackCallback, this));
 	auto menu = Menu::create(start_label, back_label, NULL);
 	menu->setPosition(Vec2(origin.x + visibleSize.width / 2,
 		origin.y + visibleSize.height / 2));
@@ -412,7 +384,7 @@ void ClientMenu::menuBackCallback(cocos2d::Ref* pSender)
 void ClientMenu::wait_start()
 {
 	//socket_client_->camp();
-	unscheduleAllSelectors();
+	unscheduleAllCallbacks();
 	log("get the camp");
 	log("start game");
 	auto scene = BattleScene::createScene(socket_client_, nullptr);
@@ -424,8 +396,7 @@ void ClientMenu::startSchedule(float f)
 {
 	if (socket_client_->error())
 	{
-//		menuBackCallback(nullptr);
-		unscheduleAllSelectors();
+		unscheduleAllCallbacks();
 		socket_client_->close();
 		delete socket_client_;
 		socket_client_ = nullptr;
@@ -501,7 +472,7 @@ void CreditsScene::menuBackCallback(cocos2d::Ref* pSender)
 
 void CreditsScene::scheduleMove(float f)
 {
-	label->setPosition(label->getPosition() + Vec2(0, 1));
+	label->setPosition(label->getPosition() + Vec2(0, 0.7));
 	if (label->getPosition().y -label->getContentSize().height/2> Director::getInstance()->getVisibleSize().height)
 		label->setPosition(Vec2(Director::getInstance()->getVisibleSize().width / 2, -label->getContentSize().height / 2));
 }

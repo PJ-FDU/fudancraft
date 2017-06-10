@@ -93,7 +93,8 @@ public:
 	
 	void menuBackCallback(cocos2d::Ref* pSender);
 	void scheduleMove(float f);
-	
+
+	// implement the "static create()" method manually
 	CREATE_FUNC(CreditsScene);
 private:
 	cocos2d::Label *label;
