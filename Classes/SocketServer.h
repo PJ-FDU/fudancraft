@@ -60,17 +60,44 @@ class SocketServer
 {
 public:
 
+	/**
+	 * \brief create a server on port number
+	 * \param port port number, default 8008
+	 * \return socket server
+	 */
 	static SocketServer* create(int port = 8008);
 //	~SocketServer() { acceptor_.close(); io_service_->stop(); }
+	/**
+	 * \brief close the server
+	 */
 	void close();
+	/**
+	 * \brief 
+	 * \return TcpConnection vector
+	 */
 	std::vector<TcpConnection::pointer> get_connection() const;
 
+	/**
+	 * \brief remove a connction, if there is a connction
+	 * \param p tcp connection
+	 */
 	void remove_connection(TcpConnection::pointer p);
+	/**
+	 * \brief start the game
+	 */
 	void button_start();
 
-	bool error()const { return error_flag_; }
+	/**
+	 * \brief 
+	 * \return if error occured
+	 */
+	bool error() const;
 
-	int connection_num()const { return connections_.size(); }
+	/**
+	 * \brief 
+	 * \return total connction number
+	 */
+	int connection_num() const;
 private:
 	SocketServer(int port);
 	void start_accept();

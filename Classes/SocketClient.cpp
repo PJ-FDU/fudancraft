@@ -186,3 +186,8 @@ std::string SocketClient::read_data()
 	auto ret = std::string(read_msg.body(), read_msg.body_length());
 	return ret;
 }
+
+void SocketClient::close()
+{
+	do_close();
+}

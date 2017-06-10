@@ -17,11 +17,24 @@ using asio::ip::tcp;
 class SocketClient
 {
 public:
+	/**
+	 * \brief create a socket client
+	 * \param ip ip address, default to localhost
+	 * \param port port number, default to 8008
+	 * \return a socket client 
+	 */
 	static SocketClient* create(std::string ip = "127.0.0.1", int port = 8008);
 
 //	~SocketClient() {  io_service_.stop();do_close(); }
 
-	void close() { ; do_close();  }
+	/**
+	 * \brief close the socket 
+	 */
+	void close();
+
+	/**
+	 * \brief start a socket
+	 */
 	void start()
 	{
 		start_connect();
@@ -32,18 +45,45 @@ public:
 	[[deprecated("just for test")]]
 	void send_game_message(const std::vector<GameMessage>& vec_game_msg);
 
-
+	
+	/**
+	 * \brief send string through socket
+	 * \param s protubuf serialized string 
+	 */
 	void send_string(std::string s);
 
+	/**
+	 * \brief this is a block function of receving stirng
+	 * \return protubuf serialized string
+	 */
 	std::string get_string();;
 
+	/**
+	 * \brief inner use
+	 */
 	void do_close();
 
+	/**
+	 * \brief 
+	 * \return if game has started
+	 */
 	bool started() const { return start_flag_; }
+	/**
+	 * \brief 
+	 * \return if there is error
+	 */
 	bool error()const { return error_flag_; }
 
+	/**
+	 * \brief start from 1
+	 * \return camp number
+	 */
 	int camp() const;
 
+	/**
+	 * \brief 
+	 * \return total player number
+	 */
 	int total() const;
 
 private:

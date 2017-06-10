@@ -194,6 +194,16 @@ void SocketServer::button_start()
 	button_thread_->detach();
 }
 
+bool SocketServer::error() const
+{
+	return error_flag_;
+}
+
+int SocketServer::connection_num() const
+{
+	return connections_.size();
+}
+
 SocketServer::SocketServer(int port):
 	acceptor_(*io_service_, tcp::endpoint(tcp::v4(), port))
 {
