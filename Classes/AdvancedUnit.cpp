@@ -26,15 +26,15 @@ void Fighter::setProperties()
 	type = 1;
 
 
-	atk = 8;
-	atk_range = 200;
+	atk = 10;
+	atk_range = 250;
 
   
 	hp_max = 100;
 
 	cd_max = 20;
 
-	move_speed = 4.0f;
+	move_speed = 4.5f;
 
 	mobile = true;
 
@@ -139,7 +139,7 @@ void Tank::setProperties()
 	hp_max = 250;
 
 	cd_max = 45;
-	move_speed = 2.0f;
+	move_speed = 2.5f;
 
 
 	z_index = 10;
