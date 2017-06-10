@@ -1,1 +1,193 @@
-﻿
+﻿  btAxisSweep3.cpp
+  btBroadphaseProxy.cpp
+  btCollisionAlgorithm.cpp
+  btDbvt.cpp
+  btDbvtBroadphase.cpp
+  btDispatcher.cpp
+  btMultiSapBroadphase.cpp
+  btOverlappingPairCache.cpp
+  btQuantizedBvh.cpp
+  btSimpleBroadphase.cpp
+  btActivatingCollisionAlgorithm.cpp
+  btBox2dBox2dCollisionAlgorithm.cpp
+  btBoxBoxCollisionAlgorithm.cpp
+  btBoxBoxDetector.cpp
+  btCollisionDispatcher.cpp
+  btCollisionObject.cpp
+  btCollisionWorld.cpp
+  btCompoundCollisionAlgorithm.cpp
+  btCompoundCompoundCollisionAlgorithm.cpp
+  btConvex2dConvex2dAlgorithm.cpp
+  btConvexConcaveCollisionAlgorithm.cpp
+  btConvexConvexAlgorithm.cpp
+  btConvexPlaneCollisionAlgorithm.cpp
+  btDefaultCollisionConfiguration.cpp
+  btEmptyCollisionAlgorithm.cpp
+  btGhostObject.cpp
+  btHashedSimplePairCache.cpp
+  btInternalEdgeUtility.cpp
+  btManifoldResult.cpp
+  btSimulationIslandManager.cpp
+  btSphereBoxCollisionAlgorithm.cpp
+  btSphereSphereCollisionAlgorithm.cpp
+  btSphereTriangleCollisionAlgorithm.cpp
+  btUnionFind.cpp
+  SphereTriangleDetector.cpp
+  btBox2dShape.cpp
+  btBoxShape.cpp
+  btBvhTriangleMeshShape.cpp
+  btCapsuleShape.cpp
+  btCollisionShape.cpp
+  btCompoundShape.cpp
+  btConcaveShape.cpp
+  btConeShape.cpp
+  btConvex2dShape.cpp
+  btConvexHullShape.cpp
+  btConvexInternalShape.cpp
+  btConvexPointCloudShape.cpp
+  btConvexPolyhedron.cpp
+  btConvexShape.cpp
+  btConvexTriangleMeshShape.cpp
+  btCylinderShape.cpp
+  btEmptyShape.cpp
+  btHeightfieldTerrainShape.cpp
+  btMinkowskiSumShape.cpp
+  btMultimaterialTriangleMeshShape.cpp
+  btMultiSphereShape.cpp
+  btOptimizedBvh.cpp
+  btPolyhedralConvexShape.cpp
+  btScaledBvhTriangleMeshShape.cpp
+  btShapeHull.cpp
+  btSphereShape.cpp
+  btStaticPlaneShape.cpp
+  btStridingMeshInterface.cpp
+  btTetrahedronShape.cpp
+  btTriangleBuffer.cpp
+  btTriangleCallback.cpp
+  btTriangleIndexVertexArray.cpp
+  btTriangleIndexVertexMaterialArray.cpp
+  btTriangleMesh.cpp
+  btTriangleMeshShape.cpp
+  btUniformScalingShape.cpp
+  btContactProcessing.cpp
+  btGenericPoolAllocator.cpp
+  btGImpactBvh.cpp
+  btGImpactCollisionAlgorithm.cpp
+  btGImpactQuantizedBvh.cpp
+  btGImpactShape.cpp
+  btTriangleShapeEx.cpp
+  gim_box_set.cpp
+  gim_contact.cpp
+  gim_memory.cpp
+  gim_tri_collision.cpp
+  btContinuousConvexCollision.cpp
+  btConvexCast.cpp
+  btGjkConvexCast.cpp
+  btGjkEpa2.cpp
+  btGjkEpaPenetrationDepthSolver.cpp
+  btGjkPairDetector.cpp
+  btMinkowskiPenetrationDepthSolver.cpp
+  btPersistentManifold.cpp
+  btPolyhedralContactClipping.cpp
+  btRaycastCallback.cpp
+  btSubSimplexConvexCast.cpp
+  btVoronoiSimplexSolver.cpp
+  btKinematicCharacterController.cpp
+  btConeTwistConstraint.cpp
+  btContactConstraint.cpp
+  btFixedConstraint.cpp
+a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\constraintsolver\btconetwistconstraint.cpp(866): warning C4244: “=”: 从“double”转换到“btScalar”，可能丢失数据
+a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\constraintsolver\btconetwistconstraint.cpp(911): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\constraintsolver\btconetwistconstraint.cpp(971): warning C4244: “=”: 从“double”转换到“btScalar”，可能丢失数据
+a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\constraintsolver\btconetwistconstraint.cpp(973): warning C4244: “=”: 从“double”转换到“btScalar”，可能丢失数据
+a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\constraintsolver\btcontactconstraint.h(25): warning C4359: “btContactConstraint”: 对齐说明符小于实际对齐方式(128)，将被忽略。 (编译源文件 ..\BulletDynamics\ConstraintSolver\btContactConstraint.cpp)
+a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\character\btkinematiccharactercontroller.cpp(137): warning C4305: “=”: 从“double”到“btScalar”截断
+  btGearConstraint.cpp
+a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\character\btkinematiccharactercontroller.cpp(148): warning C4305: “=”: 从“double”到“btScalar”截断
+  btGeneric6DofConstraint.cpp
+  btGeneric6DofSpringConstraint.cpp
+  btHinge2Constraint.cpp
+  btHingeConstraint.cpp
+  btPoint2PointConstraint.cpp
+  btSequentialImpulseConstraintSolver.cpp
+  btSliderConstraint.cpp
+  btSolve2LinearConstraint.cpp
+  btTypedConstraint.cpp
+  btUniversalConstraint.cpp
+  btDiscreteDynamicsWorld.cpp
+  btRigidBody.cpp
+  btSimpleDynamicsWorld.cpp
+  Bullet-C-API.cpp
+a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\constraintsolver\btcontactconstraint.h(25): warning C4359: “btContactConstraint”: 对齐说明符小于实际对齐方式(128)，将被忽略。 (编译源文件 ..\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.cpp)
+  btMultiBody.cpp
+  btMultiBodyConstraint.cpp
+  btMultiBodyConstraintSolver.cpp
+  btMultiBodyDynamicsWorld.cpp
+  btMultiBodyJointLimitConstraint.cpp
+  btMultiBodyJointMotor.cpp
+  btMultiBodyPoint2Point.cpp
+  btDantzigLCP.cpp
+  btMLCPSolver.cpp
+  btRaycastVehicle.cpp
+a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\mlcpsolvers\btdantziglcp.cpp(1567): warning C4473: “printf”: 没有为格式字符串传递足够的参数
+  a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\mlcpsolvers\btdantziglcp.cpp(1567): note: 占位符和其参数预计 2 可变参数，但提供的却是 1 参数
+  a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\mlcpsolvers\btdantziglcp.cpp(1567): note: 缺失的可变参数 2 为格式字符串“% s”所需
+  btWheelInfo.cpp
+  btGpu3DGridBroadphase.cpp
+a:\project\fudancraft\cocos2d\external\bullet\bulletdynamics\constraintsolver\btcontactconstraint.h(25): warning C4359: “btContactConstraint”: 对齐说明符小于实际对齐方式(128)，将被忽略。 (编译源文件 ..\BulletDynamics\Vehicle\btRaycastVehicle.cpp)
+  btParallelConstraintSolver.cpp
+  btThreadSupportInterface.cpp
+  PosixThreadSupport.cpp
+  SequentialThreadSupport.cpp
+  SpuCollisionObjectWrapper.cpp
+  SpuCollisionTaskProcess.cpp
+a:\project\fudancraft\cocos2d\external\bullet\bulletmultithreaded\btparallelconstraintsolver.cpp(1141): warning C4316: “btConstraintSolverIO”: 在堆上分配的对象可能不是对齐 16
+a:\project\fudancraft\cocos2d\external\bullet\bulletmultithreaded\btparallelconstraintsolver.cpp(1484): warning C4305: “初始化”: 从“double”到“float”截断
+a:\project\fudancraft\cocos2d\external\bullet\bulletmultithreaded\sequentialthreadsupport.cpp(180): warning C4316: “btDummyCriticalSection”: 在堆上分配的对象可能不是对齐 16
+  SpuContactManifoldCollisionAlgorithm.cpp
+  SpuFakeDma.cpp
+  SpuGatheringCollisionDispatcher.cpp
+  SpuLibspe2Support.cpp
+  boxBoxDistance.cpp
+  SpuCollisionShapes.cpp
+  SpuContactResult.cpp
+  SpuGatheringCollisionTask.cpp
+  SpuMinkowskiPenetrationDepthSolver.cpp
+  SpuSampleTaskProcess.cpp
+  SpuSampleTask.cpp
+a:\project\fudancraft\cocos2d\external\bullet\bulletmultithreaded\spunarrowphasecollisiontask\spugatheringcollisiontask.cpp(130): warning C4359: “CollisionTask_LocalStoreMemory”: 对齐说明符小于实际对齐方式(128)，将被忽略。
+  Win32ThreadSupport.cpp
+a:\project\fudancraft\cocos2d\external\bullet\bulletmultithreaded\spusampletask\spusampletask.cpp(226): warning C4316: “SampleTask_LocalStoreMemory”: 在堆上分配的对象可能不是对齐 16
+  btAlignedAllocator.cpp
+  btConvexHull.cpp
+  btConvexHullComputer.cpp
+  btGeometryUtil.cpp
+  btPolarDecomposition.cpp
+  btQuickprof.cpp
+  btSerializer.cpp
+  btVector3.cpp
+  MiniCL.cpp
+a:\project\fudancraft\cocos2d\external\bullet\bulletmultithreaded\win32threadsupport.cpp(253): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: 参见“sprintf”的声明
+a:\project\fudancraft\cocos2d\external\bullet\bulletmultithreaded\win32threadsupport.cpp(262): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: 参见“sprintf”的声明
+  MiniCLTaskScheduler.cpp
+  MiniCLTask.cpp
+a:\project\fudancraft\cocos2d\external\bullet\minicl\minicl.cpp(83): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: 参见“strcpy”的声明
+a:\project\fudancraft\cocos2d\external\bullet\minicl\minicl.cpp(96): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: 参见“strcpy”的声明
+a:\project\fudancraft\cocos2d\external\bullet\minicl\minicl.cpp(129): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: 参见“sprintf”的声明
+a:\project\fudancraft\cocos2d\external\bullet\minicl\minicl.cpp(194): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: 参见“strcpy”的声明
+a:\project\fudancraft\cocos2d\external\bullet\minicl\minicl.cpp(207): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: 参见“strcpy”的声明
+a:\project\fudancraft\cocos2d\external\bullet\minicl\minicl.cpp(166): warning C4101: “workitem_size”: 未引用的局部变量
+a:\project\fudancraft\cocos2d\external\bullet\minicl\minicl.cpp(547): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: 参见“strcpy”的声明
+a:\project\fudancraft\cocos2d\external\bullet\minicl\minicl.cpp(640): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: 参见“sprintf”的声明
+PosixThreadSupport.obj : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+btBroadphaseProxy.obj : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+  libbullet.vcxproj -> A:\Project\fudancraft\proj.win32\Debug.win32\libbullet.lib

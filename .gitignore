@@ -7,4 +7,8 @@
 
 !documents
 
+!cocos2d
+
+*.obj
+
 /proj.win32
