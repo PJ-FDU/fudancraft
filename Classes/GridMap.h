@@ -53,25 +53,71 @@ class GridMap : public cocos2d::Ref
 {
 public:
 	static GridMap* create(const cocos2d::TMXTiledMap * tiled_map);
+	/**
+	 * \return the nearest grid point
+	 */
 	GridPoint findFreePositionNear(/*const GridVec& gv,*/ const GridPoint& gp);
+	/**
+	 * \return get coordinate of point 
+	 */
 	cocos2d::Point getPoint(const GridPoint& gp);
 	GridPoint getGridPoint(const cocos2d::Point& p);
 	cocos2d::Point getGridRectCenter(const GridRect& grec);
+	/** 
+	 * \return get coordinate of point with offset 
+	 */
 	cocos2d::Point getPointWithOffset(const GridPoint& gp);
+	/** 
+	 * \return return grid point of point with offset
+	 */
 	GridPoint getGridPointWithOffset(const cocos2d::Point& p);
+	/**
+	 * \return if the rectangle has been taken
+	 */
 	bool checkPosition(const GridRect& grec);
+	/**
+	 * \return if a point has been taken
+	 */
 	bool checkPosition(const GridPoint& gp);
+	/**
+	 * \brief try to occupy the position
+	 * \return true if success
+	 */
 	bool occupyPosition(int id, const GridPoint& pos, bool occupy_grid = true);
 	bool occupyPosition(int id, const cocos2d::Point& pos, bool occupy_grid = true);
 	bool occupyPosition(int id, const GridRect& grec, bool occupy_grid = true);
+	/**
+	 * \return if the point is in the map
+	 */
 	bool checkPointInMap(const GridPoint& gp) const;
 	bool checkPointInMap(int x, int y) const;
+	/**
+	 * \brief leave the point 
+	 */
 	void leavePosition(const GridPoint& pos, bool occupy_grid = true);
+	/**
+	 * \brief leave the rectangle
+	 */
 	void leavePosition(const GridRect& grec, bool occupy_grid = true);
+	/**
+	 * \return a logical grid map
+	 */
 	std::vector<std::vector<int>>& getLogicalGridMap();
+	/**
+	 * \return all the ID that in the rectangle
+	 */
 	std::vector<int> getUnitIDAt(const GridRect& range) const;
+	/**
+	 * \return unit id at point gp
+	 */
 	int getUnitIDAt(const GridPoint& gp) const;
 
+	/**
+	 * \brief 
+	 * \param cur_fp current point
+	 * \param dest_gp destination grid point
+	 * \return  if the current point is neat the center of destination
+	 */
 	bool hasApproached(const cocos2d::Point& cur_fp, const GridPoint& dest_gp);
 private:
 	bool initWithTiledMap(const cocos2d::TMXTiledMap* tiled_map);
