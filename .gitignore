@@ -12,3 +12,4 @@
 *.obj
 
 /proj.win32
+*.bak
