@@ -18,12 +18,31 @@ class Notice;
 class Bar : public cocos2d::DrawNode
 {
 public:
+	/**
+	 * \brief update the bar
+	 */
 	void update(float f) override;
+	/**
+	 * \brief update the bar in a rate
+	 * \param rate update rate
+	 * \param _disp_time display time
+	 */
 	void updateBarDisplay(float rate, int _disp_time = 0);
 	CREATE_FUNC(Bar);
+	/**
+	 * \brief set lenght of bar
+	 * \param _length length
+	 */
 	void setLength(float _length);
+	/**
+	 * \brief set color of bar
+	 * \param _color color
+	 */
 	void setColor(const cocos2d::Color4F& _color);
 	void keepVisible();
+	/**
+	 * \brief stop keeping visible
+	 */
 	void stopKeepingVisible();
 private:
 	int timer = 0;
