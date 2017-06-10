@@ -154,7 +154,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\GameMessage.pb.cc" />
     <ClCompile Include="..\Classes\GridMap.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
-    <ClCompile Include="..\Classes\MainScene.cpp" />
     <ClCompile Include="..\Classes\PathFinder\PathFinder.cpp" />
     <ClCompile Include="..\Classes\SocketClient.cpp" />
     <ClCompile Include="..\Classes\SocketServer.cpp" />
@@ -168,15 +167,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\BattleScene.h" />
     <ClInclude Include="..\Classes\Building.h" />
     <ClInclude Include="..\Classes\fudancraft.h" />
-    <ClInclude Include="..\Classes\GameMessage.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\Classes\GameMessage.pb.h" />
     <ClInclude Include="..\Classes\GameMessageWrap.h" />
     <ClInclude Include="..\Classes\GridMap.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
-    <ClInclude Include="..\Classes\MainScene.h" />
     <ClInclude Include="..\Classes\PathFinder\PathFinder.h" />
     <ClInclude Include="..\Classes\SocketClient.h" />
     <ClInclude Include="..\Classes\SocketServer.h" />

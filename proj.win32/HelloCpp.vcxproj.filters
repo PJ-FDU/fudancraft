@@ -27,9 +27,6 @@
     <ClCompile Include="..\Classes\HelloWorldScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\MainScene.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\GridMap.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -68,9 +65,6 @@
     <ClInclude Include="..\Classes\HelloWorldScene.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\MainScene.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\BattleScene.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -93,9 +87,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\asio.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GameMessage.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\GameMessage.pb.h">
