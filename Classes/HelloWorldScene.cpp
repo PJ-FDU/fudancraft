@@ -471,7 +471,7 @@ bool CreditsScene::init()
 	Message Format/消息格式：\n朱灵均\n赵凌丰\n\
 	Art Designer/美工：\n潘健\n赵凌丰\n\
 	Audio Effect/音效：\n赵凌丰\n\n\
-	Special Thanks to/特别感谢：\n\n周学功老师\n\n\n Cocos2dx\nBoost::Asio\nGoogle Protocal Buffer\nTiled\nAdobe Photoshop\nAdobe Audition\nMicrosoft Visual Studio\nGitHub\nFudan University\n\
+	Special Thanks to/特别感谢：\n\n周学功老师\n\n\n Cocos2dx\nBoost::Asio\nGoogle Protocal Buffer\nTiled\nAdobe Photoshop\nAdobe Audition\nMicrosoft Visual Studio\nRed Alert2:Yuri's Revenge\nAiGei.com\nGitHub\nFudan University\n\
 	";
 
 	label = Label::createWithTTF(credits_content, "/fonts/SIMLI.TTF",22);
