@@ -711,9 +711,10 @@ void UnitManager::deleteUnit(int id)
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/die1.wav");
 		else
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/bomb1.wav");
-		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/unitlost.wav");
+		
 		if (notice && unit->camp == player_id)
 		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/unitlost.wav");
 			char ntc[50];
 			sprintf(ntc, "Unit %d destroyed", id);
 			notice->displayNotice(ntc, 80);

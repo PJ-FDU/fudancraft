@@ -13,3 +13,4 @@
 
 /proj.win32
 *.bak
+*.cache

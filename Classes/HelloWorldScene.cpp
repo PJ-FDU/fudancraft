@@ -458,7 +458,7 @@ bool CreditsScene::init()
 		return false;
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/mainv.wav");
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/mainv.wav",true);
 
 	std::string credits_content = "Producer/主创：\n赵凌丰\n朱灵均\n潘健\n\
 	Unit Logic/单位逻辑：\n朱灵均\n赵凌丰\n潘健\n\
