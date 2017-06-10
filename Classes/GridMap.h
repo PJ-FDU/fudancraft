@@ -15,6 +15,10 @@ struct GridPoint
 	friend GridPoint operator+(const GridPoint& gp1, const GridPoint& gp2);
 	friend GridPoint operator-(const GridPoint& gp1, const GridPoint& gp2);
 	friend GridPoint operator-(const GridPoint& gp, const GridSize& gz);
+	/**
+	 * \brief render a point to point limit to({-1,0,1},{-1,0,1})
+	 * \return one of point in eight direction
+	 */
 	GridPoint getDirectionVector();
 };
 
@@ -22,6 +26,9 @@ typedef GridPoint GridVec;
 
 typedef std::vector<GridPoint>  GridPath;
 
+/**
+ * \brief similar to cocos2d::Size, but implements in integer
+ */
 struct GridSize
 {
 	int width;
@@ -31,6 +38,9 @@ struct GridSize
 	friend GridSize operator/(const GridSize& gz, int s);
 };
 
+/**
+ * \brief similar to cocos2d::Rect, but implements in integer
+ */
 struct GridRect
 {
 	GridPoint gp;
