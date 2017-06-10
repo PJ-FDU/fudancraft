@@ -9,6 +9,7 @@
 
 !cocos2d
 
+!Report
 *.obj
 
 /proj.win32
