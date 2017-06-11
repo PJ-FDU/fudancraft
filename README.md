@@ -1,8 +1,12 @@
 # fudancraft
 a small rts game based on Cocos2dx
 
->   测试一下
+Introduction and document please refer to /document 
 
->   这是赵凌丰的branch
->	更新时间2017年5月6日14:08:45
+**Note: this game is only support win32 for now**
+
+## How to compile
+
+Using Visual Studio to open `/proj.win32/HelloCpp.sln` and compile it
+
 

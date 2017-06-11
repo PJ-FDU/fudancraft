@@ -9,6 +9,7 @@
 
 !cocos2d
 
+!Report
 *.obj
 
 /proj.win32
@@ -16,3 +17,5 @@
 *.cache
 *.cache
 *.cache
+*.log
+*.tlog
