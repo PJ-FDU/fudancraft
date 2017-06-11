@@ -673,7 +673,7 @@ void UnitManager::updateUnitsState()
 					if (unit_1->type == 5)
 					{
 						CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/baseunderatack.wav");
-						sprintf(ntc, "Our base is under attack, damage %d", unitid_1, damage);
+						sprintf(ntc, "Our base is under attack, damage %d", damage);
 					}
 					else						
 						sprintf(ntc, "Unit %d under attack, damage %d", unitid_1, damage);
