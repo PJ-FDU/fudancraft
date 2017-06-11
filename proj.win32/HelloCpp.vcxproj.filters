@@ -137,4 +137,9 @@
     <None Include="..\README.md" />
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\Classes\libprotobuf-lite.lib">
+      <Filter>src</Filter>
+    </Library>
+  </ItemGroup>
 </Project>
