@@ -94,7 +94,8 @@ private:
 	SocketServer* socket_server = nullptr;
 	SocketClient* socket_client = nullptr;
 
-	int start_flag = 0;
+	bool start_flag = false;
+	bool end_flag = false;
 
 	cocos2d::TMXTiledMap* battle_map = nullptr;
 	GridMap* grid_map = nullptr;

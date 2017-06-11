@@ -77,13 +77,28 @@ void BattleScene::onExit()
 
 void BattleScene::win()
 {
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto win_label = LabelBMFont::create("You Win!", "fonts/AgencyFB.fnt");
+	win_label->setPosition(Vec2(origin.x + visibleSize.width / 2,
+		origin.y + visibleSize.height - win_label->getContentSize().height));
+	addChild(win_label, 40);
+
 	notice->displayNotice("You Win!");
+	end_flag = true;
 }
 
 void BattleScene::lose()
 {
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto lose_label = LabelBMFont::create("You Lose!", "fonts/AgencyFB.fnt");
+	lose_label->setPosition(Vec2(origin.x + visibleSize.width / 2,
+		origin.y + visibleSize.height - lose_label->getContentSize().height));
+	addChild(lose_label, 40);
+
 	notice->displayNotice("You Lose");
-	start_flag = 0;
+	end_flag = true;
 }
 
 Scene* BattleScene::createScene(SocketClient* _socket_client, SocketServer* _socket_server)
@@ -233,7 +248,7 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 
 
 
-	start_flag = 1;
+	start_flag = true;
 
 	return true;
 }
@@ -374,6 +389,9 @@ void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 
 	log("Map Touch Grid Point: (%d, %d)", map_touch_grid_point.x, map_touch_grid_point.y);
 
+	if (end_flag)
+		return;
+
 	if ((maptouch - last_maptouch).length() < MIN_SELECT_RECT_SIZE)
 		unit_manager->selectUnits(maptouch);
 	else
@@ -469,7 +487,7 @@ bool Money::init()
 	money = INITIAL_BUDGET;
 	char money_str[30];
 	sprintf(money_str, "%d", money);
-	return initWithString(money_str, "fonts/MoneyFont.fnt");
+	return initWithString(money_str, "fonts/AgencyFB.fnt");
 }
 
 void Money::updateMoneyDisplay()
@@ -527,5 +545,5 @@ void Notice::displayNotice(std::string ntc)
 bool Notice::init()
 {
 	ntc_life = 100;
-	return initWithString("Welcome to FudanCraft!", "fonts/NoticeFont.fnt");
+	return initWithString("Welcome to FudanCraft!", "fonts/AgencyFB.fnt");
 }

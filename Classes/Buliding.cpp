@@ -164,7 +164,7 @@ void Tower::setProperties()
 	mobile = false;
 
 	auto_atk_freq = 50;
-	auto_atk_range = GridSize(9, 9);
+	auto_atk_range = GridSize(11, 11);
 
 	size = GridSize(1, 1);
 
