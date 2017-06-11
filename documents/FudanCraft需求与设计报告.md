@@ -1,3 +1,17 @@
+# *FudanCraft需求与设计报告*
+
+[TOC]
+
+# 设计思路
+
+系统总体框图如下所示：
+
+![FudanCraft总体结构图](FudanCraft总体结构图.png)
+
+核心的数据结构类图如下所示：
+
+![FudanCraft部分类图](FudanCraft部分类图.png)
+
 # Cocos2d-x游戏引擎
 
 ## 概述
@@ -479,7 +493,7 @@ sequenceDiagram
 
 当鼠标按压移动时，BattleScene会将MouseRect添加到自动更新update队列中。cocos2d引擎的场景导演会定时调用`MouseRect::update()`更新函数，在更新函数中MouseRect会查询战场地图的位置，实现鼠标选框的变形显示，具体关系如下图所示：
 
-![MouseRect原理图](F:\Programs\Test C++\软件设计与开发\fudancraft\fudancraft\documents\MouseRect原理图.jpg)
+![MouseRect原理图](MouseRect原理图.jpg)
 
 当视角移动、地图滚动时，鼠标选框的端点应该是当前鼠标拖动向量和地图滚动向量的差，在update()函数中定时进行运算，就可以实现鼠标选框的连续变化。
 
@@ -503,7 +517,7 @@ sequenceDiagram
 
 
 
-![瓦片地图与格点地图关系图](F:\Programs\Test C++\软件设计与开发\fudancraft\fudancraft\documents\瓦片地图与格点地图关系图.jpg)
+![瓦片地图与格点地图关系图](瓦片地图与格点地图关系图.jpg)
 
 瓦片地图用于显示，提供了各种瓦片的信息，地形能否通过的信息以及初始化单位的信息；格点地图用于运算，储存了格点是否被占据的信息以及占据单位ID的信息。
 
@@ -705,6 +719,10 @@ GridMap类是格点地图，用于寻路、格点占据判断、临近单位搜�
 * 单位创建、被摧毁、基地被攻击产生音效，提示用户的同时提升用户的视听感受
 
 ## 单位相关的数据结构
+
+单位相关的数据结构类图如下所示：
+
+![单位相关类图](单位相关类图.png)
 
 ### Unit类
 
