@@ -60,6 +60,7 @@ bool GridMap::initWithTiledMap(const TMXTiledMap* tiled_map)
 	offset_vec = Vec2(grid_width / 2, grid_height / 2);
 	gmap = std::vector<std::vector<int>>(map_width, std::vector<int>(map_height, 0));
 	umap = std::vector<std::vector<int>>(map_width, std::vector<int>(map_height, 0));
+	fmap = std::vector<std::vector<int>>(map_width, std::vector<int>(map_height, 1));
 
 	auto decoration_layer = tiled_map->getLayer("InfoLayer");
 	for (int gx = 0; gx < map_width; gx++)
@@ -221,6 +222,24 @@ bool GridMap::hasApproached(const Point& cur_fp, const GridPoint& dest_gp)
 	return(false);
 }
 
+void GridMap::setFogLayer(cocos2d::TMXLayer* _fog_layer)
+{
+	fog_layer = _fog_layer;
+}
+
+void GridMap::clearFog(const GridRect& grec)
+{
+	for (int x = grec.gp.x; x < grec.gp.x + grec.size.width; x++)
+		for (int y = grec.gp.y; y < grec.gp.y + grec.size.height; y++)
+			if (checkPointInMap(x, y) && fmap[x][y])
+			{
+				fmap[x][y] = 0;
+				auto fog_tile = fog_layer->getTileAt(Vec2(x, map_height - 1 - y));
+				if (fog_tile)
+					fog_tile->setVisible(false);
+			}
+}
+
 GridPoint operator+(const GridPoint & gp1, const GridPoint & gp2)
 {
 	return GridPoint(gp1.x + gp2.x, gp1.y + gp2.y);
@@ -238,4 +257,18 @@ GridPoint operator-(const GridPoint & gp, const GridSize & gz)
 GridSize operator/(const GridSize & gz, int s)
 {
 	return GridSize(gz.width / s, gz.height / s);
+}
+
+GridRect::GridRect(GridPoint _gp, GridSize _size, bool center)
+{
+	if (center)
+	{
+		gp = GridPoint(_gp.x - _size.width / 2, _gp.y - _size.height / 2);
+		size = _size;
+	}
+	else
+	{
+		gp = _gp;
+		size = _size;
+	}
 }

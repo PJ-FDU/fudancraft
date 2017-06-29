@@ -127,7 +127,13 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	battle_map->setAnchorPoint(Vec2(0, 0));
 	addChild(battle_map, 0);
 
+	warfog_map = TMXTiledMap::create("map/WarFogMap.tmx");
+	warfog_map->setAnchorPoint(Vec2(0, 0));
+	battle_map->addChild(warfog_map, 100);
+
 	grid_map = GridMap::create(battle_map);
+	auto fog_layer = warfog_map->getLayer("FogLayer");
+	grid_map->setFogLayer(fog_layer);
 	grid_map->retain();
 
 	unit_manager = UnitManager::create();

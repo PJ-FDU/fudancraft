@@ -269,6 +269,7 @@ protected:
 	float move_speed;
 	int auto_atk_freq;
 	GridSize auto_atk_range;
+	GridSize vision_range;
 
 	cocos2d::TMXTiledMap* tiled_map = nullptr;
 	GridMap* grid_map = nullptr;

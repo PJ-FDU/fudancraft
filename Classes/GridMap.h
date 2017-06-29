@@ -46,7 +46,7 @@ struct GridRect
 	GridPoint gp;
 	GridSize size;
 
-	GridRect(GridPoint _gp = GridPoint(), GridSize _size = GridSize()) : gp(_gp), size(_size) {}
+	GridRect(GridPoint _gp = GridPoint(), GridSize _size = GridSize(), bool center = false);
 };
 
 class GridMap : public cocos2d::Ref
@@ -119,10 +119,16 @@ public:
 	 * \return  if the current point is neat the center of destination
 	 */
 	bool hasApproached(const cocos2d::Point& cur_fp, const GridPoint& dest_gp);
+	void setFogLayer(cocos2d::TMXLayer* _fog_layer);
+	void clearFog(const GridRect& grec);
 private:
 	bool initWithTiledMap(const cocos2d::TMXTiledMap* tiled_map);
+	
 	std::vector<std::vector<int>> gmap;
 	std::vector<std::vector<int>> umap;
+	std::vector<std::vector<int>> fmap;
+
+	cocos2d::TMXLayer* fog_layer;
 	int map_width, map_height;
 	int grid_width, grid_height;
 	cocos2d::Vec2 offset_vec;

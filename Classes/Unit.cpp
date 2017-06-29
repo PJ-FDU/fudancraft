@@ -264,6 +264,8 @@ void Unit::addToMaps(const GridPoint & crt_gp, TMXTiledMap* _tiled_map, GridMap*
 	_tiled_map->addChild(this, z_index);
 
 	_grid_map->occupyPosition(id, cur_pos);
+	if (camp == unit_manager->player_id)
+		grid_map->clearFog(GridRect(cur_pos, vision_range, true));
 }
 
 void Unit::removeFromMaps()
@@ -298,6 +300,8 @@ void Unit::move()
 			setPosition(next_pos);
 			grid_map->leavePosition(cur_pos);
 			cur_pos = next_gp;
+			if (camp == unit_manager->player_id)
+				grid_map->clearFog(GridRect(cur_pos, vision_range, true));
 		}
 		else
 		{

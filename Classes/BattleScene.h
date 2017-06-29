@@ -98,6 +98,7 @@ private:
 	bool end_flag = false;
 
 	cocos2d::TMXTiledMap* battle_map = nullptr;
+	cocos2d::TMXTiledMap* warfog_map = nullptr;
 	GridMap* grid_map = nullptr;
 	UnitManager* unit_manager = nullptr;
 	ControlPanel* control_panel_;
