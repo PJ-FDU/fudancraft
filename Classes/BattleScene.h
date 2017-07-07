@@ -10,6 +10,7 @@
 class ControlPanel;
 class Money;
 class Notice;
+class MiniMap;
 
 class MouseRect : public cocos2d::DrawNode
 {
@@ -18,6 +19,7 @@ public:
 	cocos2d::Point touch_start, touch_end;
 	cocos2d::Point start, end;
 	void update(float f) override;
+	void reset();
 };
 
 class BattleScene : public cocos2d::Layer
@@ -64,6 +66,8 @@ public:
 	 */
 	void focusOnBase();
 
+	void focusOn(cocos2d::Point pos);
+
 	/**
 	 * \brief get reward when destroy unit
 	 */
@@ -82,6 +86,8 @@ public:
 	 * \brief back to main menu
 	 */
 	void menuBackCallback(cocos2d::Ref* pSender);
+
+	cocos2d::Rect getVisionRect();
 private:
 //	void create_figher(Ref*);
 
@@ -108,9 +114,12 @@ private:
 
 	Money* money = nullptr;
 	Notice* notice = nullptr;
+	MiniMap* mini_map = nullptr;
 
 	cocos2d::Point last_touch{0, 0};
 	cocos2d::Point crusor_position{0, 0};
+
+	cocos2d::Rect mini_map_rect{};
 
 	void initPlayerID();
 
@@ -185,4 +194,18 @@ public:
 private:
 	int timer = 0;
 	int ntc_life = 0;
+};
+
+class MiniMap : public cocos2d::DrawNode
+{
+public:
+	CREATE_FUNC(MiniMap);
+	void update(float f) override;
+	void setGridMap(GridMap* _grid_map);
+	void setUnitManager(UnitManager* _unit_manager);
+	void setBattleScene(BattleScene* _battle_scene);
+private:
+	GridMap* grid_map;
+	UnitManager* unit_manager;
+	BattleScene* battle_scene;
 };

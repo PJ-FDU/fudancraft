@@ -1,4 +1,5 @@
 #include "GridMap.h"
+#include "Unit.h"
 #include <vector>
 
 USING_NS_CC;
@@ -137,10 +138,10 @@ bool GridMap::occupyPosition(int id, const GridPoint& pos, bool occupy_grid)
 	return(false);
 }
 
-bool GridMap::occupyPosition(int id, const Point& pos, bool occupy_grid)
-{
-	return(occupyPosition(id, getGridPoint(pos)), occupy_grid);
-}
+//bool GridMap::occupyPosition(int id, const Point& pos, bool occupy_grid)
+//{
+//	return(occupyPosition(id, getGridPoint(pos)), occupy_grid);
+//}
 
 bool GridMap::occupyPosition(int id, const GridRect& grec, bool occupy_grid)
 {
@@ -236,8 +237,26 @@ void GridMap::clearFog(const GridRect& grec)
 				fmap[x][y] = 0;
 				auto fog_tile = fog_layer->getTileAt(Vec2(x, map_height - 1 - y));
 				if (fog_tile)
-					fog_tile->setVisible(false);
+					//fog_tile->setVisible(false);
+					fog_tile->runAction(FadeOut::create(0.5));
 			}
+}
+
+const std::vector<std::vector<int>>& GridMap::getFogMap()
+{
+	// TODO: 在此处插入 return 语句
+	return(fmap);
+}
+
+const std::vector<std::vector<int>>& GridMap::getUnitMap()
+{
+	// TODO: 在此处插入 return 语句
+	return(umap);
+}
+
+int GridMap::getGridWidth()
+{
+	return grid_width;
 }
 
 GridPoint operator+(const GridPoint & gp1, const GridPoint & gp2)
