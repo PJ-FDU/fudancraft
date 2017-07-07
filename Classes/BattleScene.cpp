@@ -11,6 +11,15 @@ void MouseRect::update(float f)
 	drawRect(start, end, Color4F(0, 1, 0, 1));
 }
 
+void MouseRect::reset()
+{
+	setVisible(false);
+	if (isScheduled(schedule_selector(MouseRect::update)))
+		unschedule(schedule_selector(MouseRect::update));
+	touch_start = touch_end = Point{ 0, 0 };
+	start = end = Point{ 0, 0 };
+}
+
 BattleScene* BattleScene::create(SocketClient* _socket_client, SocketServer* _socket_server)
 {
 	BattleScene *battle_scene = new (std::nothrow) BattleScene();
@@ -38,6 +47,13 @@ void BattleScene::menuBackCallback(cocos2d::Ref* pSender)
 	socket_client = nullptr;*/
 	auto scene = HelloWorld::createScene();
 	Director::getInstance()->replaceScene(TransitionSplitCols::create(0.5, scene));
+}
+
+cocos2d::Rect BattleScene::getVisionRect()
+{
+	auto visible_origin = Vec2(0, 0) - battle_map->getPosition();
+	auto visible_size = Director::getInstance()->getVisibleSize();
+	return cocos2d::Rect(visible_origin, visible_size);
 }
 
 
@@ -127,7 +143,13 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	battle_map->setAnchorPoint(Vec2(0, 0));
 	addChild(battle_map, 0);
 
+	warfog_map = TMXTiledMap::create("map/WarFogMap.tmx");
+	warfog_map->setAnchorPoint(Vec2(0, 0));
+	battle_map->addChild(warfog_map, 50);
+
 	grid_map = GridMap::create(battle_map);
+	auto fog_layer = warfog_map->getLayer("FogLayer");
+	grid_map->setFogLayer(fog_layer);
 	grid_map->retain();
 
 	unit_manager = UnitManager::create();
@@ -184,7 +206,7 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 
 	mouse_rect = MouseRect::create();
 	mouse_rect->setVisible(false);
-	battle_map->addChild(mouse_rect, 15);
+	battle_map->addChild(mouse_rect, 60);
 
 	schedule(schedule_selector(BattleScene::update));
 
@@ -246,7 +268,14 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	log("if back ground music playing %d", CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying());
 	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/battlefieldcontrol.wav");
 
-
+	mini_map = MiniMap::create();
+	addChild(mini_map, 40);
+	mini_map->setGridMap(grid_map);
+	mini_map->setUnitManager(unit_manager);
+	mini_map->setBattleScene(this);
+	mini_map->setPosition(50, 300);
+	mini_map->schedule(schedule_selector(MiniMap::update), 1);
+	mini_map_rect = Rect{ {50, 300}, {256, 256} };
 
 	start_flag = true;
 
@@ -255,18 +284,23 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 
 void BattleScene::focusOnBase()
 {
+	Point base_pos = grid_map->getPoint(unit_manager->getBasePosition());
+	focusOn(base_pos);
+}
+
+void BattleScene::focusOn(cocos2d::Point pos)
+{
 	auto visibleSize = Director::getInstance()->getVisibleSize();
-	GridPoint base_gp = unit_manager->getBasePosition();
-	Vec2 base_vec = grid_map->getPoint(base_gp) - visibleSize / 2;
-	if (battle_map->getBoundingBox().size.height < base_vec.y + visibleSize.height)
-		base_vec.y = battle_map->getBoundingBox().size.height - visibleSize.height;
-	if (battle_map->getBoundingBox().size.width < base_vec.x + visibleSize.width)
-		base_vec.x = battle_map->getBoundingBox().size.width - visibleSize.width;
-	if (base_vec.x < 0)
-		base_vec.x = 0;
-	if (base_vec.y < 0)
-		base_vec.y = 0;
-	battle_map->setPosition(Point(0, 0) - base_vec);
+	Vec2 map_vec = pos - visibleSize / 2;
+	if (battle_map->getBoundingBox().size.height < map_vec.y + visibleSize.height)
+		map_vec.y = battle_map->getBoundingBox().size.height - visibleSize.height;
+	if (battle_map->getBoundingBox().size.width < map_vec.x + visibleSize.width)
+		map_vec.x = battle_map->getBoundingBox().size.width - visibleSize.width;
+	if (map_vec.x < 0)
+		map_vec.x = 0;
+	if (map_vec.y < 0)
+		map_vec.y = 0;
+	battle_map->setPosition(Point(0, 0) - map_vec);
 }
 
 void BattleScene::destroyReward(int destroyed_type)
@@ -376,6 +410,15 @@ void BattleScene::onTouchEnded(cocos2d::Touch* pTouch, cocos2d::Event* pEvent)
 {
 
 	Point touch = pTouch->getLocation();//杩斿洖鐐瑰嚮鐨勪綅缃?
+
+	if (mini_map_rect.containsPoint(touch))
+	{
+		auto focus_point = (touch - mini_map_rect.origin) / 2 * grid_map->getGridWidth();
+		focusOn(focus_point);
+		mini_map->update(0.0f);
+		mouse_rect->reset();
+		return;
+	}
 
 	mouse_rect->setVisible(false);
 	if (mouse_rect->isScheduled(schedule_selector(MouseRect::update)))
@@ -546,4 +589,46 @@ bool Notice::init()
 {
 	ntc_life = 100;
 	return initWithString("Welcome to FudanCraft!", "fonts/AgencyFB.fnt");
+}
+
+void MiniMap::update(float f)
+{
+	static std::vector<Color4F> color_list = { { 0, 0, 0, 0.5 }, {0.5, 0.5, 0.5, 0.5}, { 1, 0, 0, 1 },{ 0, 1, 0, 1 }, { 0, 0, 1, 1 }, {1, 1, 0, 1} };
+	const auto& umap = grid_map->getUnitMap();
+	const auto& fmap = grid_map->getFogMap();
+	clear();
+	int color_index = 0;
+	for (int x = 0; x < int(fmap.size()); x++)
+		for (int y = 0; y < int(fmap[x].size()); y++)
+		{
+			if (fmap[x][y])
+				color_index = 0;
+			else
+				if (umap[x][y])
+					color_index = unit_manager->getUnitCamp(umap[x][y]) + 1;
+				else
+					color_index = 1;
+			drawPoint(Point(x * 2, y * 2), 2, color_list[color_index]);
+		}
+
+	const auto& visible_rect = battle_scene->getVisionRect();
+	int grid_width = grid_map->getGridWidth();
+	auto mini_rect_start = visible_rect.origin / grid_width * 2;
+	auto mini_rect_end = mini_rect_start + visible_rect.size / grid_width * 2;
+	drawRect(mini_rect_start, mini_rect_end, Color4F(1, 0, 1, 1));
+}
+
+void MiniMap::setGridMap(GridMap * _grid_map)
+{
+	grid_map = _grid_map;
+}
+
+void MiniMap::setUnitManager(UnitManager * _unit_manager)
+{
+	unit_manager = _unit_manager;
+}
+
+void MiniMap::setBattleScene(BattleScene * _battle_scene)
+{
+	battle_scene = _battle_scene;
 }

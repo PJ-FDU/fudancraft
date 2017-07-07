@@ -3,6 +3,7 @@
 #include "cocos2d.h"
 #include "fudancraft.h"
 
+class UnitManager;
 class GridSize;
 
 struct GridPoint
@@ -46,7 +47,7 @@ struct GridRect
 	GridPoint gp;
 	GridSize size;
 
-	GridRect(GridPoint _gp = GridPoint(), GridSize _size = GridSize()) : gp(_gp), size(_size) {}
+	GridRect(GridPoint _gp = GridPoint(), GridSize _size = GridSize(), bool center = false);
 };
 
 class GridMap : public cocos2d::Ref
@@ -84,7 +85,7 @@ public:
 	 * \return true if success
 	 */
 	bool occupyPosition(int id, const GridPoint& pos, bool occupy_grid = true);
-	bool occupyPosition(int id, const cocos2d::Point& pos, bool occupy_grid = true);
+	//bool occupyPosition(int id, int camp, const cocos2d::Point& pos, bool occupy_grid = true);
 	bool occupyPosition(int id, const GridRect& grec, bool occupy_grid = true);
 	/**
 	 * \return if the point is in the map
@@ -119,10 +120,20 @@ public:
 	 * \return  if the current point is neat the center of destination
 	 */
 	bool hasApproached(const cocos2d::Point& cur_fp, const GridPoint& dest_gp);
+	void setFogLayer(cocos2d::TMXLayer* _fog_layer);
+	void clearFog(const GridRect& grec);
+	const std::vector<std::vector<int>>& getFogMap();
+	const std::vector<std::vector<int>>& getUnitMap();
+	int getGridWidth();
 private:
 	bool initWithTiledMap(const cocos2d::TMXTiledMap* tiled_map);
+	
 	std::vector<std::vector<int>> gmap;
 	std::vector<std::vector<int>> umap;
+	std::vector<std::vector<int>> fmap;
+
+	cocos2d::TMXLayer* fog_layer;
+
 	int map_width, map_height;
 	int grid_width, grid_height;
 	cocos2d::Vec2 offset_vec;

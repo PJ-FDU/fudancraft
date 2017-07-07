@@ -29,6 +29,7 @@ void Base::setProperties()
 
 	mobile = false;
 
+	vision_range = GridSize(11, 11);
 	size = GridSize(2, 2);
 	period_map[1] = 300;
 	period_map[2] = 200;
@@ -50,6 +51,9 @@ void Base::addToMaps(const GridPoint & crt_gp, cocos2d::TMXTiledMap* _tiled_map,
 	_tiled_map->addChild(this, 1);
 
 	_grid_map->occupyPosition(id, cur_grec);
+
+	if (camp == unit_manager->player_id)
+		grid_map->clearFog(GridRect(cur_pos, vision_range, true));
 }
 
 void Base::update(float f)
@@ -167,6 +171,7 @@ void Tower::setProperties()
 	auto_atk_range = GridSize(11, 11);
 
 	size = GridSize(1, 1);
+	vision_range = GridSize(11, 11);
 
 	cd = 0;
 	hp = hp_max;

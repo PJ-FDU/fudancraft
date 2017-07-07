@@ -264,6 +264,8 @@ void Unit::addToMaps(const GridPoint & crt_gp, TMXTiledMap* _tiled_map, GridMap*
 	_tiled_map->addChild(this, z_index);
 
 	_grid_map->occupyPosition(id, cur_pos);
+	if (camp == unit_manager->player_id)
+		grid_map->clearFog(GridRect(cur_pos, vision_range, true));
 }
 
 void Unit::removeFromMaps()
@@ -298,6 +300,8 @@ void Unit::move()
 			setPosition(next_pos);
 			grid_map->leavePosition(cur_pos);
 			cur_pos = next_gp;
+			if (camp == unit_manager->player_id)
+				grid_map->clearFog(GridRect(cur_pos, vision_range, true));
 		}
 		else
 		{
@@ -608,90 +612,90 @@ int UnitManager::genRandom(int start, int end)
 
 void UnitManager::updateUnitsState()
 {
+	msgs->add_game_message()->genGameMessage(GameMessage::CmdCode::GameMessage_CmdCode_EMP, 0, 0, 0, 0, 0, {});
 	auto sent_msg_str = msgs->SerializeAsString();
 	socket_client->send_string(sent_msg_str);
 	int sent_msg_num = msgs->game_message_size();
 	if (sent_msg_num)
 		log("Sent Message Num: %d, Sent Message string length: %d", sent_msg_num, sent_msg_str.length());
 
-	std::string msg_str = socket_client->get_string();
-	msgs = new GameMessageSet();
+	auto msg_str = socket_client->get_string();
 	msgs->ParseFromString(msg_str);
 	int recv_msg_num = msgs->game_message_size();
 	if (recv_msg_num)
 		log("Received Message Num: %d, Received Message String Length: %d", recv_msg_num, msg_str.length());
 
-	GameMessageSet* new_msgs = new GameMessageSet();
-
 	for (int i = 0; i < msgs->game_message_size(); i++)
 	{
 		const GameMessage&  msg = msgs->game_message(i);
+		//log("UnitManager: Read Message %d Success", i);
 		if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_EMP)
 		{
 			log("Empty Message, there must be something wrong");
 		}
 		else
-		if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_CRT)
-		{
+			if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_CRT)
+			{
 
-			int id = msg.unit_0();
-			int camp = msg.camp();
-			int unit_type = msg.unit_type();
-			Unit* new_unit = createNewUnit(id, camp, unit_type, GridPoint(msg.grid_path().grid_point(0).x(), msg.grid_path().grid_point(0).y()));
-			id_map.insert(id, new_unit);
-		}
-		else
-		if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_UDP)
-		{
-			Unit* u0 = id_map.at(msg.unit_0());
-			if (u0)
-			{
-				u0->rfp_cnt = 0;
-				const MsgGridPath& msg_grid_path = msg.grid_path();
-				if (msg_grid_path.grid_point_size())
-				{
-					log("Unit ID: %d, update path and start moving", msg.unit_0());
-					u0->setGridPath(msg.grid_path());
-					u0->motivate();
-				}
+				int id = msg.unit_0();
+				int camp = msg.camp();
+				int unit_type = msg.unit_type();
+				Unit* new_unit = createNewUnit(id, camp, unit_type, GridPoint(msg.grid_path().grid_point(0).x(), msg.grid_path().grid_point(0).y()));
+				id_map.insert(id, new_unit);
 			}
-		}
-		else
-		if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_ATK)
-		{
-			int unitid_0 = msg.unit_0();
-			int unitid_1 = msg.unit_1();
-			int damage = msg.damage();
-			//log("Attack! Unit %d -> Unit %d, Damage %d", unitid_0, unitid_1, damage);
-			Unit* unit_1 = id_map.at(unitid_1);
-			if (unit_1)
-			{
-				genAttackEffect(unitid_0, unitid_1);
-				if (notice && unit_1->camp == player_id)
+			else
+				if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_UDP)
 				{
-					char ntc[50];
-					if (unit_1->type == 5)
+					Unit* u0 = id_map.at(msg.unit_0());
+					if (u0)
 					{
-						CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/baseunderatack.wav");
-						sprintf(ntc, "Our base is under attack, damage %d", damage);
+						u0->rfp_cnt = 0;
+						const MsgGridPath& msg_grid_path = msg.grid_path();
+						if (msg_grid_path.grid_point_size())
+						{
+							log("Unit ID: %d, update path and start moving", msg.unit_0());
+							u0->setGridPath(msg.grid_path());
+							u0->motivate();
+						}
 					}
-					else						
-						sprintf(ntc, "Unit %d under attack, damage %d", unitid_1, damage);
-					notice->displayNotice(ntc, 30);
 				}
-				if (unit_1->underAttack(damage))
-				{
-					if (unit_1->getType() == 5)
-						checkWinOrLose(unitid_1);
-					if (getUnitCamp(unitid_0) == player_id)
-						battle_scene->destroyReward(unit_1->getType());
-					deleteUnit(unitid_1);
-				}
-			}
-		}
+				else
+					if (msg.cmd_code() == GameMessage::CmdCode::GameMessage_CmdCode_ATK)
+					{
+						int unitid_0 = msg.unit_0();
+						int unitid_1 = msg.unit_1();
+						int damage = msg.damage();
+						//log("Attack! Unit %d -> Unit %d, Damage %d", unitid_0, unitid_1, damage);
+						Unit* unit_1 = id_map.at(unitid_1);
+						if (unit_1)
+						{
+							genAttackEffect(unitid_0, unitid_1);
+							if (notice && unit_1->camp == player_id)
+							{
+								char ntc[50];
+								if (unit_1->type == 5)
+								{
+									//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/baseunderatack.wav");
+									CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/mp3/baseunderatack.mp3");
+									sprintf(ntc, "Our base is under attack, damage %d", damage);
+								}
+								else
+									sprintf(ntc, "Unit %d under attack, damage %d", unitid_1, damage);
+								notice->displayNotice(ntc, 30);
+							}
+							if (unit_1->underAttack(damage))
+							{
+								if (unit_1->getType() == 5)
+									checkWinOrLose(unitid_1);
+								if (getUnitCamp(unitid_0) == player_id)
+									battle_scene->destroyReward(unit_1->getType());
+								deleteUnit(unitid_1);
+							}
+						}
+					}
 	}
-	delete msgs;
-	msgs = new_msgs;
+
+	msgs->clear_game_message();
 }
 
 void UnitManager::deleteUnit(int id)
