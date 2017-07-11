@@ -1,5 +1,4 @@
 #include "GridMap.h"
-#include "Unit.h"
 #include <vector>
 
 USING_NS_CC;

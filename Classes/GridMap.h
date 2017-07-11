@@ -3,7 +3,6 @@
 #include "cocos2d.h"
 #include "fudancraft.h"
 
-class UnitManager;
 class GridSize;
 
 struct GridPoint

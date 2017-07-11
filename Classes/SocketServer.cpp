@@ -1,4 +1,5 @@
 #include "SocketServer.h"
+#include <random>
 
 
 asio::io_service* SocketServer::io_service_ = new asio::io_service;
@@ -187,8 +188,20 @@ void SocketServer::button_start()
 	char total[4 + 1] = "";
 	sprintf(total, "%4d", static_cast<int>(connections_.size()));
 
+	//Modified by zlj_09, Jul. 11, 2017
+	//Randomly distribute camp no. to players
+	auto total_num = static_cast<int>(connections_.size());
+	auto camp_list = std::vector<int>(total_num);
+	for (int i = 0; i < total_num; i++)
+		camp_list[i] = i + 1;
+	std::random_device rd;						//采用非确定性随机数发生器产生随机数种子
+	std::default_random_engine gen(rd());		//采用默认随机数引擎产生随机数
+	std::shuffle(camp_list.begin(), camp_list.end(), gen);
+	
+
+
 	for (auto i = 0; i < connections_.size(); i++)
-		connections_[i]->write_data("PLAYER" + std::string(total) + std::to_string(i + 1));
+		connections_[i]->write_data("PLAYER" + std::string(total) + std::to_string(camp_list[i]));
 	connection_num_ = connections_.size();
 	this->button_thread_ = new std::thread(std::bind(&SocketServer::loop_process, this));
 	button_thread_->detach();

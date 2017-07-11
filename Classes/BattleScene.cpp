@@ -139,11 +139,11 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	socket_client = _socket_client;
 	socket_server = _socket_server;
 
-	battle_map = TMXTiledMap::create("map/LostTemple.tmx");
+	battle_map = TMXTiledMap::create("Map/LostTemple.tmx");
 	battle_map->setAnchorPoint(Vec2(0, 0));
 	addChild(battle_map, 0);
 
-	warfog_map = TMXTiledMap::create("map/WarFogMap.tmx");
+	warfog_map = TMXTiledMap::create("Map/WarFogMap.tmx");
 	warfog_map->setAnchorPoint(Vec2(0, 0));
 	battle_map->addChild(warfog_map, 50);
 
@@ -175,7 +175,8 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 			money->spendMoney(5000);
 		}
 		else
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/insufficientfound.wav");
+			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/insufficientfound.wav");
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/mp3/insufficientfound.mp3");
 
 	});
 
@@ -188,7 +189,8 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 			money->spendMoney(4000);
 		}
 		else
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/insufficientfound.wav");
+			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/insufficientfound.wav");
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/mp3/insufficientfound.mp3");
 
 	});
 	control_panel_->setSoldierCallback([&](Ref*){
@@ -198,7 +200,8 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 			money->spendMoney(1000);
 		}
 		else
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/insufficientfound.wav");
+			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/insufficientfound.wav");
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/mp3/insufficientfound.mp3");
 
 	});
 	
@@ -264,7 +267,8 @@ bool BattleScene::init(SocketClient* _socket_client, SocketServer* _socket_serve
 	this->addChild(menu, 20);
 
 	CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.3);
-	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/killbill.wav",true);
+	//CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/killbill.wav",true);
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/mp3/killbill.mp3",true);
 	log("if back ground music playing %d", CocosDenshion::SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying());
 	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/battlefieldcontrol.wav");
 
@@ -313,14 +317,16 @@ void BattleScene::destroyReward(int destroyed_type)
 void BattleScene::initPlayerID()
 {
 	player_id = socket_client->camp();
+	//player_id = 1;
+	log("BattleScene: Get Player ID: %d", player_id);
 }
 
 bool ControlPanel::init()
 {
 	if (!Menu::init())
 		return false;
-	fighter = MenuItemImage::create("/Picture/menu/airplane-menu-up.png",
-	                                     "/Picture/menu/airplane-menu-down.png"
+	fighter = MenuItemImage::create("Picture/menu/airplane-menu-up.png",
+	                                     "Picture/menu/airplane-menu-down.png"
 	);
 
 	fighter->setScale(0.8);
@@ -328,16 +334,16 @@ bool ControlPanel::init()
 	fighter->setPosition(Menu::getContentSize().width, Menu::getContentSize().height);
 	
 
-	tank = MenuItemImage::create("/Picture/menu/tank-menu-up.png",
-	                                     "/Picture/menu/tank-menu-down.png"
+	tank = MenuItemImage::create("Picture/menu/tank-menu-up.png",
+	                                     "Picture/menu/tank-menu-down.png"
 	);
 	tank->setScale(0.8);
 	tank->setAnchorPoint(Vec2(1, 1));
 	tank->setPosition(Menu::getContentSize().width,
 	                     Menu::getContentSize().height - tank->getContentSize().height);
 
-	soldier = MenuItemImage::create("/Picture/menu/soldier-menu-up.png",
-	                                "/Picture/menu/soldier-menu-down.png"
+	soldier = MenuItemImage::create("Picture/menu/soldier-menu-up.png",
+	                                "Picture/menu/soldier-menu-down.png"
 	);
 	soldier->setScale(0.8);
 	soldier->setAnchorPoint(Vec2(1, 1));
@@ -480,7 +486,6 @@ void BattleScene::scrollMap()
 void BattleScene::onKeyPressed(EventKeyboard::KeyCode keycode, cocos2d::Event* pEvent)
 {
 	auto map_center = battle_map->getPosition();
-	Director::getInstance()->getVisibleSize();
 	switch (keycode)
 	{
 	case EventKeyboard::KeyCode::KEY_W:
